@@ -152,6 +152,43 @@ se lines=40 co=100 so=2 hh=0 ea
 se ch=2
 
 
+" Window位置の保存と復帰 "{{{
+if has('gui_running')
+  if has('unix')
+    let s:infofile = '~/.vim/.vimpos'
+  else
+    let s:infofile = '$VIM/.vimpos'
+  endif
+
+  augroup WinPosSizeSaver
+    au!
+  augroup END
+  exe 'au WinPosSizeSaver VimLeave * call s:WinPosSizeSave("'.s:infofile.'")'
+
+  if filereadable(expand(s:infofile))
+    execute 'source '.s:infofile
+  endif
+  unlet s:infofile
+endif
+
+function! s:WinPosSizeSave(filename)"{{{
+  let saved_reg = @a
+  redir @a
+  winpos
+  redir END
+  let px = substitute(@a, '.*X \(\d\+\).*', '\1', '') + 0
+  let py = substitute(@a, '.*Y \(\d\+\).*', '\1', '') + 0
+  exe 'redir! >'.a:filename
+  if px > 0 && py > 0
+    echo 'winpos '.px.' '.py
+  endif
+  echo 'set lines='.&lines.' columns='.&columns
+  redir END
+  let @a = saved_reg
+endfunction
+"}}}
+"}}}
+
 "-----------------------------------------------------------------------------
 "カーソルの挙動"{{{
 
@@ -172,6 +209,15 @@ se ww+=]  "<Right> (i Replace)
 "<BS>等をindentやeolを越えて有効にする
 se bs=indent,eol,start
 "}}}
+
+" ファイルを開いたら前回のカーソル位置へ移動
+aug vimrc_ex
+  au!
+  au BufReadPost *
+    \ if line("'\"") > 1 && line("'\"") <= line('$') |
+    \   exe "normal! g`\"" |
+    \ endif
+aug END
 
 "-----------------------------------------------------------------------------
 "その他挙動
@@ -206,9 +252,6 @@ se fdm=marker cms=%s fdc=5 fdt=FoldCCtext()
 
 "-----------------------------------------------------------------------------
 "Statusline
-"表示設定：その他見栄え・statuslineなど
-
-
 se stl =%!Gs_StatusLine()
 
 function! Gs_StatusLine() "{{{
@@ -351,8 +394,6 @@ endfunction "}}}
 "}}}
 
 
-"-----------------------------------------------------------------------------
-
 "=============================================================================
 "表示系
 
@@ -444,59 +485,11 @@ endfunction
 
 "}}}
 
-"colorscheme siicEvening
-"=============================================================================
-" ファイルを開いたら前回のカーソル位置へ移動
-aug vimrc_ex
-  au!
-  au BufReadPost *
-    \ if line("'\"") > 1 && line("'\"") <= line('$') |
-    \   exe "normal! g`\"" |
-    \ endif
-aug END
-
-
-" Window位置の保存と復帰 "{{{
-if has('gui_running')
-  if has('unix')
-    let s:infofile = '~/.vim/.vimpos'
-  else
-    let s:infofile = '$VIM/.vimpos'
-  endif
-
-  augroup WinPosSizeSaver
-    au!
-  augroup END
-  exe 'au WinPosSizeSaver VimLeave * call s:WinPosSizeSave("'.s:infofile.'")'
-
-  if filereadable(expand(s:infofile))
-    execute 'source '.s:infofile
-  endif
-  unlet s:infofile
-endif
-
-function! s:WinPosSizeSave(filename)"{{{
-  let saved_reg = @a
-  redir @a
-  winpos
-  redir END
-  let px = substitute(@a, '.*X \(\d\+\).*', '\1', '') + 0
-  let py = substitute(@a, '.*Y \(\d\+\).*', '\1', '') + 0
-  exe 'redir! >'.a:filename
-  if px > 0 && py > 0
-    echo 'winpos '.px.' '.py
-  endif
-  echo 'set lines='.&lines.' columns='.&columns
-  redir END
-  let @a = saved_reg
-endfunction
-"}}}
-"}}}
-
 
 "=============================================================================
 "Gvim
 "-----------------------------------------------------------------------------
+"colorscheme siicEvening
 
 "エラー時の音とビジュアルベルの抑制
 au GUIEnter * set vb t_vb=
@@ -517,102 +510,82 @@ endif
 "}}}
 
 
+if filereadable(fnamemodify('~/.privacy/.vimrc_privacy.vim', ':p'))
+  source ~/.privacy/.vimrc_privacy.vim  "lingr.vimのパスワードとか
+endif
 
 
 
 
-" diffの設定"{{{
-  if has('win32') || has('win64')"{{{
-    set diffexpr=MyDiff()
-
-    function! MyDiff()
-      let opt = '-a --binary '
-      if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-      if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-      let arg1 = v:fname_in
-      if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
-      let arg2 = v:fname_new
-      if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
-      let arg3 = v:fname_out
-      if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-      let eq = ''
-      if $VIMRUNTIME =~ ' '
-        if &sh =~ '\<cmd'
-          let cmd = '""' . $VIMRUNTIME . '\diff"'
-          let eq = '"'
-        else
-          let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-        endif
-      else
-        let cmd = $VIMRUNTIME . '\diff'
-      endif
-      silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
-    endfunction
-  endif"}}}
-
-" difforig（バッファと元ファイルでの更新を比較・変更箇所表示）を使用可能にする。
-  command! DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
-" ファイルまたはバッファ番号を指定して差分表示。#なら裏バッファと比較
-  command! -nargs=? -complete=file Diff if '<args>'=='' | browse vertical diffsplit|else| vertical diffsplit <args>|endif
-" パッチコマンド
-  set patchexpr=MyPatch()
-  function! MyPatch()
-   :call system($VIM."\\'.'patch -o " . v:fname_out . " " . v:fname_in . " < " . v:fname_diff)
-  endfunction
-"}}}
 
 
+"=============================================================================
+"Mapping Basis
+let mapleader = '\'
+let maplocalleader = '_'
 
-" 特殊ファイルの取り込み
-"======================
-source $VIM/vimfiles/vimrc/privacy.vim
+"-----------------------------------------------------------------------------
+"No operation
+"インサートモードで間違って出してほしくないキー
+nnoremap <F1> <Nop>
+noremap <F13> <Nop>
+noremap! <F13> <Nop>
+noremap <F15> <Nop>
+noremap! <F15> <Nop>
+noremap <F16> <Nop>
+noremap! <F16> <Nop>
+inoremap <S-F16> <Nop>
+cnoremap <S-F16> <Nop>
+inoremap <M-j> <Nop>
+
+"誤爆防止
+nnoremap ZZ <Nop>
+noremap zq q
+noremap z@ @
+
+"-----------------------------------------------------------------------------
+"Replace
+noremap ; :
+noremap - ^
+nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
+nnoremap gj j|nnoremap gk k|vnoremap gj j|vnoremap gk k
+"-----------------------------------------------------------------------------
+"New
+"undoフラグはctrlを押しっぱなしでも有効
+inoremap <c-g><c-u> <c-g>u
+"mark jump
+noremap gm `
+noremap ,, `
+
+"-----------------------------------------------------------------------------
+"Compensation
+noremap ,; ;
+vnoremap ,; ;
+noremap z; ;
+vnoremap z; ;
+
+noremap z, ,
+vnoremap z, ,
+
+noremap z- -
+
+"-----------------------------------------------------------------------------
+"インサートモードでの削除コマンドにundoを有効化させる
+inoremap <c-h> <c-g>u<c-h>
+inoremap <c-u> <c-g>u<c-u>
+"inoremap <c-w> <c-g>u<c-w>
 
 
-let maplocalleader = ','
-" キーマップ"{{{
-"==========
-  " <Leader>および、<LocalLeader>に使うキーを決める
-    let mapleader = '\'
-  "sを独自キーおよび<LocalLeader>にする（sを使いたいときはcl使えばいいよ）
-    "nnoremap s <nop>
-    nnoremap S <nop>
-    "nnoremap <C-h> s
-
-"設定・fixに近い"{{{
-  "カーソル移動を直感的なgjgkに変える
-    nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
-    nnoremap gj j|nnoremap gk k|vnoremap gj j|vnoremap gk k
-  "インサートモードでの削除コマンドにundoを有効化させる
-    inoremap <c-h> <c-g>u<c-h>
-    inoremap <c-u> <c-g>u<c-u>
-    "inoremap <c-w> <c-g>u<c-w>
-"}}}
-
-"特定キーの無効化・再配置"{{{
-  "インサートモードで間違って出してほしくないキーを無効にする"{{{
-    nnoremap <F1> <Nop>
-    noremap <F13> <Nop>
-    noremap! <F13> <Nop>
-    noremap <F15> <Nop>
-    noremap! <F15> <Nop>
-    noremap <F16> <Nop>
-    noremap! <F16> <Nop>
-    inoremap <S-F16> <Nop>
-    cnoremap <S-F16> <Nop>
-    inoremap <M-j> <Nop>|"}}}
-  "誤爆してほしくないキーを無効化
-    "強制全保存終了を無効化。
-      nnoremap ZZ <Nop>
-    "レコーディングを無効化・再配置
-      noremap zq q
-      noremap q <Nop>
-      noremap <silent>q :call <SID>close_specialwin()<CR>
-        "qは特殊窓を遠隔で閉じるコマンドにする
-function! s:close_specialwin() "{{{
+"=============================================================================
+"Mapping Normal
+"-----------------------------------------------------------------------------
+"qは特殊窓を遠隔で閉じるコマンドにする
+noremap <silent>q :call <SID>Close_specialWins()<CR>
+function! s:Close_specialWins() "{{{
   let crrwinnr = winnr()
 
   let deledlist = []
-  windo call add(deledlist, s:close_specialwin2())
+  windo call add(deledlist, s:__chk_specialwin_winnr())
 
   for deledwinnr in reverse(deledlist)
     if deledwinnr == 0
@@ -624,37 +597,31 @@ function! s:close_specialwin() "{{{
   endfor
 
   exe crrwinnr.'wincmd w'
-endfunction "}}}
-function! s:close_specialwin2() "{{{
+endfunction
+"}}}
+function! s:__chk_specialwin_winnr() "{{{
   if &pvw || &bt =~ 'help\|quickfix' || &ft ==# 'unite'
     let winnr = winnr()
     hide
     return winnr
   endif
 endfunction "}}}
-" 既存キーマップを楽なキーマップに割り当て換える"{{{
-  "使いづらいキーの再配置
-    "使いづらい':'と、使用頻度が低い';'','の処理
-      noremap ; :
-      "noremap :: '
-        "単品:だとnmap :call等のコマンドで不具合
-      noremap ,; ;
-      vnoremap ,; ;
-      noremap z; ;
-      vnoremap z; ;
-      noremap z, ,
-      vnoremap z, ,
-    "^が押しづらいので-に変更
-      noremap - ^
-      noremap z- -
-    "マクロの@はz@にして@で誤爆しない&自由に使えるようにする
-      noremap z@ @
-    "マークジャンプを押しやすいキーに
-      noremap gm `
-      noremap ,, `
-    "undoフラグはctrlを押しっぱなしでも有効
-      inoremap <c-g><c-u> <c-g>u
-"}}}"}}}
+
+"-----------------------------------------------------------------------------
+
+
+
+
+
+let maplocalleader = ','
+"==========
+  " <Leader>および、<LocalLeader>に使うキーを決める
+  "sを独自キーおよび<LocalLeader>にする（sを使いたいときはcl使えばいいよ）
+    "nnoremap s <nop>
+    nnoremap S <nop>
+    "nnoremap <C-h> s
+
+
 
 
 "ノーマルモードで入力をする"{{{
@@ -1105,7 +1072,7 @@ inoremap <c-e><c-a> <esc>I
     vnoremap <silent> <F4><C-a> :ContinuousNumber <C-a><CR>
     vnoremap <silent> <F4><C-x> :ContinuousNumber <C-x><CR>
     command! -count -nargs=1 ContinuousNumber let c = col('.')|for n in range(1, <count>?<count>-line('.'):1)|exec 'normal! j' . n . <q-args>|call cursor('.', c)|endfor
-"}}}"}}}
+"}}}
 let maplocalleader = "_"
 
 " コマンド"{{{
@@ -1970,6 +1937,46 @@ let QFixHowm_WikiDir = 'wiki'
 "}}}
 let maplocalleader = "_"
 
+
+" diffの設定"{{{
+  if has('win32') || has('win64')"{{{
+    set diffexpr=MyDiff()
+
+    function! MyDiff()
+      let opt = '-a --binary '
+      if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+      if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+      let arg1 = v:fname_in
+      if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+      let arg2 = v:fname_new
+      if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+      let arg3 = v:fname_out
+      if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+      let eq = ''
+      if $VIMRUNTIME =~ ' '
+        if &sh =~ '\<cmd'
+          let cmd = '""' . $VIMRUNTIME . '\diff"'
+          let eq = '"'
+        else
+          let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+        endif
+      else
+        let cmd = $VIMRUNTIME . '\diff'
+      endif
+      silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
+    endfunction
+  endif"}}}
+
+" difforig（バッファと元ファイルでの更新を比較・変更箇所表示）を使用可能にする。
+  command! DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+" ファイルまたはバッファ番号を指定して差分表示。#なら裏バッファと比較
+  command! -nargs=? -complete=file Diff if '<args>'=='' | browse vertical diffsplit|else| vertical diffsplit <args>|endif
+" パッチコマンド
+  set patchexpr=MyPatch()
+  function! MyPatch()
+   :call system($VIM."\\'.'patch -o " . v:fname_out . " " . v:fname_in . " < " . v:fname_diff)
+  endfunction
+"}}}
 
 " スクラッチ
 " ==========
