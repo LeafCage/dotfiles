@@ -147,8 +147,9 @@ set confirm
 
 "-----------------------------------------------------------------------------
 "Window
-se lines=40 co=100 so=2
-"se ea hh=20
+se lines=40 co=100 so=2 hh=0 ea
+"コマンドラインの高さ
+se ch=2
 
 
 "-----------------------------------------------------------------------------
@@ -196,6 +197,8 @@ se sm mat=1  "括弧の対応表示時間
 
 "補完を有効にする
 set completeopt=menu,menuone,longest,preview
+"補完の色
+hi Pmenu         guifg=white  guibg=#6A5CB4  gui=NONE
 
 "折り畳み
 se fdm=marker cms=%s fdc=5 fdt=FoldCCtext()
@@ -204,12 +207,11 @@ se fdm=marker cms=%s fdc=5 fdt=FoldCCtext()
 "-----------------------------------------------------------------------------
 "Statusline
 "表示設定：その他見栄え・statuslineなど
-source $VIM/vimfiles/vimrc/colorCstm.vim
 
 
-se stl =%!StatusLine()
+se stl =%!Gs_StatusLine()
 
-function! StatusLine() "{{{
+function! Gs_StatusLine() "{{{
   let crrbuf_head = empty(bufname('%')) ? '' : '%{expand(''%:p:h'')}/'
     "<issue: 空バッファ表示させてるとき他窓のパスも巻き添えで消去してしまう
   let crrbuf_tail = '%9*%t %0*'  "< tail の highlight を変えている :h hl-User1
@@ -232,8 +234,7 @@ function! StatusLine() "{{{
     \ '%13([%L] %l,%v%)%< %P'
 endfunction
 "}}}
-
-"関数定義始まりから見た行数を返す
+"関数定義始まりから見た行数を返す >
 function! s:__Gi_funclnum() "{{{
   let funcdef = search('^\s*\<fu\%[nction]\>', 'bcnW', search('^\s*\<endf\%[unction]\>', 'bcnW'))
   if funcdef > 0
@@ -243,6 +244,41 @@ function! s:__Gi_funclnum() "{{{
   endif
 endfunction
 "}}}
+
+"挿入モード時、ステータスラインのカラー変更
+let g:hi_insert = 'highlight StatusLine guifg=black guibg=darkyellow gui=bold ctermfg=blue ctermbg=yellow cterm=bold'
+
+if has('syntax')
+  syntax on
+  augroup InsertHook
+    autocmd!
+    autocmd InsertEnter * call s:StatusLine('Enter')
+    autocmd InsertLeave * call s:StatusLine('Leave')
+  augroup END
+endif
+
+inoremap <silent><C-c> <C-c>:call <SID>StatusLine('Leave')<CR>
+
+let s:slhlcmd = ''
+function! s:StatusLine(mode)
+  if a:mode == 'Enter'
+    silent! let s:slhlcmd = 'highlight ' . s:GetHighlight('StatusLine')
+    silent exec g:hi_insert
+  else
+    highlight clear StatusLine
+    silent exec s:slhlcmd
+  endif
+endfunction
+
+function! s:GetHighlight(hi)
+  redir => hl
+  exec 'highlight '.a:hi
+  redir END
+  let hl = substitute(hl, '[\r\n]', '', 'g')
+  let hl = substitute(hl, 'xxx', '', '')
+  return hl
+endfunction
+
 
 "-----------------------------------------------------------------------------
 "TabLine"{{{
@@ -316,26 +352,6 @@ endfunction "}}}
 
 
 "-----------------------------------------------------------------------------
-"StatusLine, TabLine で使うhighlight
-aug vimrc_stl8tal_hl
-  au!
-  au BufEnter *
-    \ call <SID>StatusLineNC_fixer() |
-    \ call <SID>Add_stl8tal_hl() |
-aug END
-
-function! s:StatusLineNC_fixer() "{{{
-  "u> StatusLine のhlを取得してguibg guifgを取得
-  hi StatusLineNC term=reverse cterm=reverse gui=NONE guibg=Gray80 guifg=Black
-endfunction
-"}}}
-
-function! s:Add_stl8tal_hl() "{{{
-  hi User9 gui=bold guifg=darkblue guibg=lightcyan
-  hi User8 gui=bold guifg=darkcyan guibg=lightblue
-  hi TabLineInfo term=reverse ctermfg=Black ctermbg=LightBlue guifg=black guibg=lightblue
-endfunction
-"}}}
 
 "=============================================================================
 "表示系
@@ -377,6 +393,59 @@ se shm +=I  "Vim開始挨拶メッセージを表示しない
 
 
 "=============================================================================
+"その他のhighlight
+"全角スペースを表示 "{{{
+if has('syntax')
+  syntax on
+
+  aug InvisibleIndicator
+    au!
+    au VimEnter,BufEnter * call ActivateInvisibleIndicator()
+  aug END
+endif
+
+
+function! ActivateInvisibleIndicator()
+  hi ZenkakuSpace cterm=underline ctermfg=darkgrey gui=underline guifg=darkgrey
+  " 全角スペースを明示的に表示する。
+  silent! match ZenkakuSpace /　/
+endfunction
+"}}}
+
+"-----------------------------------------------------------------------------
+aug vimrc_colorscheme
+  au!
+  au ColorScheme *
+    \ call <SID>CursorIM() |
+    \ call <SID>StatusLineNC_fixer() |
+    \ call <SID>Add_stl8tal_hl() |
+aug END
+
+"" 日本語入力ON時のカーソルの色を設定
+function! s:CursorIM() "{{{
+  if has('multi_byte_ime') || has('xim')
+    highlight CursorIM guibg=#ffb700 guifg=NONE
+  endif
+endfunction
+"}}}
+
+"StatusLine, TabLine で使うhighlight
+function! s:StatusLineNC_fixer() "{{{
+  "c] StatusLine のhlを取得してguibg guifgを取得
+  hi StatusLineNC term=reverse cterm=reverse gui=NONE guibg=Gray80 guifg=Black
+endfunction
+"}}}
+function! s:Add_stl8tal_hl() "{{{
+  hi User9 gui=bold guifg=darkblue guibg=lightcyan
+  hi User8 gui=bold guifg=darkcyan guibg=lightblue
+  hi TabLineInfo term=reverse ctermfg=Black ctermbg=LightBlue guifg=black guibg=lightblue
+endfunction
+"}}}
+
+"}}}
+
+"colorscheme siicEvening
+"=============================================================================
 " ファイルを開いたら前回のカーソル位置へ移動
 aug vimrc_ex
   au!
@@ -386,7 +455,66 @@ aug vimrc_ex
     \ endif
 aug END
 
+
+" Window位置の保存と復帰 "{{{
+if has('gui_running')
+  if has('unix')
+    let s:infofile = '~/.vim/.vimpos'
+  else
+    let s:infofile = '$VIM/.vimpos'
+  endif
+
+  augroup WinPosSizeSaver
+    au!
+  augroup END
+  exe 'au WinPosSizeSaver VimLeave * call s:WinPosSizeSave("'.s:infofile.'")'
+
+  if filereadable(expand(s:infofile))
+    execute 'source '.s:infofile
+  endif
+  unlet s:infofile
+endif
+
+function! s:WinPosSizeSave(filename)"{{{
+  let saved_reg = @a
+  redir @a
+  winpos
+  redir END
+  let px = substitute(@a, '.*X \(\d\+\).*', '\1', '') + 0
+  let py = substitute(@a, '.*Y \(\d\+\).*', '\1', '') + 0
+  exe 'redir! >'.a:filename
+  if px > 0 && py > 0
+    echo 'winpos '.px.' '.py
+  endif
+  echo 'set lines='.&lines.' columns='.&columns
+  redir END
+  let @a = saved_reg
+endfunction
+"}}}
+"}}}
+
+
+"=============================================================================
+"Gvim
 "-----------------------------------------------------------------------------
+
+"エラー時の音とビジュアルベルの抑制
+au GUIEnter * set vb t_vb=
+
+"Font "{{{
+if has('win32')
+  set gfn=MeiryoKe_Gothic:h8:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  set gfn=MS_Gothic:h10:cSHIFTJIS
+  set gfn=Migu_1M:h9:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  set linespace=2
+elseif has('mac')
+  set guifont=Osaka－等幅:h14
+elseif has('xfontset')
+  set guifontset=a14,r14,k14
+  set linespace=0
+else
+endif
+"}}}
 
 
 
