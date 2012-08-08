@@ -113,7 +113,7 @@ se fo +=M  "マルチバイト文字連結時空白を挿入しない
 se fo +=m  "マルチバイト文字でも整形を有効にする
 
 "改行時にコメントしない(上手く動いていない(上書きされてる))
-aug vimrc_formatoptions
+aug vimrc_fo
   au!
   au FileType * setlocal fo-=ro
 aug END
@@ -207,12 +207,49 @@ se fdm=marker cms=%s fdc=5 fdt=FoldCCtext()
 source $VIM/vimfiles/vimrc/colorCstm.vim
 
 
-"-----------------------------------------------------------------------------
-"Tabpage"{{{
-se stal=2 "常に tabline を表示
-se tal=%!Gs_MakeTabLine()
+se stl =%!StatusLine()
 
-function! Gs_MakeTabLine() "{{{
+function! StatusLine() "{{{
+  let crrbuf_head = empty(bufname('%')) ? '' : '%{expand(''%:p:h'')}/'
+    "<issue: 空バッファ表示させてるとき他窓のパスも巻き添えで消去してしまう
+  let crrbuf_tail = '%9*%t %0*'  "< tail の highlight を変えている :h hl-User1
+  let crrbuf_path = crrbuf_head .crrbuf_tail
+
+  let fenc8ff = '[%{&fenc}/%{&ff[:0]}]'
+
+  let info = ''
+  if exists('*cfi#format')
+    "let info .= '%*TabLineInfo#'.cfi#format('%.43s()' ,'') .'%0*'
+    " let info .= '%8*'.cfi#format('%s()' ,'') .'%0*'
+    let info .= '%8*'. cfi#format('%.43s()' ,'') .'%0*'
+  endif
+
+  let funclnum = s:__Gi_funclnum()
+
+  return '%2n-'. '%.40('. crrbuf_path. '%)'.
+    \ '%m%R%H%W%y %('. fenc8ff .'%) '.
+    \ info . funclnum. '%='.
+    \ '%13([%L] %l,%v%)%< %P'
+endfunction
+"}}}
+
+"関数定義始まりから見た行数を返す
+function! s:__Gi_funclnum() "{{{
+  let funcdef = search('^\s*\<fu\%[nction]\>', 'bcnW', search('^\s*\<endf\%[unction]\>', 'bcnW'))
+  if funcdef > 0
+    return ' '.(line('.') - funcdef).' '
+  else
+    return ''
+  endif
+endfunction
+"}}}
+
+"-----------------------------------------------------------------------------
+"TabLine"{{{
+se stal=2 "常に tabline を表示
+se tal=%!Gs_TabLine()
+
+function! Gs_TabLine() "{{{
   let one2end = range(1, tabpagenr('$'))
   let titles = map(one2end, 's:__Gs_Tabpage_label(v:val)')
 
@@ -278,6 +315,28 @@ endfunction "}}}
 "}}}
 
 
+"-----------------------------------------------------------------------------
+"StatusLine, TabLine で使うhighlight
+aug vimrc_stl8tal_hl
+  au!
+  au BufEnter *
+    \ call <SID>StatusLineNC_fixer() |
+    \ call <SID>Add_stl8tal_hl() |
+aug END
+
+function! s:StatusLineNC_fixer() "{{{
+  "u> StatusLine のhlを取得してguibg guifgを取得
+  hi StatusLineNC term=reverse cterm=reverse gui=NONE guibg=Gray80 guifg=Black
+endfunction
+"}}}
+
+function! s:Add_stl8tal_hl() "{{{
+  hi User9 gui=bold guifg=darkblue guibg=lightcyan
+  hi User8 gui=bold guifg=darkcyan guibg=lightblue
+  hi TabLineInfo term=reverse ctermfg=Black ctermbg=LightBlue guifg=black guibg=lightblue
+endfunction
+"}}}
+
 "=============================================================================
 "表示系
 
@@ -300,7 +359,7 @@ se fcs +=diff:-
 
 
 se guioptions=
-se go +=c  "単純な選択にはポップアップダイアログでなくコンソールダイアログを使う
+"se go +=c  "単純な選択にはポップアップダイアログでなくコンソールダイアログを使う
 se go +=r  "右スクロールバーを常に表示
 se go +=L  "垂直分割されたとき左スクロールバーを表示
 se go +=m  "menubar
