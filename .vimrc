@@ -523,6 +523,8 @@ endif
 "Mapping Basis
 let mapleader = '\'
 let maplocalleader = '_'
+noremap [space] <nop>
+nmap <Space> [space]
 
 "-----------------------------------------------------------------------------
 "No operation
@@ -550,7 +552,8 @@ noremap - ^
 nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
 nnoremap gj j|nnoremap gk k|vnoremap gj j|vnoremap gk k
 "-----------------------------------------------------------------------------
-"New
+"Substitution
+
 "undoフラグはctrlを押しっぱなしでも有効
 inoremap <c-g><c-u> <c-g>u
 "mark jump
@@ -579,6 +582,49 @@ inoremap <c-u> <c-g>u<c-u>
 "=============================================================================
 "Mapping Normal
 "-----------------------------------------------------------------------------
+"Normal modeで挿入
+nnoremap <C-j> :<C-u>call <SID>Insert_CR()<CR>
+function! s:Insert_CR() "{{{
+  let foldclosedend = foldclosedend('.')
+
+  if foldclosedend != -1
+    call append(foldclosedend, '')
+  else
+    call append('.', '')
+  endif
+  normal j
+endfunction "}}}
+
+nnoremap <C-k><C-j> :i<CR><CR>.<CR>
+
+
+"空白を一つ挿入するa bb a
+nnoremap <S-SPACE> i<Space><Esc>
+"nnoremap <M-SPACE> a<Space><Esc>
+nnoremap <M-SPACE> i<Space><Esc>la<Space><Esc>h
+nnoremap <SID>[space]1 i<Space><Esc>la<Space><Esc>h
+nnoremap <SID>[space]2 i<Space><Esc>lla<Space><Esc>h
+nnoremap <SID>[space]3 i<Space><Esc>llla<Space><Esc>h
+nnoremap <SID>[space]4 i<Space><Esc>lllla<Space><Esc>h
+nnoremap <SID>[space]5 i<Space><Esc>llllla<Space><Esc>h
+
+"-----------------------------------------------------------------------------
+"Win/Buf open/close
+
+"現在Bufを新しいタブページで開く
+noremap <silent> <C-w>m :tab split<CR>
+
+"ウィンドウレイアウトを保持したままバッファを閉じるコマンド
+com! Kwbd let kwbd_bn= bufnr("%") |e # |exe "bd ".kwbd_bn |unlet kwbd_bn
+
+nmap dv :bd<CR>
+nmap dn :Kwbd<CR>
+nmap dc <C-w>c
+nmap dq <C-w>c
+nmap d<C-w> <C-w>c
+nmap dm :tabc<CR>
+nmap dgt :tabc<CR>
+
 "qは特殊窓を遠隔で閉じるコマンドにする
 noremap <silent>q :call <SID>Close_specialWins()<CR>
 function! s:Close_specialWins() "{{{
@@ -608,6 +654,29 @@ function! s:__chk_specialwin_winnr() "{{{
 endfunction "}}}
 
 "-----------------------------------------------------------------------------
+"Win/Buf switching
+
+"次／前のバッファおよび次／前タブページへ
+noremap <silent> <M-h> :bp<CR>
+noremap <silent> <M-l> :bn<CR>
+noremap <silent> [space]h :bp<CR>
+noremap <silent> [space]l :bn<CR>
+noremap gr gT
+noremap <silent> [space]n gt
+noremap <silent> [space]p gT
+
+"次のウィンドウ・前のウィンドウへ
+noremap <M-j> <C-W>w
+noremap <M-k> <C-W>W
+noremap [space]j <C-W>w
+noremap [space]k <C-W>W
+inoremap <M-j> <Esc><C-W>w
+inoremap <M-k> <Esc><C-W>W
+
+"エラーリストをたぐる
+noremap <C-n> :cn<CR>
+noremap <C-p> :cp<CR>
+"-----------------------------------------------------------------------------
 
 
 
@@ -624,51 +693,11 @@ let maplocalleader = ','
 
 
 
-"ノーマルモードで入力をする"{{{
-  "改行を挿入する
-    nnoremap <C-j> :a<CR><CR>.<CR>
-    nnoremap <C-j> :<C-u>call <SID>Insert_CR()<CR>
-    function! s:Insert_CR() "{{{
-      let foldclosedend = foldclosedend('.')
-
-      if foldclosedend != -1
-        call append(foldclosedend, '')
-      else
-        call append('.', '')
-      endif
-      normal j
-    endfunction "}}}
-
-    nnoremap <C-k><C-j> :i<CR><CR>.<CR>
-    nnoremap <C-k><C-w> :i<CR><CR>.<CR>
-    nnoremap <C-w><C-k> :i<CR><CR>.<CR>
-  "空白を一つ挿入するa bb a
-    nnoremap <S-SPACE> i<Space><Esc>
-    "nnoremap <M-SPACE> a<Space><Esc>
-    nnoremap <M-SPACE> i<Space><Esc>la<Space><Esc>h
-    nnoremap <SID>[space]1 i<Space><Esc>la<Space><Esc>h
-    nnoremap <SID>[space]2 i<Space><Esc>lla<Space><Esc>h
-    nnoremap <SID>[space]3 i<Space><Esc>llla<Space><Esc>h
-    nnoremap <SID>[space]4 i<Space><Esc>lllla<Space><Esc>h
-    nnoremap <SID>[space]5 i<Space><Esc>llllla<Space><Esc>h
-
-"}}}
 
 
 "window/buffer操作"{{{
   "ウィンドウやバッファやタブページを閉じる
     "レイアウトを保持してバッファを閉じるコマンド
-      com! Kwbd let kwbd_bn= bufnr("%")|bn|exe "bdel ".kwbd_bn|unlet kwbd_bn|"ウィンドウレイアウトを保持したままバッファを閉じるコマンド
-    nmap dv :bd<CR>|"バッファを閉じる
-    nmap dn :Kwbd<cr>|"レイアウトを保持してバッファを閉じる
-    nmap dc <C-w>c|"窓を閉じる
-    nmap dq <C-w>c|"窓を閉じる
-    nmap d<C-w> <C-w>c|"窓を閉じる
-    nmap dz :tabc<CR>|"タブページを閉じる
-    nmap du :tabc<CR>|"タブページを閉じる
-    nmap dm :tabc<CR>|"タブページを閉じる
-    nmap dgt :tabc<CR>|"タブページを閉じる
-    "nmap cd :Kwbd<cr>|"レイアウトを保持してバッファを閉じる
 
   "ウィンドウ操作
     "noremap <silent> <C-w>[ :split|execute "help ".expand('<cword>')<CR>|"カーソルドワードを新規ウィンドウで:helpする
@@ -683,10 +712,6 @@ let maplocalleader = ','
     "inoremap <M-t> <Esc>gt
     "nmap <C-t> [\Tabcmd]
 
-    "noremap <silent> <C-t> :tab split<CR>|"現在ページを新しいタブページで開く
-    noremap <silent> <C-w>gt :tab split<CR>|"現在ページを新しいタブページで開く
-    noremap <silent> <C-w>u :tab split<CR>|"現在ページを新しいタブページで開く
-    noremap <silent> <C-w>m :tab split<CR>|"現在ページを新しいタブページで開く
     nmap <M-t>  <sid>(Tabcmd)
     "noremap <sid>(Tabcmd)<C-t> gt
     noremap <SID>(Tabcmd)<C-t> <C-t>
@@ -703,25 +728,6 @@ let maplocalleader = ','
     noremap <silent> <SID>(Tabcmd)K :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
     noremap <silent> <SID>(Tabcmd)L :call <SID>lingrlaunch_in_newtab()<CR>|"Lingr.vimを別タブページで開く
 
-  "次／前のバッファおよび次／前タブページへナビゲート
-    noremap <silent> <M-h> :bp<CR>
-    noremap <silent> <M-l> :bn<CR>
-    noremap <silent> [space]h :bp<CR>
-    noremap <silent> [space]l :bn<CR>
-    noremap gr gT
-    noremap <silent> [space]n gt
-    noremap <silent> [space]p gT
-    "noremap <M-i> <C-^>
-  "次のウィンドウ・前のウィンドウへ
-    noremap <M-j> <C-W>w
-    noremap <M-k> <C-W>W
-    noremap [space]j <C-W>w
-    noremap [space]k <C-W>W
-    inoremap <M-j> <Esc><C-W>w
-    inoremap <M-k> <Esc><C-W>W
-  "エラーリストをたぐる
-    noremap <C-n> :cn<CR>
-    noremap <C-p> :cp<CR>
 
 
   " 縦分割のwindowの幅を操作
@@ -783,8 +789,6 @@ let maplocalleader = ','
 "}}}
 
 "<space>キーで始まるコマンド"{{{
-  noremap [space] <nop>
-  nmap <Space> [space]
 
   "同じインデントレベルを移動
   nn <C-k>. :call search ("^". matchstr (getline (line (".")), '\(\s*\)') ."\\S")<CR>^
