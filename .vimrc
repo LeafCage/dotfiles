@@ -1910,7 +1910,9 @@ nnoremap ,axw :<C-u>Unite webcolorname<CR>
 "unite関係
 nnoremap ,au :UniteResume<CR>
 nnoremap ,as :<C-u>Unite source<CR>
-nnoremap ,a@ :<C-u>Unite menu:main<CR>
+nnoremap ,a@ :<C-u>Unite menu<CR>
+nnoremap ,a:m :<C-u>Unite menu:main<CR>
+nnoremap ,a:g :<C-u>Unite menu:git<CR>
 
 "source-buffer ファイル名に色を付ける
 au Syntax unite
@@ -1918,28 +1920,28 @@ au Syntax unite
   \ contained containedin=uniteSource__Buffer
 highlight default link uniteSource__Buffer_Fname Constant
 
-"source-menu {{{
+"source-menu "{{{
 if !exists("g:unite_source_menu_menus")
   let g:unite_source_menu_menus = {}
 endif
 
-let s:menus = {}
-function s:menus.map(key, value)
+let s:main = {} "{{{
+function s:main.map(key, value)
   return { 'word' : a:key, 'kind' : 'command', 'action__command' : a:value }
 endfunction
-let s:menus.candidates = {}
-"let s:menus.candidates[''] = 
-let s:menus.candidates['h 41.6'] = 'h 41.6'
-let s:menus.candidates['h functions'] = 'h functions'
-let s:menus.candidates['h [cword]()'] = "exe'h '. g:cursor_string()[0]. '()'"
-let s:menus.candidates['put_vim_modeline'] = 'call g:put_vim_modeline()'
+let s:main.candidates = {}
+"let s:main.candidates[''] = 
+let s:main.candidates['h 41.6'] = 'h 41.6'
+let s:main.candidates['h functions'] = 'h functions'
+let s:main.candidates['h [cword]()'] = "exe'h '. g:__cursor_string()[0]. '()'"
+let s:main.candidates['put_vim_modeline'] = 'call g:__put_vim_modeline()'
 
-let g:unite_source_menu_menus.main = deepcopy(s:menus)
-unlet s:menus
-" }}}
+let g:unite_source_menu_menus.main = deepcopy(s:main)
+unlet s:main
+"}}}
 
 "from Mr.rbtnn
-function! g:cursor_string() "{{{
+function! g:__cursor_string() "{{{
 " カーソル下のあるpatternにマッチするワードと始まりから終わりまでの位置をリストで返す。
 " もしマッチしなければ空文字となる。
 " 例えばカーソル行が「 ret*rn 9」の場合(*がカーソル位置)
@@ -1979,7 +1981,7 @@ function! g:cursor_string() "{{{
     return [(line[(s):(e)]),(s),(e)]
   endif
 endfunction "}}}
-function! g:put_vim_modeline() " {{{
+function! g:__put_vim_modeline() " {{{
   if &commentstring =~ "%s"
     let cs = &commentstring
   else
@@ -2003,6 +2005,17 @@ function! g:put_vim_modeline() " {{{
 endfunction "}}}
 
 
+let s:git = {} "{{{
+function s:git.map(key, value)
+  return { 'word' : a:key, 'kind' : 'command', 'action__command' : a:value }
+endfunction
+let s:git.candidates = {}
+"let s:git.candidates[''] = 
+
+let g:unite_source_menu_menus.main = deepcopy(s:git)
+unlet s:git
+"}}}
+"}}}
 
 
 "--------------------------------------
