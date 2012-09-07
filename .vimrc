@@ -11,8 +11,13 @@
 filetype off
 
 if has('vim_starting')
-  set runtimepath+=$VIM/vimfiles/neobundle/neobundle.vim
-  call neobundle#rc(expand('$VIM/vimfiles/neobundle'))
+  if isdirectory(expand('$HOME/vimfiles', ':p'))
+    set runtimepath+=$HOME/vimfiles/neobundle/neobundle.vim
+    call neobundle#rc(expand('$HOME/vimfiles/neobundle'))
+  else
+    set runtimepath+=$VIM/vimfiles/neobundle/neobundle.vim
+    call neobundle#rc(expand('$VIM/vimfiles/neobundle'))
+  endif
 endif
 
 "--------------------------------------
@@ -147,14 +152,6 @@ if !exists("$HOME")
 endif
 "}}}
 
-"$CFGHOME "{{{
-if has('unix')
-  let $CFGHOME=$HOME.'/.vim'
-else
-  let $CFGHOME=$VIM.'\vimfiles'
-  "let $CFGHOME=$VIM.'\.vim'
-endif
-"}}}
 "}}}
 
 "-----------------------------------------------------------------------------
@@ -649,7 +646,7 @@ se guioptions=
 "se go +=c  "単純な選択にはポップアップダイアログでなくコンソールダイアログを使う
 se go +=r  "右スクロールバーを常に表示
 se go +=L  "垂直分割されたとき左スクロールバーを表示
-se go +=m  "menubar
+"se go +=m  "menubar
 se go +=g  "無効の menubar 項目を灰色表示
 
 
@@ -1862,8 +1859,9 @@ au VimEnter * AlterCommand nb   Unite neobundle
 au VimEnter * AlterCommand nbi  Unite -auto-quit neobundle/install
 au VimEnter * AlterCommand nbu  Unite neobundle/update
 au VimEnter * AlterCommand nbl  Unite neobundle/log
-au VimEnter * AlterCommand nbsh[ougo]  Unite neobundle -input=Shougo
-au VimEnter * AlterCommand nbm[ain]
+au VimEnter * AlterCommand nbus
+  \ Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neocomplcache-snippets-complete
+au VimEnter * AlterCommand nbum
   \ Unite neobundle/install:vim-quickrun:vital.vim:open-browser.vim:vim-submode:vim-surround:CamelCaseMotion
 
 
@@ -1910,7 +1908,7 @@ nnoremap ,axw :<C-u>Unite webcolorname<CR>
 "unite関係
 nnoremap ,au :UniteResume<CR>
 nnoremap ,as :<C-u>Unite source<CR>
-nnoremap ,a@ :<C-u>Unite menu<CR>
+nnoremap ,a@ :<C-u>Unite menu:main<CR>
 nnoremap ,a:m :<C-u>Unite menu:main<CR>
 nnoremap ,a:g :<C-u>Unite menu:git<CR>
 
@@ -1931,6 +1929,9 @@ function s:main.map(key, value)
 endfunction
 let s:main.candidates = {}
 "let s:main.candidates[''] = 
+let s:main.candidates['00 menubar'] = 'Unite menu:menubar'
+let s:main.candidates['10 git cheatsheet'] = 'e ~/dc2/git_cheatsheet'
+let s:main.candidates['10 vimscripttips.vim'] = 'e ~/dc2/vimscripttips.vim'
 let s:main.candidates['h 41.6'] = 'h 41.6'
 let s:main.candidates['h functions'] = 'h functions'
 let s:main.candidates['h [cword]()'] = "exe'h '. g:__cursor_string()[0]. '()'"
@@ -2005,15 +2006,22 @@ function! g:__put_vim_modeline() " {{{
 endfunction "}}}
 
 
-let s:git = {} "{{{
-function s:git.map(key, value)
+let s:menubar = {} "{{{
+function s:menubar.map(key, value)
   return { 'word' : a:key, 'kind' : 'command', 'action__command' : a:value }
 endfunction
-let s:git.candidates = {}
-"let s:git.candidates[''] = 
+let s:menubar.candidates = {}
+"let s:menubar.candidates[''] = 
+let s:menubar.candidates['01Color test'] = 'sp $VIMRUNTIME/syntax/colortest.vim|so %'
+let s:menubar.candidates['02Highlight test'] = 'sp |runtime syntax/hitest.vim'
+let s:menubar.candidates['03Convert to HTML'] = 'sp runtime syntax/2html.vim'
+let s:menubar.candidates['10エンコード指定して再読込(UTF-8)'] = 'e ++enc=utf-8'
+let s:menubar.candidates['11エンコード指定して再読込(SJIS cp932)'] = 'e ++enc=cp932'
+let s:menubar.candidates['12エンコード指定して再読込(EUC)'] = 'e ++enc=euc-jp'
+let s:menubar.candidates['13エンコード指定して再読込(JIS)'] = 'e ++enc=iso-2022-jp'
 
-let g:unite_source_menu_menus.main = deepcopy(s:git)
-unlet s:git
+let g:unite_source_menu_menus.menubar = deepcopy(s:menubar)
+unlet s:menubar
 "}}}
 "}}}
 
@@ -2841,6 +2849,7 @@ set verbosefile=/tmp/vim.log
 "ステータスラインの色を変更し、そのウィンドウが別の文脈にあることを示す
 "hatenaようsyntax
 "twitterクライアントとか各種掲示板ビューア・lingrビューア
+"アンド検索（一件目がhitした後二件目のwordで一件目の前後数行を検索
 "
 "-----------------------------------------------------------------------------
 "関数を削除するテキストオブジェクト　例えばfun('aaa')で実行で'aaa'だけになる
