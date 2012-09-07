@@ -2049,10 +2049,12 @@ let g:netrw_liststyle = 3 "常にtree view
 
 
 "vimshell.vim"{{{
-noremap ,xs :let a = expand('%:p:h')| exe 'VimShellTab '. a|unlet a<CR>
+noremap <silent>,xs :let a = expand('%:p:h')| exe 'VimShellTab '. a|unlet a<CR>
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <silent> <buffer> <C-j> <Plug>(vimshell_enter)
 au FileType vimshell imap <silent> <buffer> <C-j> <Plug>(vimshell_enter)
+au FileType vimshell nnoremap <silent> <buffer> q :tabc<CR>
+  "< NOTE: exitが正常化されるまでの暫定
 au FileType vimshell nnoremap ,ab :<C-u>Unite -default-action=cd bookmark<CR>
 au FileType vimshell nnoremap ,ad :<C-u>Unite -default-action=cd directory_mru<CR>
 let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")' "ユーザプロンプトにカレントディレクトリを表示
