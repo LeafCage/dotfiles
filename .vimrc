@@ -139,8 +139,7 @@ se fileencodings=utf8,cp932,iso-2022-jp,euc-jp,default,latin
 se fileformats=dos,unix,mac
 
 "---
-se termencoding=utf8  "vimshellに送る入力
-setglobal fileencoding=cp932  "新規作成されるファイルエンコードをcp932にしたい
+"setglobal fileencoding=cp932  "新規作成されるファイルエンコードをcp932にしたい
 "}}}
 
 "-----------------------------------------------------------------------------
@@ -2051,7 +2050,9 @@ let g:netrw_liststyle = 3 "常にtree view
 
 "vimshell.vim"{{{
 nmap ,xS <Plug>(vimshell_split_switch)
-nmap ,xs :setglobal fileencoding=utf-8|  VimShellTab<CR>
+"noremap ,xs :setglobal fileencoding=utf-8|  VimShellTab<CR>
+noremap ,xsa :tabnew|  VimShellBufferDir<CR>
+noremap ,xsc :tabnew|  VimShellCurrentDir<CR>
 nmap ,x,s <Plug>(vimshell_switch)
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <silent> <buffer> <C-j> <Plug>(vimshell_enter)
