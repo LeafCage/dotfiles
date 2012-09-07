@@ -1875,8 +1875,8 @@ inoremap <C-y> <Esc>:Unite history/yank<CR>
 
 
 "file/buf関係
-nnoremap ,afc :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
-nnoremap ,aff :<C-u>Unite -buffer-name=files file<CR>
+nnoremap ,afa :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
+nnoremap ,afc :<C-u>Unite -buffer-name=files file<CR>
 nnoremap ,afs :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
 nnoremap ,afm :<C-u>Unite -buffer-name=files file_mru<CR>
 nnoremap ,amf :<C-u>Unite -buffer-name=files file_mru<CR>
@@ -2116,7 +2116,7 @@ let g:vimfiler_safe_mode_by_default = 0
 "nnoremap ,xf :VimFilerBufferDir -double -split -horizontal<CR>
 nnoremap ,fd :VimFilerBufferDir -double -split<CR>
 nnoremap ,fc :VimFiler -split -horizontal<CR>
-nnoremap ,ff :VimFilerBufferDir -split -horizontal<CR>
+nnoremap ,fa :VimFilerBufferDir -split -horizontal<CR>
 "nnoremap <silent>,xf :<C-u>call vimfiler#switch_filer(join([expand('%:p:h')]), {'split': 1, 'double': 1, 'horizontal': 1})<CR>
 
 aug vimrc_vimfiler
