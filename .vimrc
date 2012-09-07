@@ -751,6 +751,7 @@ noremap z@ @
 "-----------------------------------------------------------------------------
 "Substitute
 noremap ; :
+noremap : ;
 noremap - ^
 noremap S $
 nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
@@ -836,30 +837,39 @@ exe 'nnoremap <silent> '. s:bind_win. 'v :tab split<CR>'
 "ウィンドウレイアウトを保持したままバッファを閉じるコマンド
 com! KeepWinBd let kwbd_bn= bufnr("%") |bn |exe "bd ".kwbd_bn |unlet kwbd_bn
 
-nmap dm :bd<CR>
-nmap dn :KeepWinBd<CR>
+nmap dm <SID>bd
+noremap <SID>bd :bd<CR>
+nmap dn <SID>KeepWinBd
+noremap <SID>KeepWinBd :KeepWinBd<CR>
 nmap dq <C-w>c
-nmap <silent>d; :tabc<CR>
-nmap <silent>dv :tabc<CR>
-nmap <silent>dgt :tabc<CR>
+nmap <silent>dv <SID>tabc
+nmap <silent>dgt <SID>tabc
+noremap <SID>tabc :tabc<CR>
 
 "指定した番号の窓を閉じる
-nmap ct :call <SID>Cls_remoteWin(1)<CR>
-nmap cz :call <SID>Cls_remoteWin(winnr('$'))<CR>
-nmap c1 :call <SID>Cls_remoteWin(1)<CR>
-nmap c2 :call <SID>Cls_remoteWin(2)<CR>
-nmap c3 :call <SID>Cls_remoteWin(3)<CR>
-nmap c4 :call <SID>Cls_remoteWin(4)<CR>
-nmap c5 :call <SID>Cls_remoteWin(5)<CR>
-nmap c6 :call <SID>Cls_remoteWin(6)<CR>
-nmap d,t :call <SID>Cls_remoteWin(1)<CR>
-nmap d,z :call <SID>Cls_remoteWin(winnr('$'))<CR>
-nmap d,1 :call <SID>Cls_remoteWin(1)<CR>
-nmap d,2 :call <SID>Cls_remoteWin(2)<CR>
-nmap d,3 :call <SID>Cls_remoteWin(3)<CR>
-nmap d,4 :call <SID>Cls_remoteWin(4)<CR>
-nmap d,5 :call <SID>Cls_remoteWin(5)<CR>
-nmap d,6 :call <SID>Cls_remoteWin(6)<CR>
+nmap ct <SID>Cls_remoteWin1
+nmap cz <SID>Cls_remoteWin$
+nmap c1 <SID>Cls_remoteWin1
+nmap c2 <SID>Cls_remoteWin2
+nmap c3 <SID>Cls_remoteWin3
+nmap c4 <SID>Cls_remoteWin4
+nmap c5 <SID>Cls_remoteWin5
+nmap c6 <SID>Cls_remoteWin6
+nmap d,t <SID>Cls_remoteWin1
+nmap d,z <SID>Cls_remoteWin$
+nmap d,1 <SID>Cls_remoteWin1
+nmap d,2 <SID>Cls_remoteWin2
+nmap d,3 <SID>Cls_remoteWin3
+nmap d,4 <SID>Cls_remoteWin4
+nmap d,5 <SID>Cls_remoteWin5
+nmap d,6 <SID>Cls_remoteWin6
+nnoremap <SID>Cls_remoteWin$ :call <SID>Cls_remoteWin(winnr('$'))<CR>
+nnoremap <SID>Cls_remoteWin1 :call <SID>Cls_remoteWin(1)<CR>
+nnoremap <SID>Cls_remoteWin2 :call <SID>Cls_remoteWin(2)<CR>
+nnoremap <SID>Cls_remoteWin3 :call <SID>Cls_remoteWin(3)<CR>
+nnoremap <SID>Cls_remoteWin4 :call <SID>Cls_remoteWin(4)<CR>
+nnoremap <SID>Cls_remoteWin5 :call <SID>Cls_remoteWin(5)<CR>
+nnoremap <SID>Cls_remoteWin6 :call <SID>Cls_remoteWin(6)<CR>
 
 function! s:Cls_remoteWin(winnr) "{{{
   let save_winnr = winnr()
@@ -876,7 +886,9 @@ endfunction
 "}}}
 
 "特殊窓を遠隔で閉じるコマンド
-nmap <silent>cq :call <SID>Close_allSpecialWins({'option': ['&pvw'], 'bt': ['quickfix'], 'ft': ['unite']})<CR>
+nmap cq <SID>Close_allSpecialWins
+nmap d,q <SID>Close_allSpecialWins
+nnoremap <silent><SID>Close_allSpecialWins :call <SID>Close_allSpecialWins({'option': ['&pvw'], 'bt': ['quickfix'], 'ft': ['unite']})<CR>
 function! s:Close_allSpecialWins(spclTypes) "{{{
   let save_winnr = winnr()
 
@@ -1111,8 +1123,9 @@ endfunction
 "}}}
 
 "visualstar.vim
-nmap <silent>* <Plug>(visualstar-*)N:<C-u>call <SID>Put_SearchStartSign(0)<CR>
-vmap <silent>* <Plug>(visualstar-*)N:<C-u>call <SID>Put_SearchStartSign(0)<CR>
+nmap <silent>* <Plug>(visualstar-*)N<SID>Put_SearchStartSign
+vmap <silent>* <Plug>(visualstar-*)N<SID>Put_SearchStartSign
+noremap <SID>Put_SearchStartSign  :<C-u>call <SID>Put_SearchStartSign(0)<CR>
 "map # <Plug>(visualstar-#)N:<C-u>sign unplace 333<CR>
 
 
