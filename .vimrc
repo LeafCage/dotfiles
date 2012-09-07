@@ -726,6 +726,7 @@ let mapleader = '\'
 let maplocalleader = '_'
 noremap [space] <nop>
 nmap <Space> [space]
+nmap <C-k> [C-k]
 
 "-----------------------------------------------------------------------------
 "No operation
@@ -807,7 +808,7 @@ function! s:Insert_CR() "{{{
 endfunction "}}}
 
 nnoremap <C-g><C-j> :i<CR><CR>.<CR>
-nnoremap <C-k><C-j> :i<CR><CR>.<CR>
+nnoremap [C-k]<C-j> :i<CR><CR>.<CR>
 nnoremap [space]<C-j> :i<CR><CR>.<CR>
 
 
@@ -1289,9 +1290,9 @@ nnoremap ,w :<C-u>w<CR>
 nnoremap ,q :<C-u>qa<CR>
 map Y y$
 noremap <F4> "+
-noremap <C-k> "
-noremap <C-k><C-d> "+
-noremap <C-k>8 "+
+noremap [C-k] "
+noremap [C-k]<C-d> "+
+noremap [C-k]8 "+
 
 map cy "*y
 map zy "*y
@@ -1844,7 +1845,6 @@ au FileType unite imap <silent><buffer><expr> x
 "}}}
   "ウィンドウを分割して開く
   au FileType unite nnoremap <silent><buffer><expr><C-k>   unite#do_action('split')
-  au FileType unite inoremap    <C-k>   unite#do_action('split')
   "昇降切換
   au FileType unite nnoremap <buffer><expr><C-s>      unite#mappings#set_current_filters(
     \ empty(unite#mappings#get_current_filters()) ? ['sorter_reverse'] : [])
@@ -2150,7 +2150,7 @@ au FileType vimfiler nmap <buffer> \ <Plug>(vimfiler_switch_to_root_directory)
 au FileType vimfiler nmap <buffer> . <Plug>(vimfiler_toggle_visible_dot_files)
 au FileType vimfiler nmap <buffer> H <Plug>(vimfiler_popup_shell)
 au FileType vimfiler nmap <buffer> e <Plug>(vimfiler_edit_file)
-au FileType vimfiler nmap <buffer> E <Plug>(vimfiler_split_edit_file)
+"au FileType vimfiler nmap <buffer> E <Plug>(vimfiler_split_edit_file)
 au FileType vimfiler nmap <buffer> B <Plug>(vimfiler_edit_binary_file)
 au FileType vimfiler nmap <buffer> ge <Plug>(vimfiler_execute_external_filer)
 au FileType vimfiler nmap <buffer> <RightMouse> <Plug>(vimfiler_execute_external_filer)
