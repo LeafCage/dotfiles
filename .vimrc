@@ -2049,11 +2049,7 @@ let g:netrw_liststyle = 3 "常にtree view
 
 
 "vimshell.vim"{{{
-nmap ,xS <Plug>(vimshell_split_switch)
-"noremap ,xs :setglobal fileencoding=utf-8|  VimShellTab<CR>
-noremap ,xsa :tabnew|  VimShellBufferDir<CR>
-noremap ,xsc :tabnew|  VimShellCurrentDir<CR>
-nmap ,x,s <Plug>(vimshell_switch)
+noremap ,xs :let a = expand('%:p:h')| exe 'VimShellTab '. a|unlet a<CR>
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <silent> <buffer> <C-j> <Plug>(vimshell_enter)
 au FileType vimshell imap <silent> <buffer> <C-j> <Plug>(vimshell_enter)
