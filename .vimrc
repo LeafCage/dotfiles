@@ -1869,8 +1869,8 @@ au VimEnter * AlterCommand nbum
 
 "文字関係
 nnoremap ,ag :<C-u>Unite -buffer-name=register register<CR>
-nnoremap ,ah :<C-u>Unite history/yank<CR>
-xnoremap ,ah d:<C-u>Unite history/yank<CR>
+nnoremap ,ay :<C-u>Unite history/yank<CR>
+xnoremap ,ay d:<C-u>Unite history/yank<CR>
 inoremap <C-y> <Esc>:Unite history/yank<CR>
 
 
@@ -1879,14 +1879,16 @@ nnoremap ,afc :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 nnoremap ,aff :<C-u>Unite -buffer-name=files file<CR>
 nnoremap ,afs :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
 nnoremap ,afm :<C-u>Unite -buffer-name=files file_mru<CR>
+nnoremap ,amf :<C-u>Unite -buffer-name=files file_mru<CR>
+nnoremap ,amd :<C-u>Unite -default-action=cd directory_mru<CR>
 nnoremap ,ap :<C-u>Unite -buffer-name=files buffer<CR>
-nnoremap ,a; :<C-u>Unite -buffer-name=files buffer_tab<CR>
+nnoremap ,av :<C-u>Unite -buffer-name=files buffer_tab<CR>
+nnoremap ,aa :<C-u>UniteBookmarkAdd<CR>
+nnoremap ,ab :<C-u>Unite bookmark<CR>
 "nnoremap ,au :<C-u>Unite buffer_deleted<CR>
 
 "場所関係
 nnoremap ,al :<C-u>Unite line -start-insert<CR>
-nnoremap ,aa :<C-u>UniteBookmarkAdd<CR>
-nnoremap ,ab :<C-u>Unite bookmark<CR>
 nnoremap ,ajc :<C-u>Unite change<CR>
 nnoremap ,ajj :<C-u>Unite jump<CR>
 nnoremap ,amm :<C-u>Unite mark<CR>
@@ -2041,6 +2043,8 @@ nmap ,x,s <Plug>(vimshell_switch)
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <silent> <buffer> <C-j> <Plug>(vimshell_enter)
 au FileType vimshell imap <silent> <buffer> <C-j> <Plug>(vimshell_enter)
+au FileType vimshell nnoremap ,ab :<C-u>Unite -default-action=cd bookmark<CR>
+au FileType vimshell nnoremap ,ad :<C-u>Unite -default-action=cd directory_mru<CR>
 let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")' "ユーザプロンプトにカレントディレクトリを表示
 let g:vimshell_split_height = 50
 
