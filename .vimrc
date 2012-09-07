@@ -399,6 +399,8 @@ function! Gs_StatusLine() "{{{
   endif
 
   let funclnum =  s:__gi_funclnum()
+
+  let info .= '%8*%{exists("b:vimfiler.current_dir")?b:vimfiler.current_dir :""}%0*'
   let win_shujuukankei = ['天', '主', '副', '平', '僕', '隷']
 
   return
@@ -2154,8 +2156,8 @@ au FileType vimfiler nmap <buffer> ge <Plug>(vimfiler_execute_external_filer)
 au FileType vimfiler nmap <buffer> <RightMouse> <Plug>(vimfiler_execute_external_filer)
   au FileType vimfiler nmap <buffer> <C-CR> <Plug>(vimfiler_execute_external_filer)
 au FileType vimfiler nmap <buffer> ! <Plug>(vimfiler_execute_shell_command)
-au FileType vimfiler nmap <buffer> q <Plug>(vimfiler_hide)
-  au FileType vimfiler nmap <buffer> dq <Plug>(vimfiler_exit)
+au FileType vimfiler nmap <buffer> q <Plug>(vimfiler_close)
+  au FileType vimfiler nmap <buffer> ddq <Plug>(vimfiler_exit)
 au FileType vimfiler nmap <buffer> ? <Plug>(vimfiler_help)
   au FileType vimfiler nmap <buffer> vi <Plug>(vimfiler_preview_file)
 au FileType vimfiler nmap <buffer> o <Plug>(vimfiler_sync_with_current_vimfiler)
@@ -2180,6 +2182,7 @@ au FileType vimfiler nmap <buffer> T <Plug>(vimfiler_expand_tree_recursive)
 au FileType vimfiler nmap <buffer> I <Plug>(vimfiler_cd_input_directory)
   au FileType vimfiler vmap <buffer> @ <Plug>(vimfiler_toggle_mark_selected_lines)
 "}}}
+  au FileType vimfiler nnoremap <silent><buffer><expr><C-k>   vimfiler#do_action('split')
 aug END
 function! s:Vimfiler_switch_to_other_window() "{{{
   while 1
