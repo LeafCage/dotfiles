@@ -553,9 +553,13 @@ endif
 function! ActivateInvisibleIndicator()
   hi ZenkakuSpace cterm=underline ctermfg=darkgrey gui=underline guifg=darkgrey
   " 全角スペースを明示的に表示する。
-  silent! match ZenkakuSpace /　/
+  silent! 2match ZenkakuSpace /　/
 endfunction
 "}}}
+
+"窓にカーソルの痕跡を残す
+au WinLeave * match CursorTrack /\%#/
+au WinEnter * match none
 
 "-----------------------------------------------------------------------------
 aug vimrc_colorscheme
@@ -600,6 +604,7 @@ endfunction
 
 function! s:Other_hl()  "{{{
   hi Pmenu         guifg=white  guibg=#6A5CB4  gui=NONE
+  hi CursorTrack   guibg=darkslategray1
 endfunction
  "}}}
 
