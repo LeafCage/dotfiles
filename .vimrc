@@ -752,6 +752,9 @@ nnoremap q <Nop>
 noremap zq q
 noremap z@ @
 
+"勝手なマークを付けさせない
+noremap m <Nop>
+
 "-----------------------------------------------------------------------------
 "Substitute
 noremap ; :
@@ -1441,6 +1444,7 @@ nnoremap ,ov :e ~/dotfiles/.vimrc<CR>
 
 nnoremap  ,xv :ReloadVimrc<CR>
 
+nnoremap <expr><F1> ":\<C-u>h "
 "-----------------------------------------------------------------------------
 
 "テスト変数
@@ -1584,6 +1588,9 @@ inoremap <C-x><C-a> <C-a>
 inoremap <C-b> <C-d>
 inoremap <C-c> <Esc>
 inoremap <C-@> <Esc>
+"入力した文字を大文字・小文字化(madein thinca)
+inoremap <C-g><C-u> <ESC>gUvbgi
+inoremap <C-g><C-l> <ESC>guvbgi
 
 "-----------------------------------------------------------------------------
 "CommandLineでの編集コマンド
