@@ -335,7 +335,7 @@ se ww+=]  "<Right> (i Replace)
 se bs=indent,eol,start
 "}}}
 
-" ファイルを開いたら前回のカーソル位置へ移動
+" ファイルを開いたら前回のカーソル位置へ移動 TODO:mkviewに置き換える
 aug vimrc_ex
   au!
   au BufReadPost *
@@ -2859,6 +2859,94 @@ unlet s:bind_win s:bind_left s:bind_right s:bind_comp s:bind_snip
 
 "-----------------------------------------------------------------------------
 
+"from thinca
+
+"" Select the last changed.
+"nnoremap <expr> gc '`[' . getregtype()[0] . '`]'
+"onoremap <silent> gc :normal gc<CR>
+"onoremap <silent> gv :normal gv<CR>
+"
+"onoremap q /["',.{}()[\]<>]<CR>
+"
+"" Quick toggle options.
+"nnoremap <Space>o <Nop>
+"nnoremap <silent> <Space>oe :<C-u>setlocal expandtab! expandtab?<CR>
+"nnoremap <silent> <Space>of :<C-u>let &l:foldcolumn=1-&l:foldcolumn<CR>
+"                           \:setlocal foldcolumn?<CR>
+"nnoremap <silent> <Space>on :<C-u>setlocal number! number?<CR>
+"nnoremap <silent> <Space>ol :<C-u>setlocal list! list?<CR>
+"nnoremap <silent> <Space>ow :<C-u>setlocal wrap! wrap?<CR>
+"nnoremap <silent> <Space>op :<C-u>set paste! paste?<CR>
+"
+"" Show the diff between the current buffer and the last saved file. {{{
+"" TODO: Become plugin.
+"function! s:diff_original()
+"  if exists('b:diff_current')
+"    execute bufwinnr(b:diff_current) 'wincmd w'
+"  endif
+"  if exists('b:diff_original')
+"    diffoff
+"    execute b:diff_original 'bwipeout'
+"    unlet b:diff_original
+"    return
+"  endif
+"
+"  let bufnr = bufnr('%')
+"  let ft = &l:filetype
+"  let fenc = &l:fileencoding
+"
+"  if &modified
+"    let source = '#' . bufnr
+"    let file = '[last save]'
+"  endif
+"  if !exists('source')
+"    silent! call g:V.system('svn info')
+"    if !g:V.get_last_status()
+"      let source = '!svn cat #' . bufnr
+"      let file = '[svn HEAD]'
+"    endif
+"  endif
+"  if !exists('source')
+"    silent! call g:V.system('bzr info')
+"    if !g:V.get_last_status()
+"      let source = '!bzr cat #' . bufnr
+"      let file = '[bzr tip]'
+"    endif
+"  endif
+"  if !exists('source')
+"    silent! let git_dir = g:V.system('git rev-parse --git-dir')
+"    if git_dir !=# ''
+"      let source = '!git cat-file blob HEAD:' .
+"        \ expand('#' . bufnr . ':p')[strlen(fnamemodify(git_dir, ':p')) - 5:]
+"      let source = substitute(source, '\\', '/', 'g')
+"      let file = '[git HEAD]'
+"    endif
+"  endif
+"
+"  if !exists('source')
+"    echo 'There is not the diff.'
+"    return
+"  endif
+"
+"  vertical new
+"
+"  let b:diff_current = bufnr
+"  let bufnr = bufnr('%')
+"  setlocal buftype=nofile
+"  let &l:filetype = ft
+"  let &l:fileencoding = fenc
+"  file `=file . fnamemodify(bufname(b:diff_current), ':.')`
+"
+"  silent! execute 'read' source
+"
+"  0 delete _
+"  diffthis
+"  wincmd p
+"  diffthis
+"  let b:diff_original = bufnr
+"endfunction
+"nnoremap <silent> <Space>diff :call <SID>diff_original()<CR>
+"" }}}
 
 
 "終了時エラー確認
