@@ -2162,14 +2162,17 @@ let g:vimfiler_safe_mode_by_default = 0
 "vf call mappings
 "nnoremap ,xf :VimFilerBufferDir -double -split -horizontal<CR>
 "nnoremap ,fd :VimFilerBufferDir -double -split -reverse<CR>
-nnoremap ,fc :VimFiler -split -horizontal -reverse<CR>
+nnoremap ,ff :VimFiler -split -horizontal -reverse<CR>
 nnoremap ,fv :VimFiler -split -horizontal -reverse $VIM<CR>
 nnoremap ,fa :VimFilerBufferDir -split -horizontal -reverse<CR>
+nnoremap ,fb :Unite -default-action=vimfiler bookmark<CR>
+nnoremap ,fd :Unite -default-action=vimfiler directory_mru<CR>
 "nnoremap <silent>,xf :<C-u>call vimfiler#switch_filer(join([expand('%:p:h')]), {'split': 1, 'double': 1, 'horizontal': 1})<CR>
 
 aug vimrc_vimfiler
   au!
   au FileType vimfiler  setl nobl
+  au FileType vimfiler let b:vimfiler.is_visible_dot_files = 1
 "vf basic-Keymaps "{{{
 let g:vimfiler_no_default_key_mappings = 1
 au FileType vimfiler nmap <buffer> j <Plug>(vimfiler_loop_cursor_down)
@@ -2235,6 +2238,8 @@ au FileType vimfiler nmap <buffer> I <Plug>(vimfiler_cd_input_directory)
   au FileType vimfiler vmap <buffer> @ <Plug>(vimfiler_toggle_mark_selected_lines)
 "}}}
   au FileType vimfiler nnoremap <silent><buffer><expr><C-k>   vimfiler#do_action('split')
+  au FileType vimfiler nnoremap <silent>,ab :<C-u>Unite -default-action=vimfiler bookmark<CR>
+  au FileType vimfiler nnoremap <silent>,ad :<C-u>Unite -default-action=vimfiler directory_mru<CR>
 aug END
 function! s:Vimfiler_switch_to_other_window() "{{{
   while 1
