@@ -1144,6 +1144,7 @@ noremap <SID>Put_SearchStartSign  :<C-u>call <SID>Put_SearchStartSign(0)<CR>
 
 
 "-----------------------------------------------------------------------------
+let s:bind_markj = '@'
 "カーソル移動コマンド(Normal,Omap)"{{{
 
 noremap [space]w W
@@ -1236,9 +1237,9 @@ call submode#map('changelist', 'n', '', ',', 'g,zv')
 call submode#map('changelist', 'n', '', ';', 'g;zv')
 
 "mark jump
-noremap @ `
-noremap @@ ``
-noremap @<C-k> `"
+exe 'noremap '. s:bind_markj. ' `'
+exe 'noremap '. s:bind_markj. '@ ``'
+exe 'noremap '. s:bind_markj. '<C-k> `"'
 
 "次の折り畳みに移動
 call submode#enter_with('fd-jmp', 'n', '', 'zj', 'zj')
@@ -1312,14 +1313,15 @@ endfunction
 
 "-----------------------------------------------------------------------------
 "編集コマンド(Normal)
+let s:bind_reg = 't'
 
 nnoremap ,w :<C-u>w<CR>
 nnoremap ,q :<C-u>qa<CR>
 map Y y$
 noremap <F4> "+
-noremap [C-k] "
-noremap [C-k]<C-d> "+
-noremap [C-k]8 "+
+exe 'nnoremap '. s:bind_reg. ' "'
+exe 'nnoremap '. s:bind_reg. '@ "+'
+exe 'nnoremap '. s:bind_reg. '8 "+'
 
 map cy "*y
 map zy "*y
@@ -1578,8 +1580,8 @@ inoremap <F4> <C-r>+
 cnoremap <F4> <C-r>+
 inoremap <C-r><C-e> <C-r>"
 cnoremap <C-r><C-e> <C-r>"
-inoremap <C-r><C-d> <C-r>+
-cnoremap <C-r><C-d> <C-r>+
+inoremap <C-r>@ <C-r>+
+cnoremap <C-r>@ <C-r>+
 inoremap <C-r>8 <C-r>+
 cnoremap <C-r>8 <C-r>+
 "バックスラッシュが打ちづらいから
@@ -2882,7 +2884,7 @@ endfunction
 command! -bar -bang -nargs=? -complete=file Scouter
 \        echo Scouter(empty(<q-args>) ? $MYVIMRC : expand(<q-args>), <bang>0)
 
-unlet s:bind_win s:bind_left s:bind_right s:bind_comp s:bind_snip
+unlet s:bind_win s:bind_left s:bind_right s:bind_comp s:bind_snip s:bind_markj s:bind_reg
 
 "-----------------------------------------------------------------------------
 
