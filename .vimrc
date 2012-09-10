@@ -604,7 +604,7 @@ endfunction
 
 function! s:Other_hl()  "{{{
   hi Pmenu         guifg=white  guibg=#6A5CB4  gui=NONE
-  hi CursorTrack   guibg=darkslategray1
+  hi CursorTrack   guibg=darkslategray4
 endfunction
  "}}}
 
@@ -1030,6 +1030,8 @@ function! s:__byte2hex(bytes)
 endfunction
 "}}}
 
+nnoremap me :mes<CR>
+nnoremap ma :marks<CR>
 
 "Fontzoom
 let g:fontzoom_no_default_key_mappings = 1
@@ -1350,8 +1352,6 @@ endfunction "}}}
 "直前のコマンドを再度実行する
 "nnoremap ,. q:k<CR>
 nnoremap <C-@>: @:
-"最後に編集したところを選択する
-nnoremap <C-g>v `[v`]
 "ペーストしたテキストを再選択するBible3-15
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0,1) . '`]'
 "前回保存した状態にまでアンドゥ
@@ -1872,6 +1872,8 @@ au FileType unite imap <silent><buffer><expr> x
   "昇降切換
   au FileType unite nnoremap <buffer><expr><C-s>      unite#mappings#set_current_filters(
     \ empty(unite#mappings#get_current_filters()) ? ['sorter_reverse'] : [])
+  "no_quit切換
+  au FileType unite nnoremap <buffer><C-@>   :let b:unite.context.no_quit = !b:unite.context.no_quit|echo b:unite.context.no_quit<CR>
 aug END
 
 au VimEnter * AlterCommand u[nite] Unite
@@ -1895,7 +1897,7 @@ au VimEnter * AlterCommand nbum
 nnoremap ,ag :<C-u>Unite -buffer-name=register register<CR>
 nnoremap ,ay :<C-u>Unite history/yank<CR>
 xnoremap ,ay d:<C-u>Unite history/yank<CR>
-inoremap <C-y> <Esc>:Unite history/yank<CR>
+inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite history/yank\<CR>"
 
 
 "file/buf関係
@@ -2271,10 +2273,11 @@ let g:submode_timeoutlen = 5000
 
 
 "revolver
-nmap mm <Plug>(revolver-mark-local)
+nmap mm <Plug>(revolver-mark-local-typeB)
 nmap mM <Plug>(revolver-mark-global)
 nmap m<Space> <Plug>(revolver-mark-global)
 nmap mi <Plug>(revolver-mark-global)
+nmap <C-@>, <Plug>(revolver-jump-local-last-mark)
 "let g:revolver_register_enable_logging = 2
 nmap zq <Plug>(revolver-register-recording)
 
