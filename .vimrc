@@ -42,7 +42,7 @@ NeoBundle 'thinca/vim-quickrun'
 "ライブラリ
 NeoBundle 'Shougo/vimproc'
 NeoBundle 'tomtom/tlib_vim'
-NeoBundle 'vim-jp/vital.vim'
+exe 'NeoBundle "vim-jp/vital.vim"' | "最近なぜかNeoBundleからアップデートできない
 exe "NeoBundle 'thinca/vim-openbuf'" | "unite-vim_hacksがこれに依存
 "exe "NeoBundle 'mattn/wwwrenderer-vim'" | "webpage(only text)を返す
 "exe "NeoBundle 'mattn/webapi-vim'" | "
@@ -56,6 +56,7 @@ NeoBundle 'tpope/vim-pathogen'
 NeoBundle 'kana/vim-submode'
 "exe "NeoBundle 'thinca/vim-localrc'" | "特定dir以下に.lvimrcを置くとdir以下のfileだけで設定反映
 NeoBundle 'Rykka/lastbuf.vim'
+NeoBundle 'LeafCage/revolver.vim'
 
 "--------------------------------------
 "拡張文章
@@ -104,8 +105,8 @@ NeoBundle 'rbtnn/sign.vim'
 exe "NeoBundle 't9md/vim-quickhl'" | "複数の検索ハイライト
 NeoBundle 'tyru/winmove.vim'
 NeoBundle 'thinca/vim-fontzoom'
-"exe "NeoBundle 'ujihisa/unite-font'" | "動かない
-"exe "NeoBundle 'ujihisa/unite-colorscheme'" | "プレビューしない
+exe "NeoBundle 'ujihisa/unite-font'" | "動かない
+exe "NeoBundle 'ujihisa/unite-colorscheme'" | "プレビューしない
 NeoBundle 'pasela/unite-webcolorname'
 
 filetype plugin indent on  "ファイル判定をonにする
@@ -132,6 +133,9 @@ command! -nargs=0 NeoBundleUpdateMain
 "Encodings, Formats"{{{
 
 scriptencoding utf8 "このファイルのエンコード
+"if has("win32")
+  "se tenc =cp932 "Ref.vimでlynxが使うエンコード
+"endif
 se encoding=utf8
 se fileencodings=utf8,cp932,iso-2022-jp,euc-jp,default,latin
   "<< BufRead時、'fileencodings'の先頭から'encoding'を試してerrが出なければそれを適用する
@@ -1231,9 +1235,9 @@ call submode#map('changelist', 'n', '', ',', 'g,zv')
 call submode#map('changelist', 'n', '', ';', 'g;zv')
 
 "mark jump
-noremap <C-@> `
-noremap <C-@><C-@> ``
-noremap <C-@><C-k> `"
+noremap @ `
+noremap @@ ``
+noremap @<C-k> `"
 
 "次の折り畳みに移動
 call submode#enter_with('fd-jmp', 'n', '', 'zj', 'zj')
@@ -1351,7 +1355,7 @@ endfunction "}}}
 
 "直前のコマンドを再度実行する
 "nnoremap ,. q:k<CR>
-nnoremap <C-@>: @:
+nnoremap @: @:
 "ペーストしたテキストを再選択するBible3-15
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0,1) . '`]'
 "前回保存した状態にまでアンドゥ
@@ -1414,7 +1418,7 @@ nnoremap <silent>[gs]sf   :let &swf = !&swf<CR>:se swf?<CR>
 nnoremap <silent>[gs]ps   :let g:scroll_other_win_reverse = !g:scroll_other_win_reverse<CR>:echo 'scroll reverse'.g:scroll_other_win_reverse<CR>
 "}}}
 
-nnoremap <silent> @ :call <SID>multikey_effect()<CR>
+nnoremap <silent> <C-@> :call <SID>multikey_effect()<CR>
 function! s:multikey_effect() "{{{
   if &rnu == 0
     setl rnu
@@ -1754,18 +1758,31 @@ endfunction
 
 
 "ref.vim"{{{
-let s:lynx = "D:/bnr/txe/vim/lynx.exe" "lynx.exe の絶対パス
-let s:cfg  = "D:/bnr/txe/vim/lynx.cfg" "lynx.cfg の絶対パス
-let g:ref_alc_cmd = s:lynx.' -cfg='.s:cfg.' -dump %s'
-"let g:ref_alc_cmd = ':wwwrenderer#render("%s")'
-let g:ref_phpmanual_path = 'D:/dict/php-chunked-xhtml/'
-let g:ref_alc_start_linenumber = 47 " 開いたときの初期カーソル位置
-let g:ref_alc_encoding = 'Shift-JIS' " 文字化けするならここで文字コードを指定してみる
+au FileType ref-* nnoremap <silent><buffer>   q   :close<CR>
+let g:ref_phpmanual_path = 'D:/dic/vim-ref/php-chunked-xhtml'
+
+"webdictサイトの設定
+let g:ref_source_webdict_sites = {}
+let g:ref_source_webdict_sites.je = {'url': 'http://dictionary.infoseek.ne.jp/jeword/%s',}
+let g:ref_source_webdict_sites.ej = {'url': 'http://dictionary.infoseek.ne.jp/ejword/%s',}
+let g:ref_source_webdict_sites.wip = {'url': 'http://ja.wikipedia.org/wiki/%s',}
+let g:ref_source_webdict_sites.default = 'ej'
+let g:ref_source_webdict_encoding = 'cp932'
+"出力に対するフィルタ。最初の数行を削除
+function! g:ref_source_webdict_sites.je.filter(output)
+  return join(split(a:output, "\n")[15 :], "\n")
+endfunction
+function! g:ref_source_webdict_sites.ej.filter(output)
+  return join(split(a:output, "\n")[15 :], "\n")
+endfunction
+function! g:ref_source_webdict_sites.wip.filter(output)
+  return join(split(a:output, "\n")[17 :], "\n")
+endfunction
+nnoremap ,aw :<C-u>Ref webdict je<Space>
+nnoremap ,ae :<C-u>Ref webdict ej<Space>
+
 
 "nmap ,xra :<C-u>Ref alc<Space>
-au FileType ref-* nnoremap <silent><buffer>   q   :close<CR>
-nnoremap <silent> ,xrK :<C-u>call ref#jump('normal', 'alc')<CR>
-vnoremap <silent> ,xrK :<C-u>call ref#jump('visual', 'alc')<CR>
 "}}}
 
 
@@ -2141,9 +2158,10 @@ let g:vimfiler_safe_mode_by_default = 0
 
 "vf call mappings
 "nnoremap ,xf :VimFilerBufferDir -double -split -horizontal<CR>
-nnoremap ,fd :VimFilerBufferDir -double -split<CR>
-nnoremap ,fc :VimFiler -split -horizontal<CR>
-nnoremap ,fa :VimFilerBufferDir -split -horizontal<CR>
+"nnoremap ,fd :VimFilerBufferDir -double -split -reverse<CR>
+nnoremap ,fc :VimFiler -split -horizontal -reverse<CR>
+nnoremap ,fv :VimFiler -split -horizontal -reverse $VIM<CR>
+nnoremap ,fa :VimFilerBufferDir -split -horizontal -reverse<CR>
 "nnoremap <silent>,xf :<C-u>call vimfiler#switch_filer(join([expand('%:p:h')]), {'split': 1, 'double': 1, 'horizontal': 1})<CR>
 
 aug vimrc_vimfiler
@@ -2272,14 +2290,16 @@ nmap <silent> <F9> :VersDiff -c<cr>
 let g:submode_timeoutlen = 5000
 
 
-"revolver
+"revolver.vim
 nmap mm <Plug>(revolver-mark-local-typeB)
 nmap mM <Plug>(revolver-mark-global)
 nmap m<Space> <Plug>(revolver-mark-global)
 nmap mi <Plug>(revolver-mark-global)
-nmap <C-@>, <Plug>(revolver-jump-local-last-mark)
+nmap @- <Plug>(revolver-jump-last-local-mark)zv
+"nmap <C-@><C-_> <Plug>(revolver-jump-last-local-mark)zv
 "let g:revolver_register_enable_logging = 2
 nmap zq <Plug>(revolver-register-recording)
+noremap z,q q
 
 
 "lastbuf
