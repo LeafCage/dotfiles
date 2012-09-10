@@ -1585,14 +1585,14 @@ cnoremap <C-r>@ <C-r>+
 inoremap <C-r>8 <C-r>+
 cnoremap <C-r>8 <C-r>+
 "バックスラッシュが打ちづらいから
-inoremap <C-z> \
-cnoremap <C-z> \
+inoremap <C-b> \
+cnoremap <C-b> \
 
 "-----------------------------------------------------------------------------
 "InsertModeでの編集コマンド
 inoremap <C-x><C-a> <C-a>
   "< 直前の挿入を再度挿入
-inoremap <C-b> <C-d>
+inoremap <C-z> <C-d>
 inoremap <C-c> <Esc>
 inoremap <C-@> <Esc>
 "入力した文字を大文字・小文字化(madein thinca)
@@ -1781,8 +1781,8 @@ endfunction
 function! g:ref_source_webdict_sites.wip.filter(output)
   return join(split(a:output, "\n")[17 :], "\n")
 endfunction
-nnoremap ,aw :<C-u>Ref webdict je<Space>
-nnoremap ,ae :<C-u>Ref webdict ej<Space>
+nnoremap ,zj :<C-u>Ref webdict je<Space>
+nnoremap ,ze :<C-u>Ref webdict ej<Space>
 
 
 "nmap ,xra :<C-u>Ref alc<Space>
@@ -1922,7 +1922,7 @@ inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite history/yank\<CR>"
 
 "file/buf関係
 nnoremap ,afa :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
-nnoremap ,afc :<C-u>Unite -buffer-name=files file<CR>
+nnoremap ,aff :<C-u>Unite -buffer-name=files file<CR>
 nnoremap ,afs :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
 nnoremap ,afm :<C-u>Unite -buffer-name=files file_mru<CR>
 nnoremap ,amf :<C-u>Unite -buffer-name=files file_mru<CR>
@@ -2303,11 +2303,12 @@ nmap mm <Plug>(revolver-mark-local-typeB)
 nmap mM <Plug>(revolver-mark-global)
 nmap m<Space> <Plug>(revolver-mark-global)
 nmap mi <Plug>(revolver-mark-global)
-nmap @- <Plug>(revolver-jump-last-local-mark)zv
+exe 'nmap '. s:bind_markj. ', <Plug>(revolver-jump-last-local-mark)zv'
+nnoremap z,m m
 "nmap <C-@><C-_> <Plug>(revolver-jump-last-local-mark)zv
 "let g:revolver_register_enable_logging = 2
 nmap zq <Plug>(revolver-register-recording)
-noremap z,q q
+nnoremap z,q q
 
 
 "lastbuf
