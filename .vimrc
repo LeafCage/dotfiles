@@ -71,6 +71,7 @@ NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'kana/vim-textobj-user'
   exe "NeoBundle 'h1mesuke/textobj-wiw'" | "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
   NeoBundle 'kana/vim-textobj-indent'
+  NeoBundle 'thinca/vim-textobj-plugins'
 NeoBundle 'anyakichi/vim-surround'
 NeoBundle 'scrooloose/nerdcommenter'
 "NeoBundle 'tomtom/tcomment_vim'
@@ -133,9 +134,9 @@ command! -nargs=0 NeoBundleUpdateMain
 "Encodings, Formats"{{{
 
 scriptencoding utf8 "このファイルのエンコード
-"if has("win32")
-  "se tenc =cp932 "Ref.vimでlynxが使うエンコード
-"endif
+if has("win32")
+  se tenc =cp932 "Ref.vimでlynxがデフォルトで使うエンコード
+endif
 se encoding=utf8
 se fileencodings=utf8,cp932,iso-2022-jp,euc-jp,default,latin
   "<< BufRead時、'fileencodings'の先頭から'encoding'を試してerrが出なければそれを適用する
@@ -1707,7 +1708,7 @@ au FileType snippet setl nofoldenable
 
 aug vimrc_help
   au!
-  au FileType help nnoremap <buffer>q <C-w>q
+  au FileType help nnoremap <buffer>q <C-w>c
 aug END
 
 aug vimrc_vim
@@ -2423,6 +2424,9 @@ map <M-i> <Plug>(poslist-next-pos)
 "call submode#leave_with('C-oC-i', 'nv', '', '<Esc>')
 "call submode#map('C-oC-i', 'nv', '', '<C-o>', '<C-o>')
 "call submode#map('C-oC-i', 'nv', '', '<C-i>', '<C-i>')
+
+
+
 
 "-----------------------------------------------------------------------------
 "プラグイン コマンドライン
