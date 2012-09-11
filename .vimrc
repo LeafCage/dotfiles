@@ -565,8 +565,11 @@ endfunction
 "}}}
 
 "窓にカーソルの痕跡を残す
-au WinLeave * match CursorTrack /\%#/
-au WinEnter * match none
+aug vimrc_CursorTrack
+  au!
+  "au WinLeave * match CursorTrack /\%#/
+  "au WinEnter * match none
+aug END
 
 "-----------------------------------------------------------------------------
 aug vimrc_colorscheme
@@ -1597,6 +1600,8 @@ inoremap <C-x><C-a> <C-a>
 inoremap <C-z> <C-d>
 inoremap <C-c> <Esc>
 inoremap <C-@> <Esc>
+cnoremap <C-@> <Esc>
+vnoremap <C-@> <Esc>
 "入力した文字を大文字・小文字化(madein thinca)
 inoremap <C-g><C-u> <ESC>gUvbgi
 inoremap <C-g><C-l> <ESC>guvbgi
