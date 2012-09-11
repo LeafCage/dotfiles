@@ -1176,32 +1176,6 @@ function! s:In_nextBracket() "{{{
 endfunction
 "}}}
 
-"camelcasemotion.vimのコマンドに置き換える
-"前方・後方移動をキャメルケース単位にする
-map <silent> w <Plug>CamelCaseMotion_w
-map <silent> b <Plug>CamelCaseMotion_b
-map <silent> e <Plug>CamelCaseMotion_e
-"omap <silent> e <Plug>CamelCaseMotion_ie
-"テキストオブジェクトに対応させる
-"omap <silent> iw <Plug>CamelCaseMotion_iw
-"vmap <silent> iw <Plug>CamelCaseMotion_iw
-omap <silent> ib <Plug>CamelCaseMotion_ib
-vmap <silent> ib <Plug>CamelCaseMotion_ib
-omap <silent> ie <Plug>CamelCaseMotion_ie
-vmap <silent> ie <Plug>CamelCaseMotion_ie
-
-
-"h1mesuke/textobj-wiw
-let g:textobj_wiw_no_default_key_mappings = 1 "デフォルトで用意されてるマッピングを無効に
-"map @w <Plug>(textobj-wiw-n)
-"map @b <Plug>(textobj-wiw-p)
-"map @e <Plug>(textobj-wiw-N)
-"map @ge <Plug>(textobj-wiw-P)
-vmap a@ <Plug>(textobj-wiw-a)
-vmap i@ <Plug>(textobj-wiw-i)
-omap a@ <Plug>(textobj-wiw-a)
-omap i@ <Plug>(textobj-wiw-i)
-
 
 "一つ上or下の他窓をスクロールさせる
 noremap <silent><Down> :call <SID>Scroll_other_win(1, "\<lt>C-e>")<CR>
@@ -2445,6 +2419,32 @@ map <M-i> <Plug>(poslist-next-pos)
 "call submode#map('C-oC-i', 'nv', '', '<C-o>', '<C-o>')
 "call submode#map('C-oC-i', 'nv', '', '<C-i>', '<C-i>')
 
+
+
+"camelcasemotion.vimのコマンドに置き換える
+"前方・後方移動をキャメルケース単位にする
+map <silent> w <Plug>CamelCaseMotion_w
+map <silent> b <Plug>CamelCaseMotion_b
+map <silent> e <Plug>CamelCaseMotion_e
+"omap <silent> e <Plug>CamelCaseMotion_ie
+"テキストオブジェクトに対応させる
+omap <silent> ib <Plug>CamelCaseMotion_ib
+vmap <silent> ib <Plug>CamelCaseMotion_ib
+omap <silent> ie <Plug>CamelCaseMotion_ie
+vmap <silent> ie <Plug>CamelCaseMotion_ie
+
+
+"h1mesuke/textobj-wiw
+let g:textobj_wiw_no_default_key_mappings = 1 "デフォルトで用意されてるマッピングを無効に
+"map w <Plug>(textobj-wiw-n)
+"map b <Plug>(textobj-wiw-p)
+"map e <Plug>(textobj-wiw-N)
+  "< omapの時の挙動に欠陥
+"map ge <Plug>(textobj-wiw-P)
+xmap aw <Plug>(textobj-wiw-a)
+xmap iw <Plug>(textobj-wiw-i)
+omap aw <Plug>(textobj-wiw-a)
+omap iw <Plug>(textobj-wiw-i)
 
 
 
