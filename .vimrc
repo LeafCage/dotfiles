@@ -112,9 +112,11 @@ NeoBundle 'pasela/unite-webcolorname'
 
 filetype plugin indent on  "ファイル判定をonにする
 "}}}
+
+call altercmd#load() "altercmdをこのvimrc内で有効にする
 "Lazyしていたpluginsを読み込む
-au VimEnter * AlterCommand nbso[urce] NeoBundleSource
-au VimEnter * AlterCommand nbc NeoBundleClean
+AlterCommand nbso[urce] NeoBundleSource
+AlterCommand nbc NeoBundleClean
 
 command! -nargs=0 NeoBundleUpdateShougo
   \ NeoBundleUpdate
@@ -1643,11 +1645,11 @@ endfunction
 "Commands
 " ヘルプを別のタブで開く
 command! -nargs=* -complete=help TH  tab help <args>
-au VimEnter * AlterCommand th TH
+AlterCommand th TH
 
 ".vimrcをリロードする
 command! ReloadVimrc  source $MYVIMRC
-au VimEnter * AlterCommand rv ReloadVimrc
+AlterCommand rv ReloadVimrc
 
 
 "パターンとファイル名を逆にしたgrep
@@ -1655,7 +1657,7 @@ command! -complete=file -nargs=+ Perg  call s:perg([<f-args>])
 function! s:perg(args)
   execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2])
 endfunction
-au VimEnter * AlterCommand perg Perg
+AlterCommand perg Perg
 
 "現在ファイルのあるディレクトリでvimgrep
 command! -nargs=+   CurrentGrep  call s:CurrentGrep([<f-args>])
@@ -1663,7 +1665,7 @@ function! s:CurrentGrep(args)
   execute 'vimgrep' '/'.a:args[0].'/ '.expand(a:args[1]).'/**/*'
   cwindow
 endfunction
-au VimEnter * AlterCommand crrg[rep] CurrentGrep
+AlterCommand crrg[rep] CurrentGrep
 
 " Open junk file.(Hack#181)"{{{
 command! -nargs=0 JunkFile call s:open_junk_file()
@@ -1896,20 +1898,20 @@ au FileType unite imap <silent><buffer><expr> x
   au FileType unite nnoremap <buffer><C-@>   :let b:unite.context.no_quit = !b:unite.context.no_quit|echo b:unite.context.no_quit<CR>
 aug END
 
-au VimEnter * AlterCommand u[nite] Unite
+AlterCommand u[nite] Unite
 
 
 
 "unite-sorce
 "------------------
 "unite neobundle
-au VimEnter * AlterCommand nb   Unite neobundle
-au VimEnter * AlterCommand nbi  Unite -auto-quit neobundle/install
-au VimEnter * AlterCommand nbu  Unite neobundle/update
-au VimEnter * AlterCommand nbl  Unite neobundle/log
-au VimEnter * AlterCommand nbus
+AlterCommand nb   Unite neobundle
+AlterCommand nbi  Unite -auto-quit neobundle/install
+AlterCommand nbu  Unite neobundle/update
+AlterCommand nbl  Unite neobundle/log
+AlterCommand nbus
   \ Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neocomplcache-snippets-complete
-au VimEnter * AlterCommand nbum
+AlterCommand nbum
   \ Unite neobundle/install:vim-quickrun:vital.vim:open-browser.vim:vim-submode:vim-surround:CamelCaseMotion
 
 
@@ -2335,8 +2337,8 @@ vmap [gc]b <Plug>NERDCommenterMinimal
 
 
 "altercmd (other)
-au VimEnter * AlterCommand g[it] Git
-au VimEnter * AlterCommand c[tags] !start ctags %
+AlterCommand g[it] Git
+AlterCommand c[tags] !start ctags %
 
 
 "migemo.vim
