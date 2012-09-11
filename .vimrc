@@ -1775,6 +1775,7 @@ let g:ref_phpmanual_path = 'D:/dic/vim-ref/php-chunked-xhtml'
 let g:ref_source_webdict_sites = {}
 let g:ref_source_webdict_sites.je = {'url': 'http://dictionary.infoseek.ne.jp/jeword/%s',}
 let g:ref_source_webdict_sites.ej = {'url': 'http://dictionary.infoseek.ne.jp/ejword/%s',}
+let g:ref_source_webdict_sites.kok = {'url': 'http://dictionary.infoseek.ne.jp/word/%s?dic=daijisen',}
 let g:ref_source_webdict_sites.wip = {'url': 'http://ja.wikipedia.org/wiki/%s',}
 let g:ref_source_webdict_sites.default = 'ej'
 let g:ref_source_webdict_encoding = 'cp932'
@@ -1785,14 +1786,18 @@ endfunction
 function! g:ref_source_webdict_sites.ej.filter(output)
   return join(split(a:output, "\n")[15 :], "\n")
 endfunction
+function! g:ref_source_webdict_sites.kok.filter(output)
+  return join(split(a:output, "\n")[15 :], "\n")
+endfunction
 function! g:ref_source_webdict_sites.wip.filter(output)
   return join(split(a:output, "\n")[17 :], "\n")
 endfunction
 nnoremap ,zj :<C-u>Ref webdict je<Space>
 nnoremap ,ze :<C-u>Ref webdict ej<Space>
-
-
-"nmap ,xra :<C-u>Ref alc<Space>
+nnoremap ,zk :<C-u>Ref webdict kok<Space>
+AlterCommand zj  Ref webdict je
+AlterCommand ze  Ref webdict ej
+AlterCommand zk  Ref webdict kok
 "}}}
 
 
@@ -2349,9 +2354,9 @@ AlterCommand c[tags] !start ctags %
 "migemo.vim
 if has('migemo')
   set migemo
-  set migemodict=/opt/local/share/migemo/utf-8/migemo-dict
+  "set migemodict=/opt/local/share/migemo/utf-8/migemo-dict
 endif
-
+noremap  m/ :<C-u>Migemo<CR>
 
 
 "neocomplcache.vim  Preference"{{{
