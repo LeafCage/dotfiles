@@ -1768,10 +1768,13 @@ function! g:ref_source_webdict_sites.wip.filter(output)
   return join(split(a:output, "\n")[17 :], "\n")
 endfunction
 nnoremap ,zj :<C-u>Ref webdict je<Space>
-nnoremap ,ze :<C-u>Ref webdict ej<Space>
+nnoremap ZJ :<C-u>Ref webdict je <C-r><C-w><CR>
+nnoremap ,zh :<C-u>Ref webdict ej<Space>
+nnoremap ZH :<C-u>Ref webdict ej <C-r><C-w><CR>
 nnoremap ,zk :<C-u>Ref webdict kok<Space>
+nnoremap ZK :<C-u>Ref webdict kok <C-r><C-w><CR>
+AlterCommand zh  Ref webdict ej
 AlterCommand zj  Ref webdict je
-AlterCommand ze  Ref webdict ej
 AlterCommand zk  Ref webdict kok
 "}}}
 
