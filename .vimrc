@@ -846,6 +846,7 @@ let s:bind_win = 'm'
 nnoremap [space]K <C-w>}
 
 exe 'nnoremap '. s:bind_win. 's <C-w>s'
+exe 'nnoremap '. s:bind_win. 'b <C-w>v'
 exe 'nnoremap '. s:bind_win. 'o <C-w>o'
 exe 'nnoremap '. s:bind_win. 'q <C-w>c'
 "現在Bufを新しいタブページで開く
