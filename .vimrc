@@ -23,6 +23,7 @@ endif
 "--------------------------------------
 "拡張インターフェイス
 NeoBundle 'Shougo/unite.vim'
+NeoBundle 'kien/ctrlp.vim'
 NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vimfiler', {'depends': 'Shougo/unite.vim'}
 NeoBundle 'tsukkee/lingr-vim'
@@ -1778,17 +1779,69 @@ function! g:ref_source_webdict_sites.wip.filter(output)
   return join(split(a:output, "\n")[17 :], "\n")
 endfunction
 nnoremap ,zj :<C-u>Ref webdict je<Space>
-nnoremap ZJ :<C-u>Ref webdict je <C-r><C-w><CR>
+nnoremap ZJ :<C-u>Ref webdict je <C-r><C-w>
 nnoremap ,zh :<C-u>Ref webdict ej<Space>
-nnoremap ZH :<C-u>Ref webdict ej <C-r><C-w><CR>
+nnoremap ZH :<C-u>Ref webdict ej <C-r><C-w>
 nnoremap ,zk :<C-u>Ref webdict kok<Space>
-nnoremap ZK :<C-u>Ref webdict kok <C-r><C-w><CR>
+nnoremap ZK :<C-u>Ref webdict kok <C-r><C-w>
 AlterCommand zh  Ref webdict ej
 AlterCommand zj  Ref webdict je
 AlterCommand zk  Ref webdict kok
 "}}}
 
 
+"ctrlp.vim "{{{
+nnoremap <silent>[C-k]<C-k> :<C-u>CtrlP<CR>
+nnoremap <silent>[C-k]<C-b> :<C-u>CtrlPBuffer<CR>
+nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
+let g:ctrlp_use_migemo = 1
+let g:ctrlp_switch_buffer = 'Et'
+let g:ctrlp_reuse_window = 'netrw\|help\|quickfix\|vimfiler\|unite\|vimshell'
+let g:ctrlp_root_markers = ['[root]']
+  let g:ctrlp_open_new_file = 'h'
+  let g:ctrlp_mruf_exclude = '' "mruに追跡したくないfile
+
+let g:ctrlp_prompt_mappings = {}
+"移動
+let g:ctrlp_prompt_mappings['PrtCurStart()']        = ['<c-a>']
+let g:ctrlp_prompt_mappings['PrtCurEnd()']          = ['<c-e>']
+  let g:ctrlp_prompt_mappings['PrtCurLeft()']         = ['<c-k>', '<left>', ]
+  let g:ctrlp_prompt_mappings['PrtCurRight()']        = ['<c-f>', '<right>']
+  let g:ctrlp_prompt_mappings['PrtSelectMove("j")']   = ['<c-n>', '<down>']
+  let g:ctrlp_prompt_mappings['PrtSelectMove("k")']   = ['<c-p>', '<up>']
+let g:ctrlp_prompt_mappings['PrtSelectMove("t")']   = ['<Home>', '<kHome>', ]
+let g:ctrlp_prompt_mappings['PrtSelectMove("b")']   = ['<End>', '<kEnd>', ]
+let g:ctrlp_prompt_mappings['PrtSelectMove("u")']   = ['<PageUp>', '<kPageUp>', ]
+let g:ctrlp_prompt_mappings['PrtSelectMove("d")']   = ['<PageDown>', '<kPageDown>', ]
+  let g:ctrlp_prompt_mappings['PrtHistory(-1)']       = ['<m-n>']
+  let g:ctrlp_prompt_mappings['PrtHistory(1)']        = ['<m-p>']
+"入力
+  let g:ctrlp_prompt_mappings['PrtBS()']              = ['<BS>', '<C-h>']
+  let g:ctrlp_prompt_mappings['PrtDelete()']          = ['<del>', '<C-d>']
+let g:ctrlp_prompt_mappings['PrtDeleteWord()']      = ['<c-w>']
+let g:ctrlp_prompt_mappings['PrtClear()']           = ['<c-u>']
+  let g:ctrlp_prompt_mappings['PrtExpandDir()']       = ['<C-l>']
+  let g:ctrlp_prompt_mappings['PrtInsert("c")']       = ['<MiddleMouse>', '<insert>', '<C-r>8', '<C-r>@']
+  let g:ctrlp_prompt_mappings['PrtInsert()']          = ['<c-\>', '<C-r><C-e>']
+"開く
+  let g:ctrlp_prompt_mappings['AcceptSelection("e")'] = ['<cr>', '<2-LeftMouse>', '<C-j>']
+  let g:ctrlp_prompt_mappings['AcceptSelection("h")'] = ['<C-m>s', '<c-cr>',]
+  let g:ctrlp_prompt_mappings['AcceptSelection("t")'] = ['<C-m>v']
+  let g:ctrlp_prompt_mappings['AcceptSelection("v")'] = ['<C-m>b',]
+  let g:ctrlp_prompt_mappings['CreateNewFile()']      = ['<C-e>']
+  let g:ctrlp_prompt_mappings['MarkToOpen()']         = ['<c-@>']
+let g:ctrlp_prompt_mappings['OpenMulti()']          = ['<c-o>']
+"トグル
+  let g:ctrlp_prompt_mappings['ToggleRegex()']        = ['<C-x>']
+  let g:ctrlp_prompt_mappings['ToggleByFname()']      = ['<c-s>']
+  let g:ctrlp_prompt_mappings['ToggleType(1)']        = ['<C-t>', '<c-up>']
+  let g:ctrlp_prompt_mappings['ToggleType(-1)']       = ['<C-z>', '<c-down>']
+let g:ctrlp_prompt_mappings['ToggleFocus()']        = ['<s-tab>']
+"その他
+let g:ctrlp_prompt_mappings['PrtClearCache()']      = ['<F5>']
+let g:ctrlp_prompt_mappings['PrtDeleteEnt()']       = ['<F7>']
+  let g:ctrlp_prompt_mappings['PrtExit()']            = ['<c-c>', '<C-q>', '<c-g>']
+"}}}
 
 
 
