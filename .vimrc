@@ -466,7 +466,7 @@ endfunction
 se stal=2 "常に tabline を表示
 se tal=%!Gs_TabLine()
 let g:TDD_idx = 0
-noremap <silent><C-g>yd :let g:TDD_idx = g:TDD_idx>=3 ?0 :g:TDD_idx+1<CR><C-l>
+noremap <silent>[C-k]td :let g:TDD_idx = g:TDD_idx>=3 ?0 :g:TDD_idx+1<CR><C-l>
 
 function! Gs_TabLine() "{{{
   let one2tabpEnd = range(1, tabpagenr('$'))
@@ -779,7 +779,7 @@ call submode#leave_with('gjgk', 'nv', '', '<Esc>')
 call submode#map('gjgk', 'nv', '', 'j', 'gj')
 call submode#map('gjgk', 'nv', '', 'k', 'gk')
 "nnoremap gj j|nnoremap gk k|vnoremap gj j|vnoremap gk k
-nnoremap <C-g><C-l> <C-l>
+nnoremap z<C-l> <C-l>
 "-----------------------------------------------------------------------------
 "Alternative
 
@@ -826,7 +826,6 @@ function! s:Insert_CR() "{{{
   normal j
 endfunction "}}}
 
-nnoremap <C-g><C-j> :i<CR><CR>.<CR>
 nnoremap [C-k]<C-j> :i<CR><CR>.<CR>
 nnoremap [space]<C-j> :i<CR><CR>.<CR>
 
@@ -1026,7 +1025,7 @@ nmap <M-t>  [Tabcmd]
 "-----------------------------------------------------------------------------
 "表示・GUI操作"{{{
 
-noremap <C-g><C-g> :echo bufname("%")'['&fenc']['&ff']'(strftime("%Y-%m-%d %X",getftime(bufname("%")))) "["b:charCounterCount"字]" "0x"CursoredCharHex()"\n"FoldCCnavi()<CR>
+noremap z<C-g> :echo bufname("%")'['&fenc']['&ff']'(strftime("%Y-%m-%d %X",getftime(bufname("%")))) "["b:charCounterCount"字]" "0x"CursoredCharHex()"\n"FoldCCnavi()<CR>
 function! CursoredCharHex()"{{{
   let c = matchstr(getline('.'), '.', col('.') - 1)
   let c = iconv(c, &enc, &fenc)
@@ -1272,8 +1271,8 @@ endfunction
 "nnoremap <silent>zf A <Esc>^:setl rnu<CR>zf
 nnoremap zf A <Esc>^zf
 nnoremap <expr>l  foldclosed(line('.')) != -1 ? 'zo' : 'l'
-nnoremap <C-g>m zM
-nnoremap <C-g>r zR
+nnoremap [C-k]m zM
+nnoremap [C-k]r zR
 nnoremap [space]<C-h> zM
 nnoremap [space]m zM
 nnoremap [space]r zR
@@ -1282,19 +1281,19 @@ function! FoldmarkerAppend()
   let cmsStart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
   let cmsEnd = matchstr(&cms,'\V%s\zs\.\+')
   let fmr = split(&fmr,',')
-  exe 'nnoremap  <C-g>[[ A '.cmsStart.fmr[0].cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>]] A '.cmsStart.fmr[1].cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>[] A'.cmsStart.'===== '.fmr[0].'1 '.fmr[1].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>[1 A '.cmsStart.fmr[0].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>[2 A '.cmsStart.fmr[0].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>[1 A '.fmr[0].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>[2 A '.fmr[0].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>]1 A '.cmsStart.fmr[1].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>]2 A '.cmsStart.fmr[1].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>1[ A '.fmr[0].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>2[ A '.fmr[0].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>1] A '.fmr[1].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>2] A '.fmr[1].'2'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][[ A '.cmsStart.fmr[0].cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]]] A '.cmsStart.fmr[1].cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][] A'.cmsStart.'===== '.fmr[0].'1 '.fmr[1].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][1 A '.cmsStart.fmr[0].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][2 A '.cmsStart.fmr[0].'2'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][1 A '.fmr[0].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][2 A '.fmr[0].'2'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]]1 A '.cmsStart.fmr[1].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]]2 A '.cmsStart.fmr[1].'2'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]1[ A '.fmr[0].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]2[ A '.fmr[0].'2'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]1] A '.fmr[1].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]2] A '.fmr[1].'2'.cmsEnd.'<ESC>^'
 endfunction
 
 
@@ -1438,13 +1437,14 @@ nnoremap ,ov :e ~/dotfiles/.vimrc<CR>
 
 nnoremap  ,xv :ReloadVimrc<CR>
 
-nnoremap <expr><F1> ":\<C-u>h "
+nnoremap <expr><C-g> ":\<C-u>h "
+
 "-----------------------------------------------------------------------------
 
 "テスト変数
-nnoremap <C-g>yu :unlet g:test01 |unlet g:test02 |unlet g:test03 |unlet g:test04<CR>
-nnoremap <C-g>yy :call <SID>display_test_vars()<CR>
-nnoremap <C-g>yk :call PeekEcho()<CR>
+nnoremap [C-k]tu :unlet g:test01 |unlet g:test02 |unlet g:test03 |unlet g:test04<CR>
+nnoremap [C-k]tt :call <SID>display_test_vars()<CR>
+nnoremap [C-k]tk :call PeekEcho()<CR>
 function! s:display_test_vars() "{{{
   let display = ''
   if exists('g:test01')
