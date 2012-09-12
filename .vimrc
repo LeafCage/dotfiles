@@ -49,7 +49,7 @@ exe "NeoBundle 'thinca/vim-openbuf'" | "unite-vim_hacksがこれに依存
 
 "--------------------------------------
 "環境
-exe "NeoBundle 'kana/vim-tabpagecd'" | "TabPage毎にcrrdirを持てるようにする
+"exe "NeoBundle 'kana/vim-tabpagecd'" | "TabPage毎にcrrdirを持てるようにする
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'Shougo/neobundle.vim'
 NeoBundle 'tpope/vim-pathogen'
@@ -115,7 +115,7 @@ filetype plugin indent on  "ファイル判定をonにする
 
 call altercmd#load() "altercmdをこのvimrc内で有効にする
 "Lazyしていたpluginsを読み込む
-AlterCommand nbso[urce] NeoBundleSource
+AlterCommand nbs[ource] NeoBundleSource
 AlterCommand nbc NeoBundleClean
 
 command! -nargs=0 NeoBundleUpdateShougo
@@ -1090,6 +1090,10 @@ exe 'nnoremap '. s:bind_win. '0 <C-w>='
 nnoremap ,\ <C-w>_
 nnoremap <C-w>\ <C-w>_
 exe 'nnoremap '. s:bind_win. '\ <C-w>_'
+exe 'nnoremap '. s:bind_win. 'J <C-w>J'
+exe 'nnoremap '. s:bind_win. 'K <C-w>K'
+exe 'nnoremap '. s:bind_win. 'H <C-w>H'
+exe 'nnoremap '. s:bind_win. 'L <C-w>L'
 "ある窓を大きく開く
 "nnoremap <silent>,0 :call <SID>Enlarge_win(0)<CR>
 nnoremap <silent>,1 :call <SID>Enlarge_win(1)<CR>
@@ -1157,10 +1161,12 @@ noremap [space]w W
 noremap [space]b B
 noremap [space]e E
 noremap [space]ge gE
-omap <Space>w W
-omap <Space>b B
-omap <Space>e E
-omap <Space>ge gE
+omap <C-w> W
+omap i<C-w> iW
+omap a<C-w> aW
+omap <C-b> B
+omap <C-e> E
+omap g<C-e> gE
 
 "'%'コマンドを拡張する#Bible4-10
 runtime macros/matchit.vim
@@ -1586,6 +1592,7 @@ inoremap <C-g><C-l> <ESC>guvbgi
 "cnoremap <C-y> <C-r>"
 "編集中のファイルの場所をカレントディレクトリに設定する
 cnoremap <C-x> %:h
+cnoremap <expr><C-z> "h "
 
 "TODO 現在のコマンドラインをyankする
 "cnoremap <C-y>
@@ -1892,6 +1899,7 @@ AlterCommand u[nite] Unite
 
 "unite-sorce
 "------------------
+"{{{
 "unite neobundle
 AlterCommand nb   Unite neobundle
 AlterCommand nbi  Unite -auto-quit neobundle/install
@@ -2064,7 +2072,7 @@ let g:unite_source_menu_menus.menubar = deepcopy(s:menubar)
 unlet s:menubar
 "}}}
 "}}}
-
+"}}}
 
 "--------------------------------------
 "プラグイン ファイラー
@@ -2396,7 +2404,7 @@ au FileType snippet  noremap <buffer>q <C-w>q
 let g:neocomplcache_snippets_dir = $VIM.'/settings/neocon_snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
 exe 'imap <expr><C-'. s:bind_snip. '>  neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
-nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
+"nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
 "スニペットを編集する
 noremap ,os :<C-u>wincmd s| NeoComplCacheEditSnippets<CR>
 noremap ,oS :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
@@ -2912,23 +2920,6 @@ unlet s:bind_win s:bind_left s:bind_right s:bind_comp s:bind_snip s:bind_markj s
 
 "from thinca
 
-"" Select the last changed.
-"nnoremap <expr> gc '`[' . getregtype()[0] . '`]'
-"onoremap <silent> gc :normal gc<CR>
-"onoremap <silent> gv :normal gv<CR>
-"
-"onoremap q /["',.{}()[\]<>]<CR>
-"
-"" Quick toggle options.
-"nnoremap <Space>o <Nop>
-"nnoremap <silent> <Space>oe :<C-u>setlocal expandtab! expandtab?<CR>
-"nnoremap <silent> <Space>of :<C-u>let &l:foldcolumn=1-&l:foldcolumn<CR>
-"                           \:setlocal foldcolumn?<CR>
-"nnoremap <silent> <Space>on :<C-u>setlocal number! number?<CR>
-"nnoremap <silent> <Space>ol :<C-u>setlocal list! list?<CR>
-"nnoremap <silent> <Space>ow :<C-u>setlocal wrap! wrap?<CR>
-"nnoremap <silent> <Space>op :<C-u>set paste! paste?<CR>
-"
 "" Show the diff between the current buffer and the last saved file. {{{
 "" TODO: Become plugin.
 "function! s:diff_original()
