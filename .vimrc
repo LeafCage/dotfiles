@@ -1794,7 +1794,7 @@ AlterCommand zk  Ref webdict kok
 
 "ctrlp.vim "{{{
 nnoremap <silent>[C-k]<C-k> :<C-u>CtrlP<CR>
-nnoremap <silent>[C-k]<C-b> :<C-u>CtrlPBuffer<CR>
+nnoremap <silent>[C-k]<C-p> :<C-u>CtrlPBuffer<CR>
 nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
 let g:ctrlp_use_migemo = 1
 let g:ctrlp_switch_buffer = 'Et'
