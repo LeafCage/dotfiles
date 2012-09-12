@@ -2538,6 +2538,16 @@ xmap iw <Plug>(textobj-wiw-i)
 omap aw <Plug>(textobj-wiw-a)
 omap iw <Plug>(textobj-wiw-i)
 
+
+call textobj#user#plugin('cword', {
+  \   '-': {
+  \     '*pattern*': '\k*\%#\k*',
+  \     'select': ['*',],
+  \   },
+  \ })
+
+
+
 "-----------------------------------------------------------------------------
 "プラグイン コマンドライン
 "ambicmd.vim(コマンドモードで一定のルールでコマンド補完
