@@ -1574,9 +1574,11 @@ inoremap <C-r>@ <C-r>+
 cnoremap <C-r>@ <C-r>+
 inoremap <C-r>8 <C-r>+
 cnoremap <C-r>8 <C-r>+
-"バックスラッシュが打ちづらいから
+"バックスラッシュとかバーが打ちづらいから
 inoremap <C-b> \
 cnoremap <C-b> \
+inoremap <M-b> <Bar>
+cnoremap <M-b> <Bar>
 
 "-----------------------------------------------------------------------------
 "InsertModeでの編集コマンド
