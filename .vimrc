@@ -1317,7 +1317,7 @@ map zp "*p
 
 "コメントアウト
 "[削]を付ける
-nmap <silent> [gc]d :call <SID>CommeToggleDelMarker()<CR>
+nmap <silent> [gs]d :call <SID>CommeToggleDelMarker()<CR>
 function! s:CommeToggleDelMarker() "{{{
   let cmsstart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
   let cmsend = matchstr(&cms,'\V%s\zs\.\+')
@@ -1329,8 +1329,8 @@ function! s:CommeToggleDelMarker() "{{{
   endif
 endfunction "}}}
 "★を挿入する
-nmap <silent> [gc]o :call <SID>CommeAddStar(0)<CR>
-nmap <silent> [gc]O :call <SID>CommeAddStar(1)<CR>
+nmap <silent> [gs]o :call <SID>CommeAddStar(0)<CR>
+nmap <silent> [gs]O :call <SID>CommeAddStar(1)<CR>
 function! s:CommeAddStar(append) "{{{
   let cmsstart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
   let cmsend = matchstr(&cms,'\V%s\zs\.\+')
@@ -1346,65 +1346,67 @@ endfunction "}}}
 "nnoremap ,. q:k<CR>
 nnoremap @: @:
 "ペーストしたテキストを再選択するBible3-15
-nnoremap <expr> gp '`[' . strpart(getregtype(), 0,1) . '`]'
+nnoremap <expr> gc '`[' . strpart(getregtype(), 0,1) . '`]'
+onoremap <silent> gc :normal gc<CR>
+onoremap <silent> gv :normal gv<CR>
 "前回保存した状態にまでアンドゥ
-nnoremap <C-g>u :earlier 1f<CR>
+nnoremap [space]u :earlier 1f<CR>
 "タグ検索をUniteで置き換える
 "nnoremap <silent>  <C-]>  :<C-u>UniteWithCursorWord -immediately tag<CR>
 
 
 "-----------------------------------------------------------------------------
 "設定を切り替える
-nmap gs [gs]
+nmap [space]o [op]
 "{{{
 "文字コード
-nnoremap [gs]7   :se fenc=euc-jp<CR>
-nnoremap [gs]8   :se fenc=utf-8<CR>
-nnoremap [gs]9   :se fenc=cp932<CR>
-nnoremap ,7   :se fenc=euc-jp<CR>
-nnoremap ,8   :se fenc=utf-8<CR>
-nnoremap ,9   :se fenc=cp932<CR>
-nnoremap <silent>[gs]-   :let &ff = &ff=='dos' ? 'unix' : &ff=='unix' ? 'mac' : 'dos'<CR>
+nnoremap [op]7   :<C-u>se fenc=euc-jp<CR>
+nnoremap [op]8   :<C-u>se fenc=utf-8<CR>
+nnoremap [op]9   :<C-u>se fenc=cp932<CR>
+nnoremap ,7   :<C-u>se fenc=euc-jp<CR>
+nnoremap ,8   :<C-u>se fenc=utf-8<CR>
+nnoremap ,9   :<C-u>se fenc=cp932<CR>
+nnoremap <silent>[op]-   :<C-u>let &ff = &ff=='dos' ? 'unix' : &ff=='unix' ? 'mac' : 'dos'<CR>
 
 "タブ
-nnoremap <silent>[gs]e   :let &et = !&et<CR>:set et?<CR>
-nnoremap [gs]t2   :setl ts=2 sw=2 sts=2<CR>
-nnoremap [gs]t4   :setl ts=4 sw=4 sts=4<CR>
-nnoremap [gs]t8   :setl ts=8 sw=8 sts=8<CR>
+nnoremap <silent>[op]e   :<C-u>setlocal expandtab! expandtab?<CR>
+nnoremap [op]t2   :<C-u>setl ts=2 sw=2 sts=2<CR>
+nnoremap [op]t4   :<C-u>setl ts=4 sw=4 sts=4<CR>
+nnoremap [op]t8   :<C-u>setl ts=8 sw=8 sts=8<CR>
 
 "見た目
-nnoremap <silent>[gs]r   :let &rnu = !&rnu<CR>
-nnoremap <silent>[gs]n   :let &nu = !&nu<CR>
-nnoremap <silent>[gs]l   :let &list = !&list<CR>
-nnoremap <silent>[gs]m   :if &go=~'m'| set go-=m| else| set go+=m| endif<CR>
-nnoremap <silent>[gs]cc   :let &cc = empty(&cc) ? '+1' : ''<CR>
-nnoremap <silent>[gs]cg   :let &cuc = !&cuc<CR>
-nnoremap <silent>[gs]cl   :let &cul = !&cul<CR>
-nnoremap <silent>[gs]co   :let &cole = &cole==0 ? 3 : 0<CR>:se cole?<CR>
-nnoremap <silent>[gs]w   :let &wrap = !&wrap<CR>:se wrap?<CR>
-nnoremap <silent>[gs]fm   :let &fdm = &fdm=='marker'?'expr':&fdm=='expr'?'diff':'marker'<CR>:se fdm?<CR>
+nnoremap <silent>[op]r   :<C-u>let &rnu = !&rnu<CR>
+nnoremap <silent>[op]n   :<C-u>let &nu = !&nu<CR>
+nnoremap <silent>[op]l   :<C-u>let &list = !&list<CR>
+nnoremap <silent>[op]m   :<C-u>if &go=~'m'| set go-=m| else| set go+=m| endif<CR>
+nnoremap <silent>[op]cc   :<C-u>let &cc = empty(&cc) ? '+1' : ''<CR>
+nnoremap <silent>[op]cg   :<C-u>let &cuc = !&cuc<CR>
+nnoremap <silent>[op]cl   :<C-u>let &cul = !&cul<CR>
+nnoremap <silent>[op]co   :<C-u>let &cole = &cole==0 ? 3 : 0<CR>:se cole?<CR>
+nnoremap <silent>[op]w   :<C-u>se wrap! wrap?<CR>
+nnoremap <silent>[op]fm   :<C-u>let &fdm = &fdm=='marker'?'expr':&fdm=='expr'?'diff':'marker'<CR>:se fdm?<CR>
 
 "挙動
-nnoremap <silent>[gs]a   :let &ai = !&ai<CR>:se ai?<CR>
+nnoremap <silent>[op]a   :<C-u>se ai! ai?<CR>
 set pastetoggle=<F12> "NOTE: paste mode 中は'ai'無効
 "&foに ro を加えたり外したり（コメント文字自動挿入）
-nnoremap <silent>[gs]fr   :if &fo=~'[ro]'| setl fo-=ro| echo 'fo -=ro'| else| setl fo+=ro| echo 'fo +=ro'|endif<CR>
+nnoremap <silent>[op]fr   :<C-u>if &fo=~'[ro]'| setl fo-=ro| echo 'fo -=ro'| else| setl fo+=ro| echo 'fo +=ro'|endif<CR>
 "&foに t を加えたり外したり（&tw自動折り返し）
-nnoremap <silent>[gs]ft   :if &fo=~'[tc]'| setl fo-=tc| echo 'fo -=tc'| else| setl fo+=tc| echo 'fo +=tc'|endif<CR>
-nnoremap <silent>[gs]sw   :let &ws = !&ws<CR>:se ws?<CR>
-nnoremap <silent>[gs]sc   :let &ic = !&ic<CR>:se ic?<CR>
-nnoremap <silent>[gs]si   :let &is = !&is<CR>:se is?<CR>
-nnoremap <silent>[gs]v   :let &vbs = &vbs==0?12:0<CR>:se is?<CR>
+nnoremap <silent>[op]ft   :<C-u>if &fo=~'[tc]'| setl fo-=tc| echo 'fo -=tc'| else| setl fo+=tc| echo 'fo +=tc'|endif<CR>
+nnoremap <silent>[op]sw   :<C-u>se ws! ws?<CR>
+nnoremap <silent>[op]sc   :<C-u>se ic! ic?<CR>
+nnoremap <silent>[op]si   :<C-u>se is! is?<CR>
+nnoremap <silent>[op]v   :<C-u>let &vbs = &vbs==0?12:0<CR>:se vbs?<CR>
 
 "バッファ属性
-nnoremap <silent>[gs]M   :let &ma = !&ma<CR>
-nnoremap <silent>[gs]R   :let &ro = !&ro<CR>
-nnoremap <silent>[gs]W   :let &write = !&write<CR>
-nnoremap <silent>[gs]cb   :let &crb = !&crb<CR>:se crb?<CR>
-nnoremap <silent>[gs]sf   :let &swf = !&swf<CR>:se swf?<CR>
+nnoremap <silent>[op]M   :<C-u>let &ma = !&ma<CR>
+nnoremap <silent>[op]R   :<C-u>let &ro = !&ro<CR>
+nnoremap <silent>[op]W   :<C-u>let &write = !&write<CR>
+nnoremap <silent>[op]cb   :<C-u>se crb! crb?<CR>
+nnoremap <silent>[op]sf   :<C-u>se swf! swf?<CR>
 
 "スクリプトの変数など
-nnoremap <silent>[gs]ps   :let g:scroll_other_win_reverse = !g:scroll_other_win_reverse<CR>:echo 'scroll reverse'.g:scroll_other_win_reverse<CR>
+nnoremap <silent>[op]ps   :let g:scroll_other_win_reverse = !g:scroll_other_win_reverse<CR>:echo 'scroll reverse'.g:scroll_other_win_reverse<CR>
 "}}}
 
 nnoremap <silent> <C-@> :call <SID>multikey_effect()<CR>
@@ -2323,14 +2325,14 @@ exe 'noremap <silent>'. s:bind_win. 'u :LastBuf<CR>'
 "let g:NERDCreateDefaultMappings = 0
 "let g:NERDRemoveExtraSpaces = 1
 "let g:NERDSpacesDelims = 0
-nmap gc [gc]
-vmap gc [gc]
-nmap [gc]c <Plug>NERDCommenterToggle
-vmap [gc]c <Plug>NERDCommenterToggle
-nmap [gc]a <Plug>NERDCommenterAppend
-nmap [gc]9 <Plug>NERDCommenterToEOL
-vmap [gc]s <Plug>NERDCommenterSexy
-vmap [gc]b <Plug>NERDCommenterMinimal
+nmap gs [gs]
+vmap gs [gs]
+nmap [gs]s <Plug>NERDCommenterToggle
+vmap [gs]s <Plug>NERDCommenterToggle
+nmap [gs]a <Plug>NERDCommenterAppend
+nmap [gs]9 <Plug>NERDCommenterToEOL
+vmap [gs]x <Plug>NERDCommenterSexy
+vmap [gs]b <Plug>NERDCommenterMinimal
 
 
 "altercmd (other)
