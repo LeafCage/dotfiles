@@ -72,6 +72,7 @@ NeoBundle 'kana/vim-textobj-user'
   exe "NeoBundle 'h1mesuke/textobj-wiw'" | "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
   NeoBundle 'kana/vim-textobj-indent'
   NeoBundle 'thinca/vim-textobj-plugins'
+  NeoBundle 'anyakichi/vim-textobj-xbrackets'
 NeoBundle 'anyakichi/vim-surround'
 NeoBundle 'scrooloose/nerdcommenter'
 "NeoBundle 'tomtom/tcomment_vim'
@@ -2409,6 +2410,28 @@ exe 'imap <expr><C-'. s:bind_snip. '>  neocomplcache#sources#snippets_complete#f
 noremap ,os :<C-u>wincmd s| NeoComplCacheEditSnippets<CR>
 noremap ,oS :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
 noremap ,ors :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
+"}}}
+
+
+
+"surround.vim "{{{
+let g:surround_no_mappings = 1
+nmap      ds   <Plug>Dsurround
+nmap      cs   <Plug>Csurround
+nmap      <C-s>   <Plug>Ysurround
+nmap      <C-s>s  <Plug>Yssurround
+nmap      <C-s>S   <Plug>Ysurround$
+nmap      g<C-s>  <Plug>Ygsurround
+nmap      g<C-s>s <Plug>Ygssurround
+nmap      g<C-s>S  <Plug>Ygsurround$
+xmap      s    <Plug>Vsurround
+xmap      <C-s>   <Plug>VSurround
+xmap      g<C-s>   <Plug>Vgsurround
+nmap      ys   <Plug>Ysurround
+nmap      yS   <Plug>Ygsurround
+nmap      yss  <Plug>Yssurround
+nmap      ySs  <Plug>Ygssurround
+nmap      ySS  <Plug>Ygssurround
 "}}}
 
 
