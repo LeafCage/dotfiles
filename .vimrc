@@ -23,6 +23,7 @@ endif
 "--------------------------------------
 "拡張インターフェイス
 NeoBundle 'Shougo/unite.vim'
+NeoBundle 'kien/ctrlp.vim'
 NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vimfiler', {'depends': 'Shougo/unite.vim'}
 NeoBundle 'tsukkee/lingr-vim'
@@ -49,7 +50,7 @@ exe "NeoBundle 'thinca/vim-openbuf'" | "unite-vim_hacksがこれに依存
 
 "--------------------------------------
 "環境
-exe "NeoBundle 'kana/vim-tabpagecd'" | "TabPage毎にcrrdirを持てるようにする
+"exe "NeoBundle 'kana/vim-tabpagecd'" | "TabPage毎にcrrdirを持てるようにする
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'Shougo/neobundle.vim'
 NeoBundle 'tpope/vim-pathogen'
@@ -72,6 +73,7 @@ NeoBundle 'kana/vim-textobj-user'
   exe "NeoBundle 'h1mesuke/textobj-wiw'" | "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
   NeoBundle 'kana/vim-textobj-indent'
   NeoBundle 'thinca/vim-textobj-plugins'
+  NeoBundle 'anyakichi/vim-textobj-xbrackets'
 NeoBundle 'anyakichi/vim-surround'
 NeoBundle 'scrooloose/nerdcommenter'
 "NeoBundle 'tomtom/tcomment_vim'
@@ -112,9 +114,11 @@ NeoBundle 'pasela/unite-webcolorname'
 
 filetype plugin indent on  "ファイル判定をonにする
 "}}}
+
+call altercmd#load() "altercmdをこのvimrc内で有効にする
 "Lazyしていたpluginsを読み込む
-au VimEnter * AlterCommand nbso[urce] NeoBundleSource
-au VimEnter * AlterCommand nbc NeoBundleClean
+AlterCommand nbs[ource] NeoBundleSource
+AlterCommand nbc NeoBundleClean
 
 command! -nargs=0 NeoBundleUpdateShougo
   \ NeoBundleUpdate
@@ -463,7 +467,7 @@ endfunction
 se stal=2 "常に tabline を表示
 se tal=%!Gs_TabLine()
 let g:TDD_idx = 0
-noremap <silent><C-g>yd :let g:TDD_idx = g:TDD_idx>=3 ?0 :g:TDD_idx+1<CR><C-l>
+noremap <silent>[C-k]td :let g:TDD_idx = g:TDD_idx>=3 ?0 :g:TDD_idx+1<CR><C-l>
 
 function! Gs_TabLine() "{{{
   let one2tabpEnd = range(1, tabpagenr('$'))
@@ -563,8 +567,11 @@ endfunction
 "}}}
 
 "窓にカーソルの痕跡を残す
-au WinLeave * match CursorTrack /\%#/
-au WinEnter * match none
+aug vimrc_CursorTrack
+  au!
+  "au WinLeave * match CursorTrack /\%#/
+  "au WinEnter * match none
+aug END
 
 "-----------------------------------------------------------------------------
 aug vimrc_colorscheme
@@ -773,7 +780,7 @@ call submode#leave_with('gjgk', 'nv', '', '<Esc>')
 call submode#map('gjgk', 'nv', '', 'j', 'gj')
 call submode#map('gjgk', 'nv', '', 'k', 'gk')
 "nnoremap gj j|nnoremap gk k|vnoremap gj j|vnoremap gk k
-nnoremap <C-g><C-l> <C-l>
+nnoremap z<C-l> <C-l>
 "-----------------------------------------------------------------------------
 "Alternative
 
@@ -820,7 +827,6 @@ function! s:Insert_CR() "{{{
   normal j
 endfunction "}}}
 
-nnoremap <C-g><C-j> :i<CR><CR>.<CR>
 nnoremap [C-k]<C-j> :i<CR><CR>.<CR>
 nnoremap [space]<C-j> :i<CR><CR>.<CR>
 
@@ -841,6 +847,7 @@ let s:bind_win = 'm'
 nnoremap [space]K <C-w>}
 
 exe 'nnoremap '. s:bind_win. 's <C-w>s'
+exe 'nnoremap '. s:bind_win. 'b <C-w>v'
 exe 'nnoremap '. s:bind_win. 'o <C-w>o'
 exe 'nnoremap '. s:bind_win. 'q <C-w>c'
 "現在Bufを新しいタブページで開く
@@ -1019,7 +1026,7 @@ nmap <M-t>  [Tabcmd]
 "-----------------------------------------------------------------------------
 "表示・GUI操作"{{{
 
-noremap <C-g><C-g> :echo bufname("%")'['&fenc']['&ff']'(strftime("%Y-%m-%d %X",getftime(bufname("%")))) "["b:charCounterCount"字]" "0x"CursoredCharHex()"\n"FoldCCnavi()<CR>
+noremap z<C-g> :echo bufname("%")'['&fenc']['&ff']'(strftime("%Y-%m-%d %X",getftime(bufname("%")))) "["b:charCounterCount"字]" "0x"CursoredCharHex()"\n"FoldCCnavi()<CR>
 function! CursoredCharHex()"{{{
   let c = matchstr(getline('.'), '.', col('.') - 1)
   let c = iconv(c, &enc, &fenc)
@@ -1084,6 +1091,10 @@ exe 'nnoremap '. s:bind_win. '0 <C-w>='
 nnoremap ,\ <C-w>_
 nnoremap <C-w>\ <C-w>_
 exe 'nnoremap '. s:bind_win. '\ <C-w>_'
+exe 'nnoremap '. s:bind_win. 'J <C-w>J'
+exe 'nnoremap '. s:bind_win. 'K <C-w>K'
+exe 'nnoremap '. s:bind_win. 'H <C-w>H'
+exe 'nnoremap '. s:bind_win. 'L <C-w>L'
 "ある窓を大きく開く
 "nnoremap <silent>,0 :call <SID>Enlarge_win(0)<CR>
 nnoremap <silent>,1 :call <SID>Enlarge_win(1)<CR>
@@ -1151,10 +1162,12 @@ noremap [space]w W
 noremap [space]b B
 noremap [space]e E
 noremap [space]ge gE
-omap <Space>w W
-omap <Space>b B
-omap <Space>e E
-omap <Space>ge gE
+omap <C-w> W
+omap i<C-w> iW
+omap a<C-w> aW
+omap <C-b> B
+omap <C-e> E
+omap g<C-e> gE
 
 "'%'コマンドを拡張する#Bible4-10
 runtime macros/matchit.vim
@@ -1170,32 +1183,6 @@ function! s:In_nextBracket() "{{{
   startinsert
 endfunction
 "}}}
-
-"camelcasemotion.vimのコマンドに置き換える
-"前方・後方移動をキャメルケース単位にする
-map <silent> w <Plug>CamelCaseMotion_w
-map <silent> b <Plug>CamelCaseMotion_b
-map <silent> e <Plug>CamelCaseMotion_e
-"omap <silent> e <Plug>CamelCaseMotion_ie
-"テキストオブジェクトに対応させる
-"omap <silent> iw <Plug>CamelCaseMotion_iw
-"vmap <silent> iw <Plug>CamelCaseMotion_iw
-omap <silent> ib <Plug>CamelCaseMotion_ib
-vmap <silent> ib <Plug>CamelCaseMotion_ib
-omap <silent> ie <Plug>CamelCaseMotion_ie
-vmap <silent> ie <Plug>CamelCaseMotion_ie
-
-
-"h1mesuke/textobj-wiw
-let g:textobj_wiw_no_default_key_mappings = 1 "デフォルトで用意されてるマッピングを無効に
-"map @w <Plug>(textobj-wiw-n)
-"map @b <Plug>(textobj-wiw-p)
-"map @e <Plug>(textobj-wiw-N)
-"map @ge <Plug>(textobj-wiw-P)
-vmap a@ <Plug>(textobj-wiw-a)
-vmap i@ <Plug>(textobj-wiw-i)
-omap a@ <Plug>(textobj-wiw-a)
-omap i@ <Plug>(textobj-wiw-i)
 
 
 "一つ上or下の他窓をスクロールさせる
@@ -1285,8 +1272,8 @@ endfunction
 "nnoremap <silent>zf A <Esc>^:setl rnu<CR>zf
 nnoremap zf A <Esc>^zf
 nnoremap <expr>l  foldclosed(line('.')) != -1 ? 'zo' : 'l'
-nnoremap <C-g>m zM
-nnoremap <C-g>r zR
+nnoremap [C-k]m zM
+nnoremap [C-k]r zR
 nnoremap [space]<C-h> zM
 nnoremap [space]m zM
 nnoremap [space]r zR
@@ -1295,19 +1282,19 @@ function! FoldmarkerAppend()
   let cmsStart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
   let cmsEnd = matchstr(&cms,'\V%s\zs\.\+')
   let fmr = split(&fmr,',')
-  exe 'nnoremap  <C-g>[[ A '.cmsStart.fmr[0].cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>]] A '.cmsStart.fmr[1].cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>[] A'.cmsStart.'===== '.fmr[0].'1 '.fmr[1].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>[1 A '.cmsStart.fmr[0].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>[2 A '.cmsStart.fmr[0].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>[1 A '.fmr[0].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>[2 A '.fmr[0].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>]1 A '.cmsStart.fmr[1].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>]2 A '.cmsStart.fmr[1].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>1[ A '.fmr[0].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>2[ A '.fmr[0].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>1] A '.fmr[1].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  <C-g>2] A '.fmr[1].'2'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][[ A '.cmsStart.fmr[0].cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]]] A '.cmsStart.fmr[1].cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][] A'.cmsStart.'===== '.fmr[0].'1 '.fmr[1].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][1 A '.cmsStart.fmr[0].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][2 A '.cmsStart.fmr[0].'2'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][1 A '.fmr[0].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k][2 A '.fmr[0].'2'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]]1 A '.cmsStart.fmr[1].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]]2 A '.cmsStart.fmr[1].'2'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]1[ A '.fmr[0].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]2[ A '.fmr[0].'2'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]1] A '.fmr[1].'1'.cmsEnd.'<ESC>^'
+  exe 'nnoremap  [C-k]2] A '.fmr[1].'2'.cmsEnd.'<ESC>^'
 endfunction
 
 
@@ -1331,7 +1318,7 @@ map zp "*p
 
 "コメントアウト
 "[削]を付ける
-nmap <silent> [gc]d :call <SID>CommeToggleDelMarker()<CR>
+nmap <silent> [gs]d :call <SID>CommeToggleDelMarker()<CR>
 function! s:CommeToggleDelMarker() "{{{
   let cmsstart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
   let cmsend = matchstr(&cms,'\V%s\zs\.\+')
@@ -1343,8 +1330,8 @@ function! s:CommeToggleDelMarker() "{{{
   endif
 endfunction "}}}
 "★を挿入する
-nmap <silent> [gc]o :call <SID>CommeAddStar(0)<CR>
-nmap <silent> [gc]O :call <SID>CommeAddStar(1)<CR>
+nmap <silent> [gs]o :call <SID>CommeAddStar(0)<CR>
+nmap <silent> [gs]O :call <SID>CommeAddStar(1)<CR>
 function! s:CommeAddStar(append) "{{{
   let cmsstart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
   let cmsend = matchstr(&cms,'\V%s\zs\.\+')
@@ -1360,65 +1347,67 @@ endfunction "}}}
 "nnoremap ,. q:k<CR>
 nnoremap @: @:
 "ペーストしたテキストを再選択するBible3-15
-nnoremap <expr> gp '`[' . strpart(getregtype(), 0,1) . '`]'
+nnoremap <expr> gc '`[' . strpart(getregtype(), 0,1) . '`]'
+onoremap <silent> gc :normal gc<CR>
+onoremap <silent> gv :normal gv<CR>
 "前回保存した状態にまでアンドゥ
-nnoremap <C-g>u :earlier 1f<CR>
+nnoremap [space]u :earlier 1f<CR>
 "タグ検索をUniteで置き換える
 "nnoremap <silent>  <C-]>  :<C-u>UniteWithCursorWord -immediately tag<CR>
 
 
 "-----------------------------------------------------------------------------
 "設定を切り替える
-nmap gs [gs]
+nmap [space]o [op]
 "{{{
 "文字コード
-nnoremap [gs]7   :se fenc=euc-jp<CR>
-nnoremap [gs]8   :se fenc=utf-8<CR>
-nnoremap [gs]9   :se fenc=cp932<CR>
-nnoremap ,7   :se fenc=euc-jp<CR>
-nnoremap ,8   :se fenc=utf-8<CR>
-nnoremap ,9   :se fenc=cp932<CR>
-nnoremap <silent>[gs]-   :let &ff = &ff=='dos' ? 'unix' : &ff=='unix' ? 'mac' : 'dos'<CR>
+nnoremap [op]7   :<C-u>se fenc=euc-jp<CR>
+nnoremap [op]8   :<C-u>se fenc=utf-8<CR>
+nnoremap [op]9   :<C-u>se fenc=cp932<CR>
+nnoremap ,7   :<C-u>se fenc=euc-jp<CR>
+nnoremap ,8   :<C-u>se fenc=utf-8<CR>
+nnoremap ,9   :<C-u>se fenc=cp932<CR>
+nnoremap <silent>[op]-   :<C-u>let &ff = &ff=='dos' ? 'unix' : &ff=='unix' ? 'mac' : 'dos'<CR>
 
 "タブ
-nnoremap <silent>[gs]e   :let &et = !&et<CR>:set et?<CR>
-nnoremap [gs]t2   :setl ts=2 sw=2 sts=2<CR>
-nnoremap [gs]t4   :setl ts=4 sw=4 sts=4<CR>
-nnoremap [gs]t8   :setl ts=8 sw=8 sts=8<CR>
+nnoremap <silent>[op]e   :<C-u>setlocal expandtab! expandtab?<CR>
+nnoremap [op]t2   :<C-u>setl ts=2 sw=2 sts=2<CR>
+nnoremap [op]t4   :<C-u>setl ts=4 sw=4 sts=4<CR>
+nnoremap [op]t8   :<C-u>setl ts=8 sw=8 sts=8<CR>
 
 "見た目
-nnoremap <silent>[gs]r   :let &rnu = !&rnu<CR>
-nnoremap <silent>[gs]n   :let &nu = !&nu<CR>
-nnoremap <silent>[gs]l   :let &list = !&list<CR>
-nnoremap <silent>[gs]m   :if &go=~'m'| set go-=m| else| set go+=m| endif<CR>
-nnoremap <silent>[gs]cc   :let &cc = empty(&cc) ? '+1' : ''<CR>
-nnoremap <silent>[gs]cg   :let &cuc = !&cuc<CR>
-nnoremap <silent>[gs]cl   :let &cul = !&cul<CR>
-nnoremap <silent>[gs]co   :let &cole = &cole==0 ? 3 : 0<CR>:se cole?<CR>
-nnoremap <silent>[gs]w   :let &wrap = !&wrap<CR>:se wrap?<CR>
-nnoremap <silent>[gs]fm   :let &fdm = &fdm=='marker'?'expr':&fdm=='expr'?'diff':'marker'<CR>:se fdm?<CR>
+nnoremap <silent>[op]r   :<C-u>let &rnu = !&rnu<CR>
+nnoremap <silent>[op]n   :<C-u>let &nu = !&nu<CR>
+nnoremap <silent>[op]l   :<C-u>let &list = !&list<CR>
+nnoremap <silent>[op]m   :<C-u>if &go=~'m'| set go-=m| else| set go+=m| endif<CR>
+nnoremap <silent>[op]cc   :<C-u>let &cc = empty(&cc) ? '+1' : ''<CR>
+nnoremap <silent>[op]cg   :<C-u>let &cuc = !&cuc<CR>
+nnoremap <silent>[op]cl   :<C-u>let &cul = !&cul<CR>
+nnoremap <silent>[op]co   :<C-u>let &cole = &cole==0 ? 3 : 0<CR>:se cole?<CR>
+nnoremap <silent>[op]w   :<C-u>se wrap! wrap?<CR>
+nnoremap <silent>[op]fm   :<C-u>let &fdm = &fdm=='marker'?'expr':&fdm=='expr'?'diff':'marker'<CR>:se fdm?<CR>
 
 "挙動
-nnoremap <silent>[gs]a   :let &ai = !&ai<CR>:se ai?<CR>
+nnoremap <silent>[op]a   :<C-u>se ai! ai?<CR>
 set pastetoggle=<F12> "NOTE: paste mode 中は'ai'無効
 "&foに ro を加えたり外したり（コメント文字自動挿入）
-nnoremap <silent>[gs]fr   :if &fo=~'[ro]'| setl fo-=ro| echo 'fo -=ro'| else| setl fo+=ro| echo 'fo +=ro'|endif<CR>
+nnoremap <silent>[op]fr   :<C-u>if &fo=~'[ro]'| setl fo-=ro| echo 'fo -=ro'| else| setl fo+=ro| echo 'fo +=ro'|endif<CR>
 "&foに t を加えたり外したり（&tw自動折り返し）
-nnoremap <silent>[gs]ft   :if &fo=~'[tc]'| setl fo-=tc| echo 'fo -=tc'| else| setl fo+=tc| echo 'fo +=tc'|endif<CR>
-nnoremap <silent>[gs]sw   :let &ws = !&ws<CR>:se ws?<CR>
-nnoremap <silent>[gs]sc   :let &ic = !&ic<CR>:se ic?<CR>
-nnoremap <silent>[gs]si   :let &is = !&is<CR>:se is?<CR>
-nnoremap <silent>[gs]v   :let &vbs = &vbs==0?12:0<CR>:se is?<CR>
+nnoremap <silent>[op]ft   :<C-u>if &fo=~'[tc]'| setl fo-=tc| echo 'fo -=tc'| else| setl fo+=tc| echo 'fo +=tc'|endif<CR>
+nnoremap <silent>[op]sw   :<C-u>se ws! ws?<CR>
+nnoremap <silent>[op]sc   :<C-u>se ic! ic?<CR>
+nnoremap <silent>[op]si   :<C-u>se is! is?<CR>
+nnoremap <silent>[op]v   :<C-u>let &vbs = &vbs==0?12:0<CR>:se vbs?<CR>
 
 "バッファ属性
-nnoremap <silent>[gs]M   :let &ma = !&ma<CR>
-nnoremap <silent>[gs]R   :let &ro = !&ro<CR>
-nnoremap <silent>[gs]W   :let &write = !&write<CR>
-nnoremap <silent>[gs]cb   :let &crb = !&crb<CR>:se crb?<CR>
-nnoremap <silent>[gs]sf   :let &swf = !&swf<CR>:se swf?<CR>
+nnoremap <silent>[op]M   :<C-u>let &ma = !&ma<CR>
+nnoremap <silent>[op]R   :<C-u>let &ro = !&ro<CR>
+nnoremap <silent>[op]W   :<C-u>let &write = !&write<CR>
+nnoremap <silent>[op]cb   :<C-u>se crb! crb?<CR>
+nnoremap <silent>[op]sf   :<C-u>se swf! swf?<CR>
 
 "スクリプトの変数など
-nnoremap <silent>[gs]ps   :let g:scroll_other_win_reverse = !g:scroll_other_win_reverse<CR>:echo 'scroll reverse'.g:scroll_other_win_reverse<CR>
+nnoremap <silent>[op]ps   :let g:scroll_other_win_reverse = !g:scroll_other_win_reverse<CR>:echo 'scroll reverse'.g:scroll_other_win_reverse<CR>
 "}}}
 
 nnoremap <silent> <C-@> :call <SID>multikey_effect()<CR>
@@ -1451,13 +1440,14 @@ nnoremap ,ov :e ~/dotfiles/.vimrc<CR>
 
 nnoremap  ,xv :ReloadVimrc<CR>
 
-nnoremap <expr><F1> ":\<C-u>h "
+nnoremap <expr><C-g> ":\<C-u>h "
+
 "-----------------------------------------------------------------------------
 
 "テスト変数
-nnoremap <C-g>yu :unlet g:test01 |unlet g:test02 |unlet g:test03 |unlet g:test04<CR>
-nnoremap <C-g>yy :call <SID>display_test_vars()<CR>
-nnoremap <C-g>yk :call PeekEcho()<CR>
+nnoremap [C-k]tu :unlet g:test01 |unlet g:test02 |unlet g:test03 |unlet g:test04<CR>
+nnoremap [C-k]tt :call <SID>display_test_vars()<CR>
+nnoremap [C-k]tk :call PeekEcho()<CR>
 function! s:display_test_vars() "{{{
   let display = ''
   if exists('g:test01')
@@ -1584,9 +1574,11 @@ inoremap <C-r>@ <C-r>+
 cnoremap <C-r>@ <C-r>+
 inoremap <C-r>8 <C-r>+
 cnoremap <C-r>8 <C-r>+
-"バックスラッシュが打ちづらいから
+"バックスラッシュとかバーが打ちづらいから
 inoremap <C-b> \
 cnoremap <C-b> \
+inoremap <M-b> <Bar>
+cnoremap <M-b> <Bar>
 
 "-----------------------------------------------------------------------------
 "InsertModeでの編集コマンド
@@ -1595,6 +1587,8 @@ inoremap <C-x><C-a> <C-a>
 inoremap <C-z> <C-d>
 inoremap <C-c> <Esc>
 inoremap <C-@> <Esc>
+cnoremap <C-@> <Esc>
+vnoremap <C-@> <Esc>
 "入力した文字を大文字・小文字化(madein thinca)
 inoremap <C-g><C-u> <ESC>gUvbgi
 inoremap <C-g><C-l> <ESC>guvbgi
@@ -1604,6 +1598,7 @@ inoremap <C-g><C-l> <ESC>guvbgi
 "cnoremap <C-y> <C-r>"
 "編集中のファイルの場所をカレントディレクトリに設定する
 cnoremap <C-x> %:h
+cnoremap <expr><C-z> "h "
 
 "TODO 現在のコマンドラインをyankする
 "cnoremap <C-y>
@@ -1643,11 +1638,11 @@ endfunction
 "Commands
 " ヘルプを別のタブで開く
 command! -nargs=* -complete=help TH  tab help <args>
-au VimEnter * AlterCommand th TH
+AlterCommand th TH
 
 ".vimrcをリロードする
 command! ReloadVimrc  source $MYVIMRC
-au VimEnter * AlterCommand rv ReloadVimrc
+AlterCommand rv ReloadVimrc
 
 
 "パターンとファイル名を逆にしたgrep
@@ -1655,7 +1650,7 @@ command! -complete=file -nargs=+ Perg  call s:perg([<f-args>])
 function! s:perg(args)
   execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2])
 endfunction
-au VimEnter * AlterCommand perg Perg
+AlterCommand perg Perg
 
 "現在ファイルのあるディレクトリでvimgrep
 command! -nargs=+   CurrentGrep  call s:CurrentGrep([<f-args>])
@@ -1663,7 +1658,7 @@ function! s:CurrentGrep(args)
   execute 'vimgrep' '/'.a:args[0].'/ '.expand(a:args[1]).'/**/*'
   cwindow
 endfunction
-au VimEnter * AlterCommand crrg[rep] CurrentGrep
+AlterCommand crrg[rep] CurrentGrep
 
 " Open junk file.(Hack#181)"{{{
 command! -nargs=0 JunkFile call s:open_junk_file()
@@ -1768,6 +1763,7 @@ let g:ref_phpmanual_path = 'D:/dic/vim-ref/php-chunked-xhtml'
 let g:ref_source_webdict_sites = {}
 let g:ref_source_webdict_sites.je = {'url': 'http://dictionary.infoseek.ne.jp/jeword/%s',}
 let g:ref_source_webdict_sites.ej = {'url': 'http://dictionary.infoseek.ne.jp/ejword/%s',}
+let g:ref_source_webdict_sites.kok = {'url': 'http://dictionary.infoseek.ne.jp/word/%s?dic=daijisen',}
 let g:ref_source_webdict_sites.wip = {'url': 'http://ja.wikipedia.org/wiki/%s',}
 let g:ref_source_webdict_sites.default = 'ej'
 let g:ref_source_webdict_encoding = 'cp932'
@@ -1778,17 +1774,76 @@ endfunction
 function! g:ref_source_webdict_sites.ej.filter(output)
   return join(split(a:output, "\n")[15 :], "\n")
 endfunction
+function! g:ref_source_webdict_sites.kok.filter(output)
+  return join(split(a:output, "\n")[15 :], "\n")
+endfunction
 function! g:ref_source_webdict_sites.wip.filter(output)
   return join(split(a:output, "\n")[17 :], "\n")
 endfunction
 nnoremap ,zj :<C-u>Ref webdict je<Space>
-nnoremap ,ze :<C-u>Ref webdict ej<Space>
-
-
-"nmap ,xra :<C-u>Ref alc<Space>
+nnoremap ZJ :<C-u>Ref webdict je <C-r><C-w>
+nnoremap ,zh :<C-u>Ref webdict ej<Space>
+nnoremap ZH :<C-u>Ref webdict ej <C-r><C-w>
+nnoremap ,zk :<C-u>Ref webdict kok<Space>
+nnoremap ZK :<C-u>Ref webdict kok <C-r><C-w>
+AlterCommand zh  Ref webdict ej
+AlterCommand zj  Ref webdict je
+AlterCommand zk  Ref webdict kok
 "}}}
 
 
+"ctrlp.vim "{{{
+nnoremap <silent>[C-k]<C-k> :<C-u>CtrlP<CR>
+nnoremap <silent>[C-k]<C-p> :<C-u>CtrlPBuffer<CR>
+nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
+let g:ctrlp_use_migemo = 1
+let g:ctrlp_switch_buffer = 'Et'
+let g:ctrlp_reuse_window = 'netrw\|help\|quickfix\|vimfiler\|unite\|vimshell'
+let g:ctrlp_root_markers = ['[root]']
+  let g:ctrlp_open_new_file = 'h'
+  let g:ctrlp_mruf_exclude = '' "mruに追跡したくないfile
+
+let g:ctrlp_prompt_mappings = {}
+"移動
+let g:ctrlp_prompt_mappings['PrtCurStart()']        = ['<c-a>']
+let g:ctrlp_prompt_mappings['PrtCurEnd()']          = ['<c-e>']
+  let g:ctrlp_prompt_mappings['PrtCurLeft()']         = ['<c-k>', '<left>', ]
+  let g:ctrlp_prompt_mappings['PrtCurRight()']        = ['<c-f>', '<right>']
+  let g:ctrlp_prompt_mappings['PrtSelectMove("j")']   = ['<c-n>', '<down>']
+  let g:ctrlp_prompt_mappings['PrtSelectMove("k")']   = ['<c-p>', '<up>']
+let g:ctrlp_prompt_mappings['PrtSelectMove("t")']   = ['<Home>', '<kHome>', ]
+let g:ctrlp_prompt_mappings['PrtSelectMove("b")']   = ['<End>', '<kEnd>', ]
+let g:ctrlp_prompt_mappings['PrtSelectMove("u")']   = ['<PageUp>', '<kPageUp>', ]
+let g:ctrlp_prompt_mappings['PrtSelectMove("d")']   = ['<PageDown>', '<kPageDown>', ]
+  let g:ctrlp_prompt_mappings['PrtHistory(-1)']       = ['<m-n>']
+  let g:ctrlp_prompt_mappings['PrtHistory(1)']        = ['<m-p>']
+"入力
+  let g:ctrlp_prompt_mappings['PrtBS()']              = ['<BS>', '<C-h>']
+  let g:ctrlp_prompt_mappings['PrtDelete()']          = ['<del>', '<C-d>']
+let g:ctrlp_prompt_mappings['PrtDeleteWord()']      = ['<c-w>']
+let g:ctrlp_prompt_mappings['PrtClear()']           = ['<c-u>']
+  let g:ctrlp_prompt_mappings['PrtExpandDir()']       = ['<C-l>']
+  let g:ctrlp_prompt_mappings['PrtInsert("c")']       = ['<MiddleMouse>', '<insert>', '<C-r>8', '<C-r>@']
+  let g:ctrlp_prompt_mappings['PrtInsert()']          = ['<c-\>', '<C-r><C-e>']
+"開く
+  let g:ctrlp_prompt_mappings['AcceptSelection("e")'] = ['<cr>', '<2-LeftMouse>', '<C-j>']
+  let g:ctrlp_prompt_mappings['AcceptSelection("h")'] = ['<C-m>s', '<c-cr>',]
+  let g:ctrlp_prompt_mappings['AcceptSelection("t")'] = ['<C-m>v']
+  let g:ctrlp_prompt_mappings['AcceptSelection("v")'] = ['<C-m>b',]
+  let g:ctrlp_prompt_mappings['CreateNewFile()']      = ['<C-e>']
+  let g:ctrlp_prompt_mappings['MarkToOpen()']         = ['<c-@>']
+let g:ctrlp_prompt_mappings['OpenMulti()']          = ['<c-o>']
+"トグル
+  let g:ctrlp_prompt_mappings['ToggleRegex()']        = ['<C-x>']
+  let g:ctrlp_prompt_mappings['ToggleByFname()']      = ['<c-s>']
+  let g:ctrlp_prompt_mappings['ToggleType(1)']        = ['<C-t>', '<c-up>']
+  let g:ctrlp_prompt_mappings['ToggleType(-1)']       = ['<C-z>', '<c-down>']
+let g:ctrlp_prompt_mappings['ToggleFocus()']        = ['<s-tab>']
+"その他
+let g:ctrlp_prompt_mappings['PrtClearCache()']      = ['<F5>']
+let g:ctrlp_prompt_mappings['PrtDeleteEnt()']       = ['<F7>']
+  let g:ctrlp_prompt_mappings['PrtExit()']            = ['<c-c>', '<C-q>', '<c-g>']
+"}}}
 
 
 
@@ -1896,20 +1951,21 @@ au FileType unite imap <silent><buffer><expr> x
   au FileType unite nnoremap <buffer><C-@>   :let b:unite.context.no_quit = !b:unite.context.no_quit|echo b:unite.context.no_quit<CR>
 aug END
 
-au VimEnter * AlterCommand u[nite] Unite
+AlterCommand u[nite] Unite
 
 
 
 "unite-sorce
 "------------------
+"{{{
 "unite neobundle
-au VimEnter * AlterCommand nb   Unite neobundle
-au VimEnter * AlterCommand nbi  Unite -auto-quit neobundle/install
-au VimEnter * AlterCommand nbu  Unite neobundle/update
-au VimEnter * AlterCommand nbl  Unite neobundle/log
-au VimEnter * AlterCommand nbus
+AlterCommand nb   Unite neobundle
+AlterCommand nbi  Unite -auto-quit neobundle/install
+AlterCommand nbu  Unite neobundle/update
+AlterCommand nbl  Unite neobundle/log
+AlterCommand nbus
   \ Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neocomplcache-snippets-complete
-au VimEnter * AlterCommand nbum
+AlterCommand nbum
   \ Unite neobundle/install:vim-quickrun:vital.vim:open-browser.vim:vim-submode:vim-surround:CamelCaseMotion
 
 
@@ -2074,7 +2130,7 @@ let g:unite_source_menu_menus.menubar = deepcopy(s:menubar)
 unlet s:menubar
 "}}}
 "}}}
-
+"}}}
 
 "--------------------------------------
 "プラグイン ファイラー
@@ -2324,27 +2380,27 @@ exe 'noremap <silent>'. s:bind_win. 'u :LastBuf<CR>'
 "let g:NERDCreateDefaultMappings = 0
 "let g:NERDRemoveExtraSpaces = 1
 "let g:NERDSpacesDelims = 0
-nmap gc [gc]
-vmap gc [gc]
-nmap [gc]c <Plug>NERDCommenterToggle
-vmap [gc]c <Plug>NERDCommenterToggle
-nmap [gc]a <Plug>NERDCommenterAppend
-nmap [gc]9 <Plug>NERDCommenterToEOL
-vmap [gc]s <Plug>NERDCommenterSexy
-vmap [gc]b <Plug>NERDCommenterMinimal
+nmap gs [gs]
+vmap gs [gs]
+nmap [gs]s <Plug>NERDCommenterToggle
+vmap [gs]s <Plug>NERDCommenterToggle
+nmap [gs]a <Plug>NERDCommenterAppend
+nmap [gs]9 <Plug>NERDCommenterToEOL
+vmap [gs]x <Plug>NERDCommenterSexy
+vmap [gs]b <Plug>NERDCommenterMinimal
 
 
 "altercmd (other)
-au VimEnter * AlterCommand g[it] Git
-au VimEnter * AlterCommand c[tags] !start ctags %
+AlterCommand g[it] Git
+AlterCommand c[tags] !start ctags %
 
 
 "migemo.vim
 if has('migemo')
   set migemo
-  set migemodict=/opt/local/share/migemo/utf-8/migemo-dict
+  "set migemodict=/opt/local/share/migemo/utf-8/migemo-dict
 endif
-
+noremap  m/ :<C-u>Migemo<CR>
 
 
 "neocomplcache.vim  Preference"{{{
@@ -2406,11 +2462,33 @@ au FileType snippet  noremap <buffer>q <C-w>q
 let g:neocomplcache_snippets_dir = $VIM.'/settings/neocon_snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
 exe 'imap <expr><C-'. s:bind_snip. '>  neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
-nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
+"nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
 "スニペットを編集する
 noremap ,os :<C-u>wincmd s| NeoComplCacheEditSnippets<CR>
 noremap ,oS :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
 noremap ,ors :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
+"}}}
+
+
+
+"surround.vim "{{{
+let g:surround_no_mappings = 1
+nmap      ds   <Plug>Dsurround
+nmap      cs   <Plug>Csurround
+nmap      <C-s>   <Plug>Ysurround
+nmap      <C-s>s  <Plug>Yssurround
+nmap      <C-s>S   <Plug>Ysurround$
+nmap      g<C-s>  <Plug>Ygsurround
+nmap      g<C-s>s <Plug>Ygssurround
+nmap      g<C-s>S  <Plug>Ygsurround$
+xmap      s    <Plug>Vsurround
+xmap      <C-s>   <Plug>VSurround
+xmap      g<C-s>   <Plug>Vgsurround
+nmap      ys   <Plug>Ysurround
+nmap      yS   <Plug>Ygsurround
+nmap      yss  <Plug>Yssurround
+nmap      ySs  <Plug>Ygssurround
+nmap      ySS  <Plug>Ygssurround
 "}}}
 
 
@@ -2433,6 +2511,40 @@ map <M-i> <Plug>(poslist-next-pos)
 "call submode#map('C-oC-i', 'nv', '', '<C-o>', '<C-o>')
 "call submode#map('C-oC-i', 'nv', '', '<C-i>', '<C-i>')
 
+
+
+"camelcasemotion.vimのコマンドに置き換える
+"前方・後方移動をキャメルケース単位にする
+map <silent> w <Plug>CamelCaseMotion_w
+map <silent> b <Plug>CamelCaseMotion_b
+map <silent> e <Plug>CamelCaseMotion_e
+"omap <silent> e <Plug>CamelCaseMotion_ie
+"テキストオブジェクトに対応させる
+omap <silent> ib <Plug>CamelCaseMotion_ib
+vmap <silent> ib <Plug>CamelCaseMotion_ib
+omap <silent> ie <Plug>CamelCaseMotion_ie
+vmap <silent> ie <Plug>CamelCaseMotion_ie
+
+
+"h1mesuke/textobj-wiw
+let g:textobj_wiw_no_default_key_mappings = 1 "デフォルトで用意されてるマッピングを無効に
+"map w <Plug>(textobj-wiw-n)
+"map b <Plug>(textobj-wiw-p)
+"map e <Plug>(textobj-wiw-N)
+  "< omapの時の挙動に欠陥
+"map ge <Plug>(textobj-wiw-P)
+xmap aw <Plug>(textobj-wiw-a)
+xmap iw <Plug>(textobj-wiw-i)
+omap aw <Plug>(textobj-wiw-a)
+omap iw <Plug>(textobj-wiw-i)
+
+
+call textobj#user#plugin('cword', {
+  \   '-': {
+  \     '*pattern*': '\k*\%#\k*',
+  \     'select': ['*',],
+  \   },
+  \ })
 
 
 
@@ -2500,7 +2612,7 @@ function! S(f, ...)
     let [nr, sfile] = p[1 : 2]
     let sfile = fnamemodify(sfile, ':p:gs?\\?/?')
     if sfile =~# filepat &&
-    \    exists(printf("*\<SNR>%d_%s", nr, fname))
+      \    exists(printf("*\<SNR>%d_%s", nr, fname))
       let cfunc = printf("\<SNR>%d_%s", nr, func)
       break
     endif
@@ -2512,12 +2624,12 @@ function! S(f, ...)
   elseif !exists('cfunc')
     let file = fnamemodify(file, ':p')
     echoerr printf(
-    \    'File found, but function is not defined: %s: %s()', file, fname)
+      \    'File found, but function is not defined: %s: %s()', file, fname)
     return
   endif
 
   return 0 <= match(func, '^\w*\s*(.*)\s*$')
-  \      ? eval(cfunc) : call(cfunc, a:000)
+    \      ? eval(cfunc) : call(cfunc, a:000)
 endfunction"}}}
 
 "指定したスクリプトファイルのスクリプトローカル変数を取得する - くふくふん"{{{
@@ -2527,8 +2639,8 @@ command! SV echo ScriptVars(PathToSNR(expand('%:p')))
 
 function! ScriptVarSource()
   return "function! s:__get_script_variables()\n
-        \   return s:\n
-        \ endfunction"
+    \   return s:\n
+    \ endfunction"
 endfunction
 
 function! ScriptVars(snr)
@@ -2585,13 +2697,13 @@ function! s:Yank_replace(fluct) "{{{
 
   let [bgn, end] = [line("'["), line("']")]
   if bgn != line('.') || bgn == 0 || end == 0
-    return
-  endif
-  let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
-  call setreg('"', replace_content,)
-  silent exe 'normal! u'
-  silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
-  call setreg('"', save_reg, save_regtype)
+  return
+endif
+let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
+call setreg('"', replace_content,)
+silent exe 'normal! u'
+silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
+call setreg('"', save_reg, save_regtype)
 endfunction
 "}}}
 function! s:__get_yank_histories() "{{{
@@ -2617,7 +2729,7 @@ endfunction
 
 
 "vim-vcs.vim
-  "設定用辞書変数
+"設定用辞書変数
 "    let g:vcs#config = {'alias':{'st':'status'},}
 
 
@@ -2626,7 +2738,7 @@ endfunction
 
 
 "smartchr
-  "autocmd FileType vim, inoremap <buffer> <expr> = smartchr#one_of(' = ', ' == ', '=')
+"autocmd FileType vim, inoremap <buffer> <expr> = smartchr#one_of(' = ', ' == ', '=')
 "cnoremap <expr> [  smartchr#one_of('[', '\[', {'ctype': '/?'})
 
 
@@ -2684,7 +2796,7 @@ let QFixHowm_Template = [
   \ "%TITLE% %TAG%",
   \ "%DATE%",
   \ ""
-\]
+  \]
 " テンプレート(カーソル移動)
 let QFixHowm_Cmd_NewEntry = "$a"
 " テンプレートに挿入されるタグ
@@ -2805,43 +2917,43 @@ let QFixHowm_WikiDir = 'wiki'
 
 
 " diffの設定"{{{
-  if has('win32') || has('win64')"{{{
-    set diffexpr=MyDiff()
+if has('win32') || has('win64')"{{{
+  set diffexpr=MyDiff()
 
-    function! MyDiff()
-      let opt = '-a --binary '
-      if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-      if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-      let arg1 = v:fname_in
-      if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
-      let arg2 = v:fname_new
-      if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
-      let arg3 = v:fname_out
-      if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-      let eq = ''
-      if $VIMRUNTIME =~ ' '
-        if &sh =~ '\<cmd'
-          let cmd = '""' . $VIMRUNTIME . '\diff"'
-          let eq = '"'
-        else
-          let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-        endif
+  function! MyDiff()
+    let opt = '-a --binary '
+    if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+    if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+    let arg1 = v:fname_in
+    if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+    let arg2 = v:fname_new
+    if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+    let arg3 = v:fname_out
+    if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+    let eq = ''
+    if $VIMRUNTIME =~ ' '
+      if &sh =~ '\<cmd'
+        let cmd = '""' . $VIMRUNTIME . '\diff"'
+        let eq = '"'
       else
-        let cmd = $VIMRUNTIME . '\diff'
+        let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
       endif
-      silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
-    endfunction
-  endif"}}}
+    else
+      let cmd = $VIMRUNTIME . '\diff'
+    endif
+    silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
+  endfunction
+endif"}}}
 
 " difforig（バッファと元ファイルでの更新を比較・変更箇所表示）を使用可能にする。
-  command! DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+command! DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
 " ファイルまたはバッファ番号を指定して差分表示。#なら裏バッファと比較
-  command! -nargs=? -complete=file Diff if '<args>'=='' | browse vertical diffsplit|else| vertical diffsplit <args>|endif
+command! -nargs=? -complete=file Diff if '<args>'=='' | browse vertical diffsplit|else| vertical diffsplit <args>|endif
 " パッチコマンド
-  set patchexpr=MyPatch()
-  function! MyPatch()
-   :call system($VIM."\\'.'patch -o " . v:fname_out . " " . v:fname_in . " < " . v:fname_diff)
-  endfunction
+set patchexpr=MyPatch()
+function! MyPatch()
+  :call system($VIM."\\'.'patch -o " . v:fname_out . " " . v:fname_in . " < " . v:fname_diff)
+endfunction
 "}}}
 
 " スクラッチ
@@ -2888,7 +3000,7 @@ function! Scouter(file, ...)
   return len(filter(lines,'v:val !~ pat'))
 endfunction
 command! -bar -bang -nargs=? -complete=file Scouter
-\        echo Scouter(empty(<q-args>) ? $MYVIMRC : expand(<q-args>), <bang>0)
+  \        echo Scouter(empty(<q-args>) ? $MYVIMRC : expand(<q-args>), <bang>0)
 
 unlet s:bind_win s:bind_left s:bind_right s:bind_comp s:bind_snip s:bind_markj s:bind_reg
 
@@ -2896,23 +3008,6 @@ unlet s:bind_win s:bind_left s:bind_right s:bind_comp s:bind_snip s:bind_markj s
 
 "from thinca
 
-"" Select the last changed.
-"nnoremap <expr> gc '`[' . getregtype()[0] . '`]'
-"onoremap <silent> gc :normal gc<CR>
-"onoremap <silent> gv :normal gv<CR>
-"
-"onoremap q /["',.{}()[\]<>]<CR>
-"
-"" Quick toggle options.
-"nnoremap <Space>o <Nop>
-"nnoremap <silent> <Space>oe :<C-u>setlocal expandtab! expandtab?<CR>
-"nnoremap <silent> <Space>of :<C-u>let &l:foldcolumn=1-&l:foldcolumn<CR>
-"                           \:setlocal foldcolumn?<CR>
-"nnoremap <silent> <Space>on :<C-u>setlocal number! number?<CR>
-"nnoremap <silent> <Space>ol :<C-u>setlocal list! list?<CR>
-"nnoremap <silent> <Space>ow :<C-u>setlocal wrap! wrap?<CR>
-"nnoremap <silent> <Space>op :<C-u>set paste! paste?<CR>
-"
 "" Show the diff between the current buffer and the last saved file. {{{
 "" TODO: Become plugin.
 "function! s:diff_original()
