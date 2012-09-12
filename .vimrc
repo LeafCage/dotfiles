@@ -2483,8 +2483,6 @@ xmap iw <Plug>(textobj-wiw-i)
 omap aw <Plug>(textobj-wiw-a)
 omap iw <Plug>(textobj-wiw-i)
 
-
-
 "-----------------------------------------------------------------------------
 "プラグイン コマンドライン
 "ambicmd.vim(コマンドモードで一定のルールでコマンド補完
@@ -2549,7 +2547,7 @@ function! S(f, ...)
     let [nr, sfile] = p[1 : 2]
     let sfile = fnamemodify(sfile, ':p:gs?\\?/?')
     if sfile =~# filepat &&
-    \    exists(printf("*\<SNR>%d_%s", nr, fname))
+      \    exists(printf("*\<SNR>%d_%s", nr, fname))
       let cfunc = printf("\<SNR>%d_%s", nr, func)
       break
     endif
@@ -2561,12 +2559,12 @@ function! S(f, ...)
   elseif !exists('cfunc')
     let file = fnamemodify(file, ':p')
     echoerr printf(
-    \    'File found, but function is not defined: %s: %s()', file, fname)
+      \    'File found, but function is not defined: %s: %s()', file, fname)
     return
   endif
 
   return 0 <= match(func, '^\w*\s*(.*)\s*$')
-  \      ? eval(cfunc) : call(cfunc, a:000)
+    \      ? eval(cfunc) : call(cfunc, a:000)
 endfunction"}}}
 
 "指定したスクリプトファイルのスクリプトローカル変数を取得する - くふくふん"{{{
@@ -2576,8 +2574,8 @@ command! SV echo ScriptVars(PathToSNR(expand('%:p')))
 
 function! ScriptVarSource()
   return "function! s:__get_script_variables()\n
-        \   return s:\n
-        \ endfunction"
+    \   return s:\n
+    \ endfunction"
 endfunction
 
 function! ScriptVars(snr)
@@ -2634,13 +2632,13 @@ function! s:Yank_replace(fluct) "{{{
 
   let [bgn, end] = [line("'["), line("']")]
   if bgn != line('.') || bgn == 0 || end == 0
-    return
-  endif
-  let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
-  call setreg('"', replace_content,)
-  silent exe 'normal! u'
-  silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
-  call setreg('"', save_reg, save_regtype)
+  return
+endif
+let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
+call setreg('"', replace_content,)
+silent exe 'normal! u'
+silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
+call setreg('"', save_reg, save_regtype)
 endfunction
 "}}}
 function! s:__get_yank_histories() "{{{
@@ -2666,7 +2664,7 @@ endfunction
 
 
 "vim-vcs.vim
-  "設定用辞書変数
+"設定用辞書変数
 "    let g:vcs#config = {'alias':{'st':'status'},}
 
 
@@ -2675,7 +2673,7 @@ endfunction
 
 
 "smartchr
-  "autocmd FileType vim, inoremap <buffer> <expr> = smartchr#one_of(' = ', ' == ', '=')
+"autocmd FileType vim, inoremap <buffer> <expr> = smartchr#one_of(' = ', ' == ', '=')
 "cnoremap <expr> [  smartchr#one_of('[', '\[', {'ctype': '/?'})
 
 
@@ -2733,7 +2731,7 @@ let QFixHowm_Template = [
   \ "%TITLE% %TAG%",
   \ "%DATE%",
   \ ""
-\]
+  \]
 " テンプレート(カーソル移動)
 let QFixHowm_Cmd_NewEntry = "$a"
 " テンプレートに挿入されるタグ
@@ -2854,43 +2852,43 @@ let QFixHowm_WikiDir = 'wiki'
 
 
 " diffの設定"{{{
-  if has('win32') || has('win64')"{{{
-    set diffexpr=MyDiff()
+if has('win32') || has('win64')"{{{
+  set diffexpr=MyDiff()
 
-    function! MyDiff()
-      let opt = '-a --binary '
-      if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-      if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-      let arg1 = v:fname_in
-      if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
-      let arg2 = v:fname_new
-      if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
-      let arg3 = v:fname_out
-      if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-      let eq = ''
-      if $VIMRUNTIME =~ ' '
-        if &sh =~ '\<cmd'
-          let cmd = '""' . $VIMRUNTIME . '\diff"'
-          let eq = '"'
-        else
-          let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-        endif
+  function! MyDiff()
+    let opt = '-a --binary '
+    if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+    if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+    let arg1 = v:fname_in
+    if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+    let arg2 = v:fname_new
+    if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+    let arg3 = v:fname_out
+    if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+    let eq = ''
+    if $VIMRUNTIME =~ ' '
+      if &sh =~ '\<cmd'
+        let cmd = '""' . $VIMRUNTIME . '\diff"'
+        let eq = '"'
       else
-        let cmd = $VIMRUNTIME . '\diff'
+        let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
       endif
-      silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
-    endfunction
-  endif"}}}
+    else
+      let cmd = $VIMRUNTIME . '\diff'
+    endif
+    silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
+  endfunction
+endif"}}}
 
 " difforig（バッファと元ファイルでの更新を比較・変更箇所表示）を使用可能にする。
-  command! DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+command! DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
 " ファイルまたはバッファ番号を指定して差分表示。#なら裏バッファと比較
-  command! -nargs=? -complete=file Diff if '<args>'=='' | browse vertical diffsplit|else| vertical diffsplit <args>|endif
+command! -nargs=? -complete=file Diff if '<args>'=='' | browse vertical diffsplit|else| vertical diffsplit <args>|endif
 " パッチコマンド
-  set patchexpr=MyPatch()
-  function! MyPatch()
-   :call system($VIM."\\'.'patch -o " . v:fname_out . " " . v:fname_in . " < " . v:fname_diff)
-  endfunction
+set patchexpr=MyPatch()
+function! MyPatch()
+  :call system($VIM."\\'.'patch -o " . v:fname_out . " " . v:fname_in . " < " . v:fname_diff)
+endfunction
 "}}}
 
 " スクラッチ
@@ -2937,7 +2935,7 @@ function! Scouter(file, ...)
   return len(filter(lines,'v:val !~ pat'))
 endfunction
 command! -bar -bang -nargs=? -complete=file Scouter
-\        echo Scouter(empty(<q-args>) ? $MYVIMRC : expand(<q-args>), <bang>0)
+  \        echo Scouter(empty(<q-args>) ? $MYVIMRC : expand(<q-args>), <bang>0)
 
 unlet s:bind_win s:bind_left s:bind_right s:bind_comp s:bind_snip s:bind_markj s:bind_reg
 
