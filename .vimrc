@@ -1318,7 +1318,7 @@ map zp "*p
 
 "コメントアウト
 "[削]を付ける
-nmap <silent> [gs]d :call <SID>CommeToggleDelMarker()<CR>
+nmap <silent> [cm]d :call <SID>CommeToggleDelMarker()<CR>
 function! s:CommeToggleDelMarker() "{{{
   let cmsstart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
   let cmsend = matchstr(&cms,'\V%s\zs\.\+')
@@ -1330,8 +1330,8 @@ function! s:CommeToggleDelMarker() "{{{
   endif
 endfunction "}}}
 "★を挿入する
-nmap <silent> [gs]o :call <SID>CommeAddStar(0)<CR>
-nmap <silent> [gs]O :call <SID>CommeAddStar(1)<CR>
+nmap <silent> [cm]o :call <SID>CommeAddStar(0)<CR>
+nmap <silent> [cm]O :call <SID>CommeAddStar(1)<CR>
 function! s:CommeAddStar(append) "{{{
   let cmsstart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
   let cmsend = matchstr(&cms,'\V%s\zs\.\+')
@@ -1347,8 +1347,9 @@ endfunction "}}}
 "nnoremap ,. q:k<CR>
 nnoremap @: @:
 "ペーストしたテキストを再選択するBible3-15
-nnoremap <expr> gc '`[' . strpart(getregtype(), 0,1) . '`]'
-onoremap <silent> gc :normal gc<CR>
+nnoremap <expr> gb '`[' . strpart(getregtype(), 0,1) . '`]'
+onoremap <silent> gb :normal gb<CR>
+onoremap <silent> @@ :normal gb<CR>
 onoremap <silent> gv :normal gv<CR>
 "前回保存した状態にまでアンドゥ
 nnoremap [space]u :earlier 1f<CR>
@@ -1504,21 +1505,19 @@ command! -count -nargs=1 ContinuousNumber
 "=============================================================================
 "Mapping Insert & CommandLine
 "-----------------------------------------------------------------------------
-let s:bind_left = 'k'
-let s:bind_right = 'f'
 let s:bind_comp = 'l'
 let s:bind_snip = 's'
 
 "InsertMode, CommandLineでの移動コマンド"{{{
-exe 'inoremap <C-'. s:bind_left. '> <Left>'
-exe 'inoremap <C-'. s:bind_right. '> <Right>'
-exe 'inoremap <M-'. s:bind_left. '> <S-Left>'
-exe 'inoremap <M-'. s:bind_right. '> <S-Right>'
+inoremap <C-k> <Left>
+inoremap <C-f> <Right>
+inoremap <M-k> <S-Left>
+inoremap <M-f> <S-Right>
 
-exe 'cnoremap <C-'. s:bind_left. '> <Left>'
-exe 'cnoremap <C-'. s:bind_right. '> <Right>'
-exe 'cnoremap <M-'. s:bind_left. '> <S-Left>'
-exe 'cnoremap <M-'. s:bind_right. '> <S-Right>'
+cnoremap <C-k> <Left>
+cnoremap <C-f> <Right>
+cnoremap <M-k> <S-Left>
+cnoremap <M-f> <S-Right>
 
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
@@ -1952,6 +1951,8 @@ au FileType unite imap <silent><buffer><expr> x
 aug END
 
 AlterCommand u[nite] Unite
+AlterCommand ua Unite -auto-preview
+AlterCommand una Unite -auto-preview
 
 
 
@@ -1979,6 +1980,7 @@ inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite history/yank\<CR>"
 "file/buf関係
 nnoremap ,afa :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 nnoremap ,aff :<C-u>Unite -buffer-name=files file<CR>
+nnoremap ,afr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(expand('%:p:h:h'), ': ')<CR><CR>
 nnoremap ,afs :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
 nnoremap ,afm :<C-u>Unite -buffer-name=files file_mru<CR>
 nnoremap ,amf :<C-u>Unite -buffer-name=files file_mru<CR>
@@ -2220,6 +2222,7 @@ let g:vimfiler_safe_mode_by_default = 0
 "nnoremap ,fd :VimFilerBufferDir -double -split -reverse<CR>
 nnoremap ,ff :VimFiler -split -horizontal -reverse<CR>
 nnoremap ,fv :VimFiler -split -horizontal -reverse $VIM<CR>
+nnoremap ,fr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(expand('%:p:h:h'), ': ')<CR><CR>
 nnoremap ,fa :VimFilerBufferDir -split -horizontal -reverse<CR>
 nnoremap ,fb :Unite -default-action=vimfiler bookmark<CR>
 nnoremap ,fd :Unite -default-action=vimfiler directory_mru<CR>
@@ -2380,14 +2383,14 @@ exe 'noremap <silent>'. s:bind_win. 'u :LastBuf<CR>'
 "let g:NERDCreateDefaultMappings = 0
 "let g:NERDRemoveExtraSpaces = 1
 "let g:NERDSpacesDelims = 0
-nmap gs [gs]
-vmap gs [gs]
-nmap [gs]s <Plug>NERDCommenterToggle
-vmap [gs]s <Plug>NERDCommenterToggle
-nmap [gs]a <Plug>NERDCommenterAppend
-nmap [gs]9 <Plug>NERDCommenterToEOL
-vmap [gs]x <Plug>NERDCommenterSexy
-vmap [gs]b <Plug>NERDCommenterMinimal
+nmap gc [cm]
+vmap gc [cm]
+nmap [cm]c <Plug>NERDCommenterToggle
+vmap [cm]c <Plug>NERDCommenterToggle
+nmap [cm]a <Plug>NERDCommenterAppend
+nmap [cm]9 <Plug>NERDCommenterToEOL
+vmap [cm]x <Plug>NERDCommenterSexy
+vmap [cm]b <Plug>NERDCommenterMinimal
 
 
 "altercmd (other)
@@ -2478,6 +2481,9 @@ nmap      cs   <Plug>Csurround
 nmap      <C-s>   <Plug>Ysurround
 nmap      <C-s>s  <Plug>Yssurround
 nmap      <C-s>S   <Plug>Ysurround$
+nmap      gs   <Plug>Ysurround
+nmap      gss  <Plug>Yssurround
+nmap      gsS   <Plug>Ysurround$
 nmap      g<C-s>  <Plug>Ygsurround
 nmap      g<C-s>s <Plug>Ygssurround
 nmap      g<C-s>S  <Plug>Ygsurround$
@@ -3002,7 +3008,7 @@ endfunction
 command! -bar -bang -nargs=? -complete=file Scouter
   \        echo Scouter(empty(<q-args>) ? $MYVIMRC : expand(<q-args>), <bang>0)
 
-unlet s:bind_win s:bind_left s:bind_right s:bind_comp s:bind_snip s:bind_markj s:bind_reg
+unlet s:bind_win s:bind_comp s:bind_snip s:bind_markj s:bind_reg
 
 "-----------------------------------------------------------------------------
 
@@ -3092,7 +3098,6 @@ set verbosefile=/tmp/vim.log
 "Idea etc
 "
 "カーソル位置から前後数行を対象にコマンドを実行する（画面から見える位置に限定して）
-"au WinLeave WinEnter を利用して、別窓に映ったとき、カーソルがあった場所に痕跡を残す
 "自動で関数の始まりから終わりまでが見える大きさにウィンドウサイズ変更
 "コメント接頭辞に<CR>で属性変更 ] c] a]
 "前回の保存からの変更点をhlさせる
@@ -3102,7 +3107,6 @@ set verbosefile=/tmp/vim.log
 "アンド検索（一件目がhitした後二件目のwordで一件目の前後数行を検索
 "
 "-----------------------------------------------------------------------------
-"関数を削除するテキストオブジェクト　例えばfun('aaa')で実行で'aaa'だけになる
 "次の空白文字へ
 "レインボーブランケットをsyntaxにインポート
 "マーキングコメント。"[削] とか"★とかを付け外しする（ノーマルコメント←→特殊コメント）
@@ -3118,5 +3122,8 @@ set verbosefile=/tmp/vim.log
 "テスト用不思議変数g:tess01 g:tess02 "通常の変数の機能+変異を記録
 "unite より使いやすいカラー一覧
 "u]コマンドライン型unite
+"uniteをメモ帳・todoリストとして使う。要素の追加・削除がその場で行える
+"uniteチートシート.同上。
+"長い辞書変数を適当に改行した後uniteで閲覧できるようにする
 
 
