@@ -1300,7 +1300,7 @@ endfunction
 
 "-----------------------------------------------------------------------------
 "編集コマンド(Normal)
-let s:bind_reg = 't'
+let s:bind_reg = '<C-@>'
 
 nnoremap ,w :<C-u>w<CR>
 nnoremap ,q :<C-u>qa<CR>
@@ -1411,7 +1411,7 @@ nnoremap <silent>[op]sf   :<C-u>se swf! swf?<CR>
 nnoremap <silent>[op]ps   :let g:scroll_other_win_reverse = !g:scroll_other_win_reverse<CR>:echo 'scroll reverse'.g:scroll_other_win_reverse<CR>
 "}}}
 
-nnoremap <silent> <C-@> :call <SID>multikey_effect()<CR>
+nnoremap <silent> t :call <SID>multikey_effect()<CR>
 function! s:multikey_effect() "{{{
   if &rnu == 0
     setl rnu
