@@ -108,8 +108,8 @@ NeoBundle 'rbtnn/sign.vim'
 exe "NeoBundle 't9md/vim-quickhl'" | "複数の検索ハイライト
 NeoBundle 'tyru/winmove.vim'
 NeoBundle 'thinca/vim-fontzoom'
-exe "NeoBundle 'ujihisa/unite-font'" | "動かない
-exe "NeoBundle 'ujihisa/unite-colorscheme'" | "プレビューしない
+"exe "NeoBundle 'ujihisa/unite-font'" | "動かない
+exe "NeoBundle 'ujihisa/unite-colorscheme'" |
 NeoBundle 'pasela/unite-webcolorname'
 
 filetype plugin indent on  "ファイル判定をonにする
