@@ -976,8 +976,8 @@ nnoremap <silent> [space]p gT
 "次のウィンドウ・前のウィンドウへ
 nnoremap <M-j> <C-w>w
 nnoremap <M-k> <C-w>W
-nnoremap [space]j <C-w>w
-nnoremap [space]k <C-w>W
+nnoremap <silent>[space]j :call <SID>Roop_switchWin("j")<CR>
+nnoremap <silent>[space]k :call <SID>Roop_switchWin("k")<CR>
 exe 'nnoremap <silent>'. s:bind_win. 'h :call <SID>Roop_switchWin("h")<CR>'
 exe 'nnoremap <silent>'. s:bind_win. 'j :call <SID>Roop_switchWin("j")<CR>'
 exe 'nnoremap <silent>'. s:bind_win. 'k :call <SID>Roop_switchWin("k")<CR>'
@@ -1303,7 +1303,7 @@ nnoremap ,q :<C-u>qa<CR>
 map Y y$
 noremap <F4> "+
 exe 'nnoremap '. s:bind_reg. ' "'
-exe 'nnoremap '. s:bind_reg. '@ "+'
+exe 'nnoremap '. s:bind_reg. '<C-@> "+'
 exe 'nnoremap '. s:bind_reg. '8 "+'
 
 map cy "*y
