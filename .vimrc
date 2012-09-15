@@ -3,6 +3,47 @@
 "init
 "-----------------------------------------------------------------------------
 
+"Encodings, Formats"{{{
+
+scriptencoding utf8 "このファイルのエンコード
+if has("win32")
+  se tenc =cp932 "Ref.vimでlynxがデフォルトで使うエンコード
+endif
+se encoding=utf8
+se fileencodings=utf8,cp932,iso-2022-jp,euc-jp,default,latin
+  "<< BufRead時、'fileencodings'の先頭から'encoding'を試してerrが出なければそれを適用する
+"改行コードの自動認識（新規作成されるファイルフォーマットをdosにしたい）
+se fileformats=dos,unix,mac
+
+"---
+"setglobal fileencoding=cp932  "新規作成されるファイルエンコードをcp932にしたい
+"}}}
+
+"環境変数を作る"{{{
+
+"$HOME がないとき、$VIM/TMPHOME を $HOME にする "{{{
+if !exists("$HOME")
+  let $HOME=$VIM. '/TMPHOME'
+endif
+"}}}
+
+"$VIMFILES "{{{
+if has('vim_starting')
+  if isdirectory(expand('$HOME/vimfiles', ':p'))
+    let $VIMFILES = $HOME. '/vimfiles'
+    set runtimepath+=$HOME/vimfiles/neobundle/neobundle.vim
+    call neobundle#rc(expand('$HOME/vimfiles/neobundle'))
+  else
+    let $VIMFILES = $VIM. '/vimfiles'
+    set runtimepath+=$VIM/vimfiles/neobundle/neobundle.vim
+    call neobundle#rc(expand('$VIM/vimfiles/neobundle'))
+  endif
+endif
+"}}}
+"}}}
+
+"-----------------------------------------------------------------------------
+"Plugins init setting
 "sow.vim
   "map ,s <Plug>(sow_start)
   let g:sow_dc = '~/.sow_dc/.old'
@@ -10,15 +51,7 @@
 "neobundle.vim"{{{
 filetype off
 
-if has('vim_starting')
-  if isdirectory(expand('$HOME/vimfiles', ':p'))
-    set runtimepath+=$HOME/vimfiles/neobundle/neobundle.vim
-    call neobundle#rc(expand('$HOME/vimfiles/neobundle'))
-  else
-    set runtimepath+=$VIM/vimfiles/neobundle/neobundle.vim
-    call neobundle#rc(expand('$VIM/vimfiles/neobundle'))
-  endif
-endif
+"$VIMFILES参照; neobundle#rc()の実行
 
 "--------------------------------------
 "拡張インターフェイス
@@ -72,7 +105,7 @@ NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'kana/vim-textobj-user'
   exe "NeoBundle 'h1mesuke/textobj-wiw'" | "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
   NeoBundle 'kana/vim-textobj-indent'
-  NeoBundle 'thinca/vim-textobj-plugins'
+  exe "NeoBundle 'thinca/vim-textobj-plugins'" | "中身はtextobj-between
   NeoBundle 'anyakichi/vim-textobj-xbrackets'
 NeoBundle 'anyakichi/vim-surround'
 NeoBundle 'scrooloose/nerdcommenter'
@@ -115,18 +148,6 @@ NeoBundle 'pasela/unite-webcolorname'
 filetype plugin indent on  "ファイル判定をonにする
 "}}}
 
-call altercmd#load() "altercmdをこのvimrc内で有効にする
-"Lazyしていたpluginsを読み込む
-AlterCommand nbs[ource] NeoBundleSource
-AlterCommand nbc NeoBundleClean
-
-command! -nargs=0 NeoBundleUpdateShougo
-  \ NeoBundleUpdate
-  \ unite.vim vimshell vimfiler vimproc neobundle.vim neocomplcache neocomplcache-snippets-complete
-command! -nargs=0 NeoBundleUpdateMain
-  \ NeoBundleUpdate
-  \ vim-quickrun vital.vim open-browser.vim vim-submode vim-surround CamelCaseMotion
-
 "pathogen.vim"{{{
   filetype off "一度ファイル判定をoffにしないとftdetectをロードしてくれないので。
   call pathogen#runtime_append_all_bundles()
@@ -134,33 +155,8 @@ command! -nargs=0 NeoBundleUpdateMain
   filetype plugin indent on  "ファイル判定をonにする
 "}}}
 
-"-----------------------------------------------------------------------------
-"Encodings, Formats"{{{
+call altercmd#load() "altercmdをこのvimrc内で有効にする
 
-scriptencoding utf8 "このファイルのエンコード
-if has("win32")
-  se tenc =cp932 "Ref.vimでlynxがデフォルトで使うエンコード
-endif
-se encoding=utf8
-se fileencodings=utf8,cp932,iso-2022-jp,euc-jp,default,latin
-  "<< BufRead時、'fileencodings'の先頭から'encoding'を試してerrが出なければそれを適用する
-"改行コードの自動認識（新規作成されるファイルフォーマットをdosにしたい）
-se fileformats=dos,unix,mac
-
-"---
-"setglobal fileencoding=cp932  "新規作成されるファイルエンコードをcp932にしたい
-"}}}
-
-"-----------------------------------------------------------------------------
-"環境変数を作る"{{{
-
-"$HOME がないとき、$VIM/TMPHOME を $HOME にする "{{{
-if !exists("$HOME")
-  let $HOME=$VIM/TMPHOME
-endif
-"}}}
-
-"}}}
 
 "-----------------------------------------------------------------------------
 "マウスを有効にする"{{{
@@ -2327,6 +2323,20 @@ let g:changelog_username ="LC <>"
 
 "-----------------------------------------------------------------------------
 "プラグイン 環境
+
+"neobundle
+">Lazyしていたpluginsを読み込む
+AlterCommand nbs[ource] NeoBundleSource
+AlterCommand nbc NeoBundleClean
+command! -nargs=0 NeoBundleUpdateShougo
+  \ NeoBundleUpdate
+  \ unite.vim vimshell vimfiler vimproc neobundle.vim neocomplcache neocomplcache-snippets-complete
+command! -nargs=0 NeoBundleUpdateMain
+  \ NeoBundleUpdate
+  \ vim-quickrun vital.vim open-browser.vim vim-submode vim-surround CamelCaseMotion
+
+
+
 
 "openbrowser.vim（カーソル下のURL,URIをブラウザで開く、または単語をブラウザで検索する）
 nmap ,xo <Plug>(openbrowser-smart-search)
