@@ -1893,7 +1893,7 @@ au FileType unite nmap <buffer> K         <Plug>(unite_skip_cursor_up)
 au FileType unite nmap <buffer> ?         <Plug>(unite_quick_help)
 au FileType unite nmap <buffer> <CR>      <Plug>(unite_do_default_action)
   au FileType unite nmap <buffer> <C-j> <Plug>(unite_do_default_action)
-au FileType unite nnoremap <silent><buffer><expr> d
+au FileType unite nnoremap <silent><buffer><expr> dd
   \ unite#smart_map('d', unite#do_action('delete'))
 au FileType unite nnoremap <silent><buffer><expr> b
   \ unite#smart_map('b', unite#do_action('bookmark'))
@@ -1977,10 +1977,10 @@ inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite history/yank\<CR>"
 nnoremap ,afa :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 nnoremap ,aff :<C-u>Unite -buffer-name=files file<CR>
 nnoremap ,afr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(expand('%:p:h:h'), ': ')<CR><CR>
-nnoremap ,afs :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
-nnoremap ,afm :<C-u>Unite -buffer-name=files file_mru<CR>
-nnoremap ,amf :<C-u>Unite -buffer-name=files file_mru<CR>
-nnoremap ,amd :<C-u>Unite -default-action=cd directory_mru<CR>
+nnoremap ,afs :<C-u>UniteWithBufferDir -buffer-name=files -start-insert buffer file_mru bookmark file<CR>
+nnoremap ,fs :<C-u>UniteWithBufferDir -buffer-name=files -start-insert buffer file_mru bookmark file<CR>
+nnoremap ,afm :<C-u>Unite -buffer-name=files -start-insert file_mru<CR>
+nnoremap ,fm :<C-u>Unite -buffer-name=files -start-insert file_mru<CR>
 nnoremap ,ap :<C-u>Unite -buffer-name=files buffer<CR>
 nnoremap ,av :<C-u>Unite -buffer-name=files buffer_tab<CR>
 nnoremap ,aa :<C-u>UniteBookmarkAdd<CR>
@@ -2217,7 +2217,7 @@ let g:vimfiler_safe_mode_by_default = 0
 "nnoremap ,xf :VimFilerBufferDir -double -split -horizontal<CR>
 "nnoremap ,fd :VimFilerBufferDir -double -split -reverse<CR>
 nnoremap ,ff :VimFiler -split -horizontal -reverse<CR>
-nnoremap ,fv :VimFiler -split -horizontal -reverse $VIM<CR>
+nnoremap ,fv :VimFiler -split -horizontal -reverse $VIMFILES<CR>
 nnoremap ,fr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(expand('%:p:h:h'), ': ')<CR><CR>
 nnoremap ,fa :VimFilerBufferDir -split -horizontal -reverse<CR>
 nnoremap ,fb :Unite -default-action=vimfiler bookmark<CR>
@@ -2235,7 +2235,7 @@ au FileType vimfiler nmap <buffer> k <Plug>(vimfiler_loop_cursor_up)
 au FileType vimfiler nmap <buffer> gg <Plug>(vimfiler_cursor_top)
 au FileType vimfiler nmap <buffer> <C-l> <Plug>(vimfiler_redraw_screen)
   au FileType vimfiler nmap <buffer> @ <Plug>(vimfiler_toggle_mark_current_line)
-au FileType vimfiler nmap <buffer> <S-Space> <Plug>(vimfiler_toggle_mark_current_line_up)
+  au FileType vimfiler nmap <buffer> ` <Plug>(vimfiler_toggle_mark_current_line_up)
 au FileType vimfiler nmap <buffer> <C-i> <Plug>(vimfiler_switch_to_other_window)
   au FileType vimfiler nmap <buffer> i <Plug>(vimfiler_switch_to_another_vimfiler)
   "au FileType vimfiler nmap <buffer> i :call <SID>Vimfiler_switch_to_other_window()<CR>
@@ -2246,7 +2246,7 @@ au FileType vimfiler nmap <buffer> zm <Plug>(vimfiler_move_file)
 au FileType vimfiler nmap <buffer> zd <Plug>(vimfiler_delete_file)
 au FileType vimfiler nmap <buffer> r <Plug>(vimfiler_rename_file)
 au FileType vimfiler nmap <buffer> K <Plug>(vimfiler_make_directory)
-au FileType vimfiler nmap <buffer> N <Plug>(vimfiler_new_file)
+au FileType vimfiler nmap <buffer> E <Plug>(vimfiler_new_file)
 au FileType vimfiler nmap <buffer> <CR> <Plug>(vimfiler_execute)
   au FileType vimfiler nmap <buffer> <C-j> <Plug>(vimfiler_execute)
 au FileType vimfiler nmap <buffer> l <Plug>(vimfiler_smart_l)
@@ -2259,9 +2259,11 @@ au FileType vimfiler nmap <buffer> \ <Plug>(vimfiler_switch_to_root_directory)
   au FileType vimfiler nmap <buffer> <C-h> <Plug>(vimfiler_switch_to_history_directory)
 au FileType vimfiler nmap <buffer> . <Plug>(vimfiler_toggle_visible_dot_files)
 au FileType vimfiler nmap <buffer> H <Plug>(vimfiler_popup_shell)
-au FileType vimfiler nmap <buffer> e <Plug>(vimfiler_edit_file)
+au FileType vimfiler nmap <buffer> ee <Plug>(vimfiler_edit_file)
 "au FileType vimfiler nmap <buffer> E <Plug>(vimfiler_split_edit_file)
+  au FileType vimfiler nmap <silent><buffer>es   <Plug>(vimfiler_split_edit_file)
 au FileType vimfiler nmap <buffer> B <Plug>(vimfiler_edit_binary_file)
+  au FileType vimfiler nmap <buffer> er <Plug>(vimfiler_edit_binary_file)
 au FileType vimfiler nmap <buffer> ge <Plug>(vimfiler_execute_external_filer)
 au FileType vimfiler nmap <buffer> <RightMouse> <Plug>(vimfiler_execute_external_filer)
   au FileType vimfiler nmap <buffer> <C-CR> <Plug>(vimfiler_execute_external_filer)
@@ -2292,7 +2294,8 @@ au FileType vimfiler nmap <buffer> T <Plug>(vimfiler_expand_tree_recursive)
 au FileType vimfiler nmap <buffer> I <Plug>(vimfiler_cd_input_directory)
   au FileType vimfiler vmap <buffer> @ <Plug>(vimfiler_toggle_mark_selected_lines)
 "}}}
-  au FileType vimfiler nnoremap <silent><buffer><expr><C-k>   vimfiler#do_action('split')
+  au FileType vimfiler nnoremap <silent><buffer><expr>eb   vimfiler#do_action('vsplit')
+  au FileType vimfiler nnoremap <silent><buffer><expr>ev   vimfiler#do_action('tabopen')
   au FileType vimfiler nnoremap <silent>,ab :<C-u>Unite -default-action=vimfiler bookmark<CR>
   au FileType vimfiler nnoremap <silent>,ad :<C-u>Unite -default-action=vimfiler directory_mru<CR>
 aug END
@@ -2415,7 +2418,7 @@ if has('migemo')
 endif
 noremap  m/ :<C-u>Migemo<CR>
 
-
+ 
 "neocomplcache.vim  Preference"{{{
 let g:neocomplcache_temporary_dir = $VIM.'/settings/.neocon' "ネオコンの一時情報を書き出すディレクトリ
 "key:ft, value:辞書ファイルのpath >
