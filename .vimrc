@@ -1682,7 +1682,24 @@ endfunction
 
 
 
-
+command! -nargs=* -complete=file -bang Rename :call <SID>Rename("<args>", "<bang>")
+function! s:Rename(name, bang) "{{{
+  let crrpath = expand("%:p")
+  let v:errmsg = ""
+  silent! exe "saveas" . a:bang . " " . a:name
+  if v:errmsg =~# '^$\|^E329'
+    if expand("%:p") !=# crrpath && filewritable(expand("%:p"))
+      silent exe "bwipe! " . crrpath
+      if delete(crrpath)
+        echoerr "Could not delete " . crrpath
+      endif
+    endif
+  else
+    echoerr v:errmsg
+  endif
+endfunction
+"}}}
+AlterCommand ren[ame] Rename
 
 
 
