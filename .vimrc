@@ -56,7 +56,7 @@ filetype off
 "--------------------------------------
 "拡張インターフェイス
 NeoBundle 'Shougo/unite.vim'
-NeoBundle 'kien/ctrlp.vim'
+NeoBundleLazy 'kien/ctrlp.vim'
 NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vimfiler', {'depends': 'Shougo/unite.vim'}
 NeoBundle 'tsukkee/lingr-vim'
@@ -204,7 +204,8 @@ se vi+=s10  "register limit (Kbyte)
 se vi+=%  "buffers list
 se vi+=h  "viminfoを読み込むとき 'hlsearch' を無効にする
 se vi+=ra:,rb:  "removable mediaの指定 (mark履歴対象外にする)
-se vi+=n$VIM/.viminfo  "viminfo file name (作成する場所)
+"se vi+=n$VIM/.viminfo  "viminfo file name (作成する場所)
+se vi+=n~/.viminfo  "viminfo file name (作成する場所)
 "}}}
 "}}}
 
@@ -276,7 +277,8 @@ set confirm
 
 "-----------------------------------------------------------------------------
 "Window
-se lines=40 co=100 scrolloff=2
+se lines=40 co=100
+"se scrolloff=2
 se hh=0 pvh=0 ea
 se wmw=0
 se ch=2 "コマンドラインの高さ
@@ -356,7 +358,7 @@ aug END
 se wak =no
 
 "keybind timeout
-se to tm=3000 ttm=100
+se to tm=5000 ttm=100
 
 "<C-a><C-x>に影響
 se nf=hex
@@ -387,7 +389,7 @@ se fdm=marker cms=%s fdc=5 fdt=FoldCCtext()
 "Statusline
 se stl =%!Gs_StatusLine()
 "au WinEnter * setl stl=%!Gs_StatusLine()
-let g:shujuu_ceiling = 1
+let g:shujuu_top = 1
 let g:shujuu_bottom = 5
 
 function! Gs_StatusLine() "{{{
@@ -766,7 +768,7 @@ noremap m <Nop>
 "-----------------------------------------------------------------------------
 "Substitute
 noremap ; :
-noremap : ;
+noremap + ;
 noremap - ^
 noremap S $
 nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
@@ -831,7 +833,7 @@ nnoremap [space]<C-j> :i<CR><CR>.<CR>
 nnoremap [space]a a<Space><Esc>
 nnoremap <C-Space> a<Space><Esc>
 nnoremap [space]i i<Space><Esc>
-nnoremap [space]y i<Space><Esc>la<Space><Esc>h
+nnoremap [space]s i<Space><Esc>la<Space><Esc>h
 
 
 "-----------------------------------------------------------------------------
@@ -845,7 +847,6 @@ nnoremap [space]K <C-w>}
 exe 'nnoremap '. s:bind_win. 's <C-w>s'
 exe 'nnoremap '. s:bind_win. 'b <C-w>v'
 exe 'nnoremap '. s:bind_win. 'o <C-w>o'
-exe 'nnoremap '. s:bind_win. 'q <C-w>c'
 "現在Bufを新しいタブページで開く
 nnoremap <silent> <C-w>; :tab split<CR>
 exe 'nnoremap <silent> '. s:bind_win. 'v :tab split<CR>'
@@ -857,6 +858,8 @@ noremap <SID>bd :bd<CR>
 nmap dn <SID>KeepWinBd
 noremap <SID>KeepWinBd :KeepWinBd<CR>
 nmap dq <C-w>c
+exe 'nnoremap '. s:bind_win. 'q <C-w>c'
+exe 'nnoremap '. s:bind_win. 'dd <C-w>c'
 nmap <silent>dv <SID>tabc
 nmap <silent>dgt <SID>tabc
 noremap <SID>tabc :tabc<CR>
@@ -878,6 +881,14 @@ nmap d,3 <SID>Cls_remoteWin3
 nmap d,4 <SID>Cls_remoteWin4
 nmap d,5 <SID>Cls_remoteWin5
 nmap d,6 <SID>Cls_remoteWin6
+nmap mdt <SID>Cls_remoteWin1
+nmap mdz <SID>Cls_remoteWin$
+nmap md1 <SID>Cls_remoteWin1
+nmap md2 <SID>Cls_remoteWin2
+nmap md3 <SID>Cls_remoteWin3
+nmap md4 <SID>Cls_remoteWin4
+nmap md5 <SID>Cls_remoteWin5
+nmap md6 <SID>Cls_remoteWin6
 nnoremap <SID>Cls_remoteWin$ :call <SID>Cls_remoteWin(winnr('$'))<CR>
 nnoremap <SID>Cls_remoteWin1 :call <SID>Cls_remoteWin(1)<CR>
 nnoremap <SID>Cls_remoteWin2 :call <SID>Cls_remoteWin(2)<CR>
@@ -1039,7 +1050,8 @@ endfunction
 "}}}
 
 nnoremap me :mes<CR>
-nnoremap ma :marks<CR>
+"nnoremap ma :marks<CR>
+nnoremap ma :<C-u>Unite mark<CR>
 
 "Fontzoom
 let g:fontzoom_no_default_key_mappings = 1
@@ -1423,6 +1435,8 @@ endfunction
 "nnoremap ,ov :e $MYVIMRC<CR>
 nnoremap ,ov :e ~/dotfiles/.vimrc<CR>
 
+nnoremap ,og :e ~/.gitconfig<CR>
+
 "junkFile
 "noremap ,oj :JunkFile<CR>
 "vimscripttips
@@ -1565,8 +1579,12 @@ inoremap <F4> <C-r>+
 cnoremap <F4> <C-r>+
 inoremap <C-r><C-e> <C-r>"
 cnoremap <C-r><C-e> <C-r>"
+inoremap <C-r><C-@> <C-r>+
+cnoremap <C-r><C-@> <C-r>+
 inoremap <C-r>@ <C-r>+
 cnoremap <C-r>@ <C-r>+
+inoremap <expr><C-r><C-q> expand('%:t')
+cnoremap <expr><C-r><C-q> expand('%:t')
 inoremap <C-r>8 <C-r>+
 cnoremap <C-r>8 <C-r>+
 "バックスラッシュとかバーが打ちづらいから
@@ -1798,9 +1816,12 @@ nnoremap ,zh :<C-u>Ref webdict ej<Space>
 nnoremap ZH :<C-u>Ref webdict ej <C-r><C-w>
 nnoremap ,zk :<C-u>Ref webdict kok<Space>
 nnoremap ZK :<C-u>Ref webdict kok <C-r><C-w>
+nnoremap ,zw :<C-u>Ref webdict wip<Space>
+nnoremap ZW :<C-u>Ref webdict wip <C-r><C-w>
 AlterCommand zh  Ref webdict ej
 AlterCommand zj  Ref webdict je
 AlterCommand zk  Ref webdict kok
+AlterCommand zw  Ref webdict wip
 "}}}
 
 
@@ -1888,6 +1909,7 @@ au FileType unite nmap <silent><buffer><expr> a
   \                 "\<Plug>(unite_choose_action)")
 au FileType unite nmap <buffer> A         <Plug>(unite_append_end)
 au FileType unite nmap <buffer> q         <Plug>(unite_exit)
+  au FileType unite imap <buffer> <C-q>         <Plug>(unite_exit)
 au FileType unite nmap <buffer> Q         <Plug>(unite_all_exit)
 au FileType unite nmap <buffer> <C-r>     <Plug>(unite_restart)
   au FileType unite nmap <buffer> @    <Plug>(unite_toggle_mark_current_candidate)
@@ -1998,8 +2020,10 @@ nnoremap ,afs :<C-u>UniteWithBufferDir -buffer-name=files -start-insert buffer f
 nnoremap ,fs :<C-u>UniteWithBufferDir -buffer-name=files -start-insert buffer file_mru bookmark file<CR>
 nnoremap ,afm :<C-u>Unite -buffer-name=files -start-insert file_mru<CR>
 nnoremap ,fm :<C-u>Unite -buffer-name=files -start-insert file_mru<CR>
-nnoremap ,ap :<C-u>Unite -buffer-name=files buffer<CR>
+nnoremap ,ap :<C-u>Unite -buffer-name=files -start-insert buffer<CR>
+nnoremap mp :<C-u>Unite -buffer-name=files -start-insert buffer<CR>
 nnoremap ,av :<C-u>Unite -buffer-name=files buffer_tab<CR>
+nnoremap ,fv :<C-u>Unite -buffer-name=files buffer_tab<CR>
 nnoremap ,aa :<C-u>UniteBookmarkAdd<CR>
 nnoremap ,ab :<C-u>Unite bookmark<CR>
 "nnoremap ,au :<C-u>Unite buffer_deleted<CR>
@@ -2154,7 +2178,7 @@ let g:netrw_liststyle = 3 "常にtree view
 
 
 "vimshell.vim"{{{
-noremap <silent>,xs :let s:A = expand('%:p:h')| exe 'VimShellTab '. s:A|unlet s:A<CR>
+noremap <silent>,xs :let A = expand('%:p:h')| exe 'VimShellTab '. A|unlet A<CR>
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <buffer> <C-j> <Plug>(vimshell_enter)
 au FileType vimshell imap <buffer> <C-j> <Plug>(vimshell_enter)
@@ -2234,12 +2258,21 @@ let g:vimfiler_safe_mode_by_default = 0
 "nnoremap ,xf :VimFilerBufferDir -double -split -horizontal<CR>
 "nnoremap ,fd :VimFilerBufferDir -double -split -reverse<CR>
 nnoremap ,ff :VimFiler -split -horizontal -reverse<CR>
-nnoremap ,fv :VimFiler -split -horizontal -reverse $VIMFILES<CR>
-nnoremap ,fr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(expand('%:p:h:h'), ': ')<CR><CR>
+nnoremap ,fj :VimFiler -split -winwidth=24 -simple -reverse <C-r>=<SID>__Get_prjRoot()<CR><CR>
+nnoremap ,fov :VimFiler -split -horizontal -reverse $VIMFILES<CR>
+nnoremap ,fr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(<SID>__Get_prjRoot(), ': ')<CR><CR>
 nnoremap ,fa :VimFilerBufferDir -split -horizontal -reverse<CR>
 nnoremap ,fb :Unite -default-action=vimfiler bookmark<CR>
 nnoremap ,fd :Unite -default-action=vimfiler directory_mru<CR>
 "nnoremap <silent>,xf :<C-u>call vimfiler#switch_filer(join([expand('%:p:h')]), {'split': 1, 'double': 1, 'horizontal': 1})<CR>
+function! s:__Get_prjRoot() "{{{
+  let prjRootPath = finddir('.git', expand('%:p:h').';')
+  if empty(prjRootPath)
+    return expand('%:p:h:h')
+  endif
+  return fnamemodify(prjRootPath, ':h')
+endfunction
+"}}}
 
 aug vimrc_vimfiler
   au!
@@ -2391,7 +2424,7 @@ let g:submode_timeoutlen = 5000
 nmap mm <Plug>(revolver-mark-local-typeB)
 nmap mM <Plug>(revolver-mark-global)
 nmap m<Space> <Plug>(revolver-mark-global)
-nmap mi <Plug>(revolver-mark-global)
+nmap mi <Plug>(revolver-mark-global-typeB)
 exe 'nmap '. s:bind_markj. ', <Plug>(revolver-jump-last-local-mark)zv'
 nnoremap z,m m
 "nmap <C-@><C-_> <Plug>(revolver-jump-last-local-mark)zv
@@ -2425,7 +2458,9 @@ vmap [cm]b <Plug>NERDCommenterMinimal
 
 "altercmd (other)
 AlterCommand g[it] Git
+AlterCommand grao Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
 AlterCommand c[tags] !start ctags %
+AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h')<CR> 
 
 
 "migemo.vim
@@ -2435,13 +2470,13 @@ if has('migemo')
 endif
 noremap  m/ :<C-u>Migemo<CR>
 
- 
+
 "neocomplcache.vim  Preference"{{{
-let g:neocomplcache_temporary_dir = $VIM.'/settings/.neocon' "ネオコンの一時情報を書き出すディレクトリ
+"let g:neocomplcache_temporary_dir = $VIM.'/settings/.neocon' "ネオコンの一時情報を書き出すディレクトリ
 "key:ft, value:辞書ファイルのpath >
 let g:neocomplcache_dictionary_filetype_lists = {
   \ 'default' : '',
-  \ 'vim' : $VIM.'/settings/neocon_dict/vim.dict',
+  \ 'vim' : '~/.neocon_user/neocon_dict/vim.dict',
   \ 'vimshell' : $HOME.'/.vimshell_hist',
   \ 'scheme' : $HOME.'/.gosh_completions'
   \ }
@@ -2480,8 +2515,8 @@ exe 'inoremap <expr><C-'. s:bind_comp. '>  neocomplcache#complete_common_string(
 "決定してポップアップを閉じる
 inoremap <expr><C-j>  pumvisible() ? neocomplcache#close_popup() : "\<C-j>"
 "キャンセルしてポップアップを閉じる
-"inoremap <expr><C-e>  pumvisible() ? eocomplcache#cancel_popup() : "\<End>"
-inoremap <expr><C-q>  eocomplcache#cancel_popup()
+inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<End>"
+"inoremap <expr><C-q>  neocomplcache#cancel_popup()
 "inoremap <expr><C-y>  eocomplcache#cancel_popup()
 "ネオコンによって挿入した補完を元に戻す
 inoremap <expr><C-\>     neocomplcache#undo_completion()
@@ -2492,7 +2527,8 @@ inoremap <expr><C-\>     neocomplcache#undo_completion()
 au FileType snippet  setl nobl
 au BufLeave *.snip setl nobl
 au FileType snippet  noremap <buffer>q <C-w>q
-let g:neocomplcache_snippets_dir = $VIM.'/settings/neocon_snippets' "スニペットプラグインディレクトリ
+au FileType snippet  inoremap <buffer><C-q> ${}<Left>
+let g:neocomplcache_snippets_dir = '~/.neocon_user/neocon_snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
 exe 'imap <expr><C-'. s:bind_snip. '>  neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
@@ -2574,13 +2610,18 @@ xmap iw <Plug>(textobj-wiw-i)
 omap aw <Plug>(textobj-wiw-a)
 omap iw <Plug>(textobj-wiw-i)
 
+"textobj-between
+let g:textobj_between_no_default_key_mappings = 1
+xmap as <Plug>(textobj-between-a)
+xmap is <Plug>(textobj-between-i)
+omap as <Plug>(textobj-between-a)
+omap is <Plug>(textobj-between-i)
+xmap ae <Plug>(textobj-between-a)
+xmap ie <Plug>(textobj-between-i)
+omap ae <Plug>(textobj-between-a)
+omap ie <Plug>(textobj-between-i)
 
-call textobj#user#plugin('cword', {
-  \   '-': {
-  \     '*pattern*': '\k*\%#\k*',
-  \     'select': ['*',],
-  \   },
-  \ })
+call textobj#user#plugin('cword', {'-': {'*pattern*': '\k*\%#\k*', 'select': ['*',], }, })
 
 
 
@@ -2599,8 +2640,8 @@ let g:buftabs_only_basename=1  "バッファタブにパスを省略してファ
 let g:echodoc_enable_at_startup = 1
 
 "win-shujuukankei.vim
-exe 'nmap '. s:bind_win. 't <Plug>(win-shujuukankei-Dokuritsu)'
-exe 'nmap '. s:bind_win. 'y <Plug>(win-shujuukankei-Bankai)'
+exe 'nmap '. s:bind_win. 't <Plug>(win-shujuukankei-Raise)'
+exe 'nmap '. s:bind_win. 'z <Plug>(win-shujuukankei-Lower)'
 au FileType vimfiler,unite,vimshell    let b:shujuu_overtaker = 1
 
 "FoldCCnavi
@@ -2609,6 +2650,9 @@ let g:foldCCnavi_shorten = 30
 "-----------------------------------------------------------------------------
 "プラグイン GUI操作
 
+" quickhl.vim
+map ,xh <Plug>(quickhl-toggle)
+map ,xH <Plug>(quickhl-reset)
 
 
 
