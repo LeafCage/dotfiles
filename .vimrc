@@ -741,6 +741,7 @@ let maplocalleader = '_'
 noremap [space] <nop>
 nmap <Space> [space]
 nmap <C-k> [C-k]
+nmap <C-g> [C-g]
 
 "-----------------------------------------------------------------------------
 "No operation
@@ -974,15 +975,17 @@ endfunction
 
 
 "次／前のバッファおよび次／前タブページへ
-nnoremap <silent> <C-S-Tab> :tabp<CR>
-nnoremap <silent> <C-Tab> :tabn<CR>
 nnoremap <silent> <M-h> :bp<CR>
 nnoremap <silent> <M-l> :bn<CR>
 nnoremap <silent> [space]h :bp<CR>
 nnoremap <silent> [space]l :bn<CR>
 nnoremap gr gT
-nnoremap <silent> [space]n gt
-nnoremap <silent> [space]p gT
+nnoremap [space]n gt
+nnoremap [space]p gT
+nnoremap [C-g]<C-g> gt
+nnoremap [C-g]g gT
+nnoremap <silent> <C-S-Tab> :tabp<CR>
+nnoremap <silent> <C-Tab> :tabn<CR>
 
 "次のウィンドウ・前のウィンドウへ
 nnoremap <M-j> <C-w>w
@@ -1019,21 +1022,18 @@ exe 'nnoremap '. s:bind_win. '6 6<C-w><C-w>'
 
 
 "タブページを手繰る
-"call Keyswitcher#map('n', ['', 'r'], '<C-t>', ['<C-t>', '<SNR>'.s:SID().'_[Tabcmd]'])
-call Keyswitcher#map('n', ['', 'r'], '<C-t>', ['<C-t>', '[Tabcmd]'])
-nnoremap <silent> [Tabcmd]o :tabonly<CR>|"現在タブページ以外を閉じる
-nnoremap <silent> [Tabcmd]c :tabclose<CR>|"タブページ閉じる
-nnoremap <silent> [Tabcmd]fv :tabe $VIM/.vimrc<CR>
-nnoremap <silent> [Tabcmd]] :execute "tab tag ".expand('<cword>')<CR>|"カーソルドタグを新規タブページで開く
-nnoremap <silent> [Tabcmd][ :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
-nnoremap <silent> [Tabcmd]K :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
-nmap <M-t>  [Tabcmd]
+nnoremap <silent> [C-g]o :tabonly<CR>|"現在タブページ以外を閉じる
+nnoremap <silent> [C-g]c :tabclose<CR>|"タブページ閉じる
+nnoremap <silent> [C-g]fv :tabe $VIM/.vimrc<CR>
+nnoremap <silent> [C-g]] :execute "tab tag ".expand('<cword>')<CR>|"カーソルドタグを新規タブページで開く
+nnoremap <silent> [C-g][ :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
+nnoremap <silent> [C-g]K :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
 "}}}
 
 "-----------------------------------------------------------------------------
 "表示・GUI操作"{{{
 
-noremap z<C-g> :echo bufname("%")'['&fenc']['&ff']'(strftime("%Y-%m-%d %X",getftime(bufname("%")))) "["b:charCounterCount"字]" "0x"CursoredCharHex()"\n"FoldCCnavi()<CR>
+nnoremap z<C-g> :echo bufname("%")'['&fenc']['&ff']'(strftime("%Y-%m-%d %X",getftime(bufname("%")))) "["b:charCounterCount"字]" "0x"CursoredCharHex()"\n"FoldCCnavi()<CR>
 function! CursoredCharHex()"{{{
   let c = matchstr(getline('.'), '.', col('.') - 1)
   let c = iconv(c, &enc, &fenc)
@@ -1318,10 +1318,9 @@ exe 'nnoremap '. s:bind_reg. ' "'
 exe 'nnoremap '. s:bind_reg. '<C-@> "+'
 exe 'nnoremap '. s:bind_reg. '8 "+'
 
-map cy "*y
-map zy "*y
-map cp "*p
-map zp "*p
+map [C-g]y "*y
+map [C-g]d "*d
+map [C-g]p "*p
 
 
 "コメントアウト
@@ -1451,7 +1450,7 @@ nnoremap ,og :e ~/.gitconfig<CR>
 
 nnoremap  ,xv :ReloadVimrc<CR>
 
-nnoremap <expr><C-g> ":\<C-u>h "
+nnoremap <expr>[C-g]<Space>    ":\<C-u>h "
 
 "-----------------------------------------------------------------------------
 
