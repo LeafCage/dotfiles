@@ -2032,7 +2032,8 @@ nnoremap ,al :<C-u>Unite line -start-insert<CR>
 nnoremap ,ajc :<C-u>Unite change<CR>
 nnoremap ,ajj :<C-u>Unite jump<CR>
 nnoremap ,amm :<C-u>Unite mark<CR>
-  let g:unite_source_mark_marks = '`mlkjih".^MLKJIHabcdefgnopqrstuvwxyzABCDEFGNOPQRSTUVWXYZ012'
+  "let g:unite_source_mark_marks = '`mlkjih".^MLKJIHabcdefgnopqrstuvwxyzABCDEFGNOPQRSTUVWXYZ012'
+  let g:unite_source_mark_marks = '`abcdefghijkl".^ABCDEFGHIJKLmnopqrstuvwxyzMNOPQRSTUVWXYZ012'
 nnoremap ,ai :<C-u>Unite outline_indent<CR>
 nnoremap ,aia :<C-u>Unite outline_indent:a<CR>
 autocmd BufEnter *
@@ -2306,11 +2307,11 @@ au FileType vimfiler nmap <buffer> L <Plug>(vimfiler_switch_to_drive)
 au FileType vimfiler nmap <buffer> ~ <Plug>(vimfiler_switch_to_home_directory)
 au FileType vimfiler nmap <buffer> \ <Plug>(vimfiler_switch_to_root_directory)
   au FileType vimfiler nmap <buffer> <C-h> <Plug>(vimfiler_switch_to_history_directory)
-au FileType vimfiler nmap <buffer> . <Plug>(vimfiler_toggle_visible_dot_files)
+au FileType vimfiler nmap <buffer> z. <Plug>(vimfiler_toggle_visible_dot_files)
 au FileType vimfiler nmap <buffer> H <Plug>(vimfiler_popup_shell)
 au FileType vimfiler nmap <buffer> ee <Plug>(vimfiler_edit_file)
 "au FileType vimfiler nmap <buffer> E <Plug>(vimfiler_split_edit_file)
-  au FileType vimfiler nmap <silent><buffer>es   <Plug>(vimfiler_split_edit_file)
+  au FileType vimfiler nnoremap <silent><buffer><expr>es   vimfiler#do_action('split')
 au FileType vimfiler nmap <buffer> B <Plug>(vimfiler_edit_binary_file)
   au FileType vimfiler nmap <buffer> er <Plug>(vimfiler_edit_binary_file)
 au FileType vimfiler nmap <buffer> ge <Plug>(vimfiler_execute_external_filer)
@@ -2339,6 +2340,7 @@ au FileType vimfiler nmap <buffer> a <Plug>(vimfiler_choose_action)
 au FileType vimfiler nmap <buffer> Y <Plug>(vimfiler_pushd)
 au FileType vimfiler nmap <buffer> P <Plug>(vimfiler_popd)
 au FileType vimfiler nmap <buffer> t <Plug>(vimfiler_expand_tree)
+  au FileType vimfiler nmap <buffer> . <Plug>(vimfiler_expand_tree)
 au FileType vimfiler nmap <buffer> T <Plug>(vimfiler_expand_tree_recursive)
 au FileType vimfiler nmap <buffer> I <Plug>(vimfiler_cd_input_directory)
   au FileType vimfiler vmap <buffer> @ <Plug>(vimfiler_toggle_mark_selected_lines)
