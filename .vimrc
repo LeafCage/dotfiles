@@ -726,6 +726,43 @@ endif
 
 
 
+"=============================================================================
+"ファイルタイプ設定
+au BufRead,BufNewFile *.markdown,*.md    set ft=markdown
+autocmd FileType js setlocal ft=javascript
+
+augroup gitcommit
+  au!
+  au FileType gitcommit  setl nofoldenable tw=60
+augroup END
+
+au FileType snippet setl nofoldenable
+
+aug vimrc_help
+  au!
+  au FileType help nnoremap <buffer>q <C-w>c
+aug END
+
+aug vimrc_vim
+  au!
+  au FileType vim
+    \ inoremap <expr><buffer>\
+    \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
+aug END
+
+
+aug qf
+  au!
+  au FileType qf
+    \ noremap <buffer> q :cclose<CR>|
+    \ noremap <buffer> <CR> :.cc<CR>|
+    \ endif
+aug END
+
+
+
+
+
 
 
 
@@ -1582,6 +1619,8 @@ inoremap <C-r><C-@> <C-r>+
 cnoremap <C-r><C-@> <C-r>+
 inoremap <C-r>@ <C-r>+
 cnoremap <C-r>@ <C-r>+
+inoremap <C-r><C-g> <C-r>+
+cnoremap <C-r><C-g> <C-r>+
 inoremap <expr><C-r><C-q> expand('%:t')
 cnoremap <expr><C-r><C-q> expand('%:t')
 inoremap <C-r>8 <C-r>+
@@ -1720,38 +1759,218 @@ AlterCommand ren[ame] Rename
 
 
 
+
+
 "=============================================================================
-"ファイルタイプ設定
-au BufRead,BufNewFile *.markdown,*.md    set ft=markdown
-autocmd FileType js setlocal ft=javascript
+"ミニプラグイン
+" Call a script local function."{{{
+" Usage:
+" - S('local_func')
+"   -> call s:local_func() in current file.
+" - S('plugin/hoge.vim:local_func', 'string', 10)
+"   -> call s:local_func('string', 10) in *plugin/hoge.vim.
+" - S('plugin/hoge:local_func("string", 10)')
+"   -> call s:local_func("string", 10) in *plugin/hoge(.vim)?.
+function! S(f, ...)
+  let [file, func] =a:f =~# ':' ?  split(a:f, ':') : [expand('%:p'), a:f]
+  let fname = matchstr(func, '^\w*')
 
-augroup gitcommit
-  au!
-  au FileType gitcommit  setl nofoldenable tw=60
-augroup END
+  " Get sourced scripts.
+  redir =>slist
+  scriptnames
+  redir END
 
-au FileType snippet setl nofoldenable
+  let filepat = '\V' . substitute(file, '\\', '/', 'g') . '\v%(\.vim)?$'
+  for s in split(slist, "\n")
+    let p = matchlist(s, '^\s*\(\d\+\):\s*\(.*\)$')
+    if empty(p)
+      continue
+    endif
+    let [nr, sfile] = p[1 : 2]
+    let sfile = fnamemodify(sfile, ':p:gs?\\?/?')
+    if sfile =~# filepat &&
+      \    exists(printf("*\<SNR>%d_%s", nr, fname))
+      let cfunc = printf("\<SNR>%d_%s", nr, func)
+      break
+    endif
+  endfor
 
-aug vimrc_help
-  au!
-  au FileType help nnoremap <buffer>q <C-w>c
-aug END
+  if !exists('nr')
+    echoerr Not sourced: ' . file
+    return
+  elseif !exists('cfunc')
+    let file = fnamemodify(file, ':p')
+    echoerr printf(
+      \    'File found, but function is not defined: %s: %s()', file, fname)
+    return
+  endif
 
-aug vimrc_vim
-  au!
-  au FileType vim
-    \ inoremap <expr><buffer>\
-    \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
-aug END
+  return 0 <= match(func, '^\w*\s*(.*)\s*$')
+    \      ? eval(cfunc) : call(cfunc, a:000)
+endfunction"}}}
+
+"指定したスクリプトファイルのスクリプトローカル変数を取得する - くふくふん"{{{
+command! SV echo ScriptVars(PathToSNR(expand('%:p')))
 
 
-aug qf
-  au!
-  au FileType qf
-    \ noremap <buffer> q :cclose<CR>|
-    \ noremap <buffer> <CR> :.cc<CR>|
-    \ endif
-aug END
+
+function! ScriptVarSource()
+  return "function! s:__get_script_variables()\n
+    \   return s:\n
+    \ endfunction"
+endfunction
+
+function! ScriptVars(snr)
+  return eval('<SNR>{a:snr}___get_script_variables()')
+endfunction
+
+function! ScriptVar(snr, var_name)
+  let d = ScriptVars(a:snr)
+  if !has_key(d, a:var_name)
+    throw 'ScriptVar: not found script variable "' . a:var_name . '".'
+  endif
+  return get(d, a:var_name)
+endfunction
+
+function! PathToSNR(path)
+  redir => _
+  silent scriptnames
+  redir END
+  redraw!
+
+  let names = split(_, "\n")
+  call filter(names, "matchstr(v:val, '^\\s*\\d*: \\zs.*') ==# a:path")
+
+  if empty(names)
+    throw 'PathToSNR: not convert the path "' . a:path . '".'
+  endif
+  return str2nr(matchstr(names[0], '^\s*\d*'))
+endfunction "}}}
+
+"" Show the diff between the current buffer and the last saved file. (from thinca) {{{
+"XXX: diff自体がうまく機能しなかった
+"
+"let g:V = vital#of('vital').load(
+"\ ['System.Filepath'],
+"\ ['Data.String'])
+"
+"nnoremap <silent>,fw :call <SID>diff_original()<CR>
+"function! s:diff_original()
+"  if exists('b:diff_current')
+"    execute bufwinnr(b:diff_current) 'wincmd w'
+"  endif
+"  if exists('b:diff_original')
+"    diffoff
+"    execute b:diff_original 'bwipeout'
+"    unlet b:diff_original
+"    return
+"  endif
+"
+"  let bufnr = bufnr('%')
+"  let ft = &l:filetype
+"  let fenc = &l:fileencoding
+"
+"  if &modified
+"    let source = '#' . bufnr
+"    let file = '[last save]'
+"  endif
+"  if !exists('source')
+"    silent! call g:V.system('svn info')
+"    if !g:V.get_last_status()
+"      let source = '!svn cat #' . bufnr
+"      let file = '[svn HEAD]'
+"    endif
+"  endif
+"  if !exists('source')
+"    silent! call g:V.system('bzr info')
+"    if !g:V.get_last_status()
+"      let source = '!bzr cat #' . bufnr
+"      let file = '[bzr tip]'
+"    endif
+"  endif
+"  if !exists('source')
+"    silent! let git_dir = g:V.system('git rev-parse --git-dir')
+"    if git_dir !=# ''
+"      let source = '!git cat-file blob HEAD:' .
+"        \ expand('#' . bufnr . ':p')[strlen(fnamemodify(git_dir, ':p')) - 5:]
+"      let source = substitute(source, '\\', '/', 'g')
+"      let file = '[git HEAD]'
+"    endif
+"  endif
+"
+"  if !exists('source')
+"    echo 'There is not the diff.'
+"    return
+"  endif
+"
+"  vertical new
+"
+"  let b:diff_current = bufnr
+"  let bufnr = bufnr('%')
+"  setlocal buftype=nofile
+"  let &l:filetype = ft
+"  let &l:fileencoding = fenc
+"  file `=file . fnamemodify(bufname(b:diff_current), ':.')`
+"
+"  silent! execute 'read' source
+"
+"  0 delete _
+"  diffthis
+"  wincmd p
+"  diffthis
+"  let b:diff_original = bufnr
+"endfunction
+"" }}}
+
+
+
+"YankRingっぽくyank/historiesを使う
+nnoremap <silent> [space]@ :<C-u>call Keyswitcher#switch('r', 'n')<CR>
+call Keyswitcher#map('n', ['r', 's'], '<C-n>', ['<Plug>(yank-replace-n)', ':cn<CR>'])
+call Keyswitcher#map('n', ['r', 's'], '<C-p>', ['<Plug>(yank-replace-p)', ':cp<CR>'])
+noremap <silent><Plug>(yank-replace-n) :call <SID>Yank_replace(1)<CR>
+noremap <silent><Plug>(yank-replace-p) :call <SID>Yank_replace(-1)<CR>
+let s:yank_histories_replace_idx = 0
+function! s:Yank_replace(fluct) "{{{
+  let yank_histories = s:__get_yank_histories()
+  if exists('s:yank_histories_cache') && s:yank_histories_cache != yank_histories
+    let s:yank_histories_replace_idx = 0
+  endif
+  let s:yank_histories_cache = copy(yank_histories)
+
+  let yank_histories_len = len(yank_histories)
+  let s:yank_histories_replace_idx += a:fluct
+  let s:yank_histories_replace_idx = s:yank_histories_replace_idx>=yank_histories_len? 0
+    \ : s:yank_histories_replace_idx<0 ? yank_histories_len-1
+    \ : s:yank_histories_replace_idx
+  echo s:yank_histories_replace_idx
+
+  let replace_content = get(yank_histories, s:yank_histories_replace_idx, '')
+
+  let [bgn, end] = [line("'["), line("']")]
+  if bgn != line('.') || bgn == 0 || end == 0
+  return
+endif
+let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
+call setreg('"', replace_content,)
+silent exe 'normal! u'
+silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
+call setreg('"', save_reg, save_regtype)
+endfunction
+"}}}
+function! s:__get_yank_histories() "{{{
+  let l = []
+  let c = unite#sources#history_yank#define().gather_candidates('','')
+  for pkd in c
+    call add(l, pkd.word)
+  endfor
+  return l
+endfunction
+"}}}
+
+
+
+
 
 
 
@@ -1988,6 +2207,22 @@ AlterCommand u[nite] Unite
 AlterCommand ua Unite -auto-preview
 AlterCommand una Unite -auto-preview
 
+" custom_actions for unite. (from thinca)
+" echo action {{{
+" uniteのアクションがつまりどんなことを行うのかをプレビューする(candidateを一
+" 覧する)
+let s:unite_action = {
+\   'description': 'Echo the candidates for debug.',
+\   'is_selectable': 1,
+\ }
+
+function! s:unite_action.func(candidates)
+  PP a:candidates
+endfunction
+
+call unite#custom_action('common', 'echo', s:unite_action)
+unlet! s:unite_action
+ "}}}
 
 
 "unite-sorce
@@ -2012,7 +2247,7 @@ inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite history/yank\<CR>"
 
 
 "file/buf関係
-nnoremap ,afa :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
+nnoremap ,afl :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 nnoremap ,aff :<C-u>Unite -buffer-name=files file<CR>
 nnoremap ,afr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(expand('%:p:h:h'), ': ')<CR><CR>
 nnoremap ,afs :<C-u>UniteWithBufferDir -buffer-name=files -start-insert buffer file_mru bookmark file<CR>
@@ -2261,7 +2496,7 @@ nnoremap ,ff :VimFiler -split -horizontal -reverse<CR>
 nnoremap ,fj :VimFiler -split -winwidth=24 -simple -reverse <C-r>=<SID>__Get_prjRoot()<CR><CR>
 nnoremap ,fov :VimFiler -split -horizontal -reverse $VIMFILES<CR>
 nnoremap ,fr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(<SID>__Get_prjRoot(), ': ')<CR><CR>
-nnoremap ,fa :VimFilerBufferDir -split -horizontal -reverse<CR>
+nnoremap ,fl :VimFilerBufferDir -split -horizontal -reverse<CR>
 nnoremap ,fb :Unite -default-action=vimfiler bookmark<CR>
 nnoremap ,fd :Unite -default-action=vimfiler directory_mru<CR>
 "nnoremap <silent>,xf :<C-u>call vimfiler#switch_filer(join([expand('%:p:h')]), {'split': 1, 'double': 1, 'horizontal': 1})<CR>
@@ -2457,11 +2692,14 @@ vmap [cm]x <Plug>NERDCommenterSexy
 vmap [cm]b <Plug>NERDCommenterMinimal
 
 
+
 "altercmd (other)
 AlterCommand g[it] Git
 AlterCommand grao Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
 AlterCommand c[tags] !start ctags %
 AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h')<CR> 
+AlterCommand sf setf
+
 
 
 "migemo.vim
@@ -2659,150 +2897,16 @@ map ,xH <Plug>(quickhl-reset)
 
 
 
+
+
+
+
+
 "=============================================================================
 "未整理空間
 
 
 
-" 関数
-"=====
-
-" Call a script local function."{{{
-" Usage:
-" - S('local_func')
-"   -> call s:local_func() in current file.
-" - S('plugin/hoge.vim:local_func', 'string', 10)
-"   -> call s:local_func('string', 10) in *plugin/hoge.vim.
-" - S('plugin/hoge:local_func("string", 10)')
-"   -> call s:local_func("string", 10) in *plugin/hoge(.vim)?.
-function! S(f, ...)
-  let [file, func] =a:f =~# ':' ?  split(a:f, ':') : [expand('%:p'), a:f]
-  let fname = matchstr(func, '^\w*')
-
-  " Get sourced scripts.
-  redir =>slist
-  scriptnames
-  redir END
-
-  let filepat = '\V' . substitute(file, '\\', '/', 'g') . '\v%(\.vim)?$'
-  for s in split(slist, "\n")
-    let p = matchlist(s, '^\s*\(\d\+\):\s*\(.*\)$')
-    if empty(p)
-      continue
-    endif
-    let [nr, sfile] = p[1 : 2]
-    let sfile = fnamemodify(sfile, ':p:gs?\\?/?')
-    if sfile =~# filepat &&
-      \    exists(printf("*\<SNR>%d_%s", nr, fname))
-      let cfunc = printf("\<SNR>%d_%s", nr, func)
-      break
-    endif
-  endfor
-
-  if !exists('nr')
-    echoerr Not sourced: ' . file
-    return
-  elseif !exists('cfunc')
-    let file = fnamemodify(file, ':p')
-    echoerr printf(
-      \    'File found, but function is not defined: %s: %s()', file, fname)
-    return
-  endif
-
-  return 0 <= match(func, '^\w*\s*(.*)\s*$')
-    \      ? eval(cfunc) : call(cfunc, a:000)
-endfunction"}}}
-
-"指定したスクリプトファイルのスクリプトローカル変数を取得する - くふくふん"{{{
-command! SV echo ScriptVars(PathToSNR(expand('%:p')))
-
-
-
-function! ScriptVarSource()
-  return "function! s:__get_script_variables()\n
-    \   return s:\n
-    \ endfunction"
-endfunction
-
-function! ScriptVars(snr)
-  return eval('<SNR>{a:snr}___get_script_variables()')
-endfunction
-
-function! ScriptVar(snr, var_name)
-  let d = ScriptVars(a:snr)
-  if !has_key(d, a:var_name)
-    throw 'ScriptVar: not found script variable "' . a:var_name . '".'
-  endif
-  return get(d, a:var_name)
-endfunction
-
-function! PathToSNR(path)
-  redir => _
-  silent scriptnames
-  redir END
-  redraw!
-
-  let names = split(_, "\n")
-  call filter(names, "matchstr(v:val, '^\\s*\\d*: \\zs.*') ==# a:path")
-
-  if empty(names)
-    throw 'PathToSNR: not convert the path "' . a:path . '".'
-  endif
-  return str2nr(matchstr(names[0], '^\s*\d*'))
-endfunction "}}}
-
-
-
-"YankRingっぽくyank/historiesを使う
-nnoremap <silent> [space]@ :<C-u>call Keyswitcher#switch('r', 'n')<CR>
-call Keyswitcher#map('n', ['r', 's'], '<C-n>', ['<Plug>(yank-replace-n)', ':cn<CR>'])
-call Keyswitcher#map('n', ['r', 's'], '<C-p>', ['<Plug>(yank-replace-p)', ':cp<CR>'])
-noremap <silent><Plug>(yank-replace-n) :call <SID>Yank_replace(1)<CR>
-noremap <silent><Plug>(yank-replace-p) :call <SID>Yank_replace(-1)<CR>
-let s:yank_histories_replace_idx = 0
-function! s:Yank_replace(fluct) "{{{
-  let yank_histories = s:__get_yank_histories()
-  if exists('s:yank_histories_cache') && s:yank_histories_cache != yank_histories
-    let s:yank_histories_replace_idx = 0
-  endif
-  let s:yank_histories_cache = copy(yank_histories)
-
-  let yank_histories_len = len(yank_histories)
-  let s:yank_histories_replace_idx += a:fluct
-  let s:yank_histories_replace_idx = s:yank_histories_replace_idx>=yank_histories_len? 0
-    \ : s:yank_histories_replace_idx<0 ? yank_histories_len-1
-    \ : s:yank_histories_replace_idx
-  echo s:yank_histories_replace_idx
-
-  let replace_content = get(yank_histories, s:yank_histories_replace_idx, '')
-
-  let [bgn, end] = [line("'["), line("']")]
-  if bgn != line('.') || bgn == 0 || end == 0
-  return
-endif
-let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
-call setreg('"', replace_content,)
-silent exe 'normal! u'
-silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
-call setreg('"', save_reg, save_regtype)
-endfunction
-"}}}
-function! s:__get_yank_histories() "{{{
-  let l = []
-  let c = unite#sources#history_yank#define().gather_candidates('','')
-  for pkd in c
-    call add(l, pkd.word)
-  endfor
-  return l
-endfunction
-"}}}
-
-
-
-
-
-" 各種プラグイン設定
-"===================
 
 
 
@@ -3087,77 +3191,10 @@ unlet s:bind_win s:bind_comp s:bind_snip s:bind_markj s:bind_reg
 
 "-----------------------------------------------------------------------------
 
-"from thinca
 
-"" Show the diff between the current buffer and the last saved file. {{{
-"" TODO: Become plugin.
-"function! s:diff_original()
-"  if exists('b:diff_current')
-"    execute bufwinnr(b:diff_current) 'wincmd w'
-"  endif
-"  if exists('b:diff_original')
-"    diffoff
-"    execute b:diff_original 'bwipeout'
-"    unlet b:diff_original
-"    return
-"  endif
-"
-"  let bufnr = bufnr('%')
-"  let ft = &l:filetype
-"  let fenc = &l:fileencoding
-"
-"  if &modified
-"    let source = '#' . bufnr
-"    let file = '[last save]'
-"  endif
-"  if !exists('source')
-"    silent! call g:V.system('svn info')
-"    if !g:V.get_last_status()
-"      let source = '!svn cat #' . bufnr
-"      let file = '[svn HEAD]'
-"    endif
-"  endif
-"  if !exists('source')
-"    silent! call g:V.system('bzr info')
-"    if !g:V.get_last_status()
-"      let source = '!bzr cat #' . bufnr
-"      let file = '[bzr tip]'
-"    endif
-"  endif
-"  if !exists('source')
-"    silent! let git_dir = g:V.system('git rev-parse --git-dir')
-"    if git_dir !=# ''
-"      let source = '!git cat-file blob HEAD:' .
-"        \ expand('#' . bufnr . ':p')[strlen(fnamemodify(git_dir, ':p')) - 5:]
-"      let source = substitute(source, '\\', '/', 'g')
-"      let file = '[git HEAD]'
-"    endif
-"  endif
-"
-"  if !exists('source')
-"    echo 'There is not the diff.'
-"    return
-"  endif
-"
-"  vertical new
-"
-"  let b:diff_current = bufnr
-"  let bufnr = bufnr('%')
-"  setlocal buftype=nofile
-"  let &l:filetype = ft
-"  let &l:fileencoding = fenc
-"  file `=file . fnamemodify(bufname(b:diff_current), ':.')`
-"
-"  silent! execute 'read' source
-"
-"  0 delete _
-"  diffthis
-"  wincmd p
-"  diffthis
-"  let b:diff_original = bufnr
-"endfunction
-"nnoremap <silent> <Space>diff :call <SID>diff_original()<CR>
-"" }}}
+
+
+
 
 
 "終了時エラー確認
