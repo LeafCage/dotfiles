@@ -3,6 +3,47 @@
 "init
 "-----------------------------------------------------------------------------
 
+"Encodings, Formats"{{{
+
+scriptencoding utf8 "このファイルのエンコード
+if has("win32")
+  se tenc =cp932 "Ref.vimでlynxがデフォルトで使うエンコード
+endif
+se encoding=utf8
+se fileencodings=utf8,cp932,iso-2022-jp,euc-jp,default,latin
+  "<< BufRead時、'fileencodings'の先頭から'encoding'を試してerrが出なければそれを適用する
+"改行コードの自動認識（新規作成されるファイルフォーマットをdosにしたい）
+se fileformats=dos,unix,mac
+
+"---
+"setglobal fileencoding=cp932  "新規作成されるファイルエンコードをcp932にしたい
+"}}}
+
+"環境変数を作る"{{{
+
+"$HOME がないとき、$VIM/TMPHOME を $HOME にする "{{{
+if !exists("$HOME")
+  let $HOME=$VIM. '/TMPHOME'
+endif
+"}}}
+
+"$VIMFILES "{{{
+if has('vim_starting')
+  if isdirectory(expand('$HOME/vimfiles', ':p'))
+    let $VIMFILES = $HOME. '/vimfiles'
+    set runtimepath+=$HOME/vimfiles/neobundle/neobundle.vim
+    call neobundle#rc(expand('$HOME/vimfiles/neobundle'))
+  else
+    let $VIMFILES = $VIM. '/vimfiles'
+    set runtimepath+=$VIM/vimfiles/neobundle/neobundle.vim
+    call neobundle#rc(expand('$VIM/vimfiles/neobundle'))
+  endif
+endif
+"}}}
+"}}}
+
+"-----------------------------------------------------------------------------
+"Plugins init setting
 "sow.vim
   "map ,s <Plug>(sow_start)
   let g:sow_dc = '~/.sow_dc/.old'
@@ -10,20 +51,12 @@
 "neobundle.vim"{{{
 filetype off
 
-if has('vim_starting')
-  if isdirectory(expand('$HOME/vimfiles', ':p'))
-    set runtimepath+=$HOME/vimfiles/neobundle/neobundle.vim
-    call neobundle#rc(expand('$HOME/vimfiles/neobundle'))
-  else
-    set runtimepath+=$VIM/vimfiles/neobundle/neobundle.vim
-    call neobundle#rc(expand('$VIM/vimfiles/neobundle'))
-  endif
-endif
+"$VIMFILES参照; neobundle#rc()の実行
 
 "--------------------------------------
 "拡張インターフェイス
 NeoBundle 'Shougo/unite.vim'
-NeoBundle 'kien/ctrlp.vim'
+NeoBundleLazy 'kien/ctrlp.vim'
 NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vimfiler', {'depends': 'Shougo/unite.vim'}
 NeoBundle 'tsukkee/lingr-vim'
@@ -72,7 +105,7 @@ NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'kana/vim-textobj-user'
   exe "NeoBundle 'h1mesuke/textobj-wiw'" | "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
   NeoBundle 'kana/vim-textobj-indent'
-  NeoBundle 'thinca/vim-textobj-plugins'
+  exe "NeoBundle 'thinca/vim-textobj-plugins'" | "中身はtextobj-between
   NeoBundle 'anyakichi/vim-textobj-xbrackets'
 NeoBundle 'anyakichi/vim-surround'
 NeoBundle 'scrooloose/nerdcommenter'
@@ -108,24 +141,12 @@ NeoBundle 'rbtnn/sign.vim'
 exe "NeoBundle 't9md/vim-quickhl'" | "複数の検索ハイライト
 NeoBundle 'tyru/winmove.vim'
 NeoBundle 'thinca/vim-fontzoom'
-exe "NeoBundle 'ujihisa/unite-font'" | "動かない
-exe "NeoBundle 'ujihisa/unite-colorscheme'" | "プレビューしない
+"exe "NeoBundle 'ujihisa/unite-font'" | "動かない
+exe "NeoBundle 'ujihisa/unite-colorscheme'" |
 NeoBundle 'pasela/unite-webcolorname'
 
 filetype plugin indent on  "ファイル判定をonにする
 "}}}
-
-call altercmd#load() "altercmdをこのvimrc内で有効にする
-"Lazyしていたpluginsを読み込む
-AlterCommand nbs[ource] NeoBundleSource
-AlterCommand nbc NeoBundleClean
-
-command! -nargs=0 NeoBundleUpdateShougo
-  \ NeoBundleUpdate
-  \ unite.vim vimshell vimfiler vimproc neobundle.vim neocomplcache neocomplcache-snippets-complete
-command! -nargs=0 NeoBundleUpdateMain
-  \ NeoBundleUpdate
-  \ vim-quickrun vital.vim open-browser.vim vim-submode vim-surround CamelCaseMotion
 
 "pathogen.vim"{{{
   filetype off "一度ファイル判定をoffにしないとftdetectをロードしてくれないので。
@@ -134,33 +155,8 @@ command! -nargs=0 NeoBundleUpdateMain
   filetype plugin indent on  "ファイル判定をonにする
 "}}}
 
-"-----------------------------------------------------------------------------
-"Encodings, Formats"{{{
+call altercmd#load() "altercmdをこのvimrc内で有効にする
 
-scriptencoding utf8 "このファイルのエンコード
-if has("win32")
-  se tenc =cp932 "Ref.vimでlynxがデフォルトで使うエンコード
-endif
-se encoding=utf8
-se fileencodings=utf8,cp932,iso-2022-jp,euc-jp,default,latin
-  "<< BufRead時、'fileencodings'の先頭から'encoding'を試してerrが出なければそれを適用する
-"改行コードの自動認識（新規作成されるファイルフォーマットをdosにしたい）
-se fileformats=dos,unix,mac
-
-"---
-"setglobal fileencoding=cp932  "新規作成されるファイルエンコードをcp932にしたい
-"}}}
-
-"-----------------------------------------------------------------------------
-"環境変数を作る"{{{
-
-"$HOME がないとき、$VIM/TMPHOME を $HOME にする "{{{
-if !exists("$HOME")
-  let $HOME=$VIM/TMPHOME
-endif
-"}}}
-
-"}}}
 
 "-----------------------------------------------------------------------------
 "マウスを有効にする"{{{
@@ -208,7 +204,8 @@ se vi+=s10  "register limit (Kbyte)
 se vi+=%  "buffers list
 se vi+=h  "viminfoを読み込むとき 'hlsearch' を無効にする
 se vi+=ra:,rb:  "removable mediaの指定 (mark履歴対象外にする)
-se vi+=n$VIM/.viminfo  "viminfo file name (作成する場所)
+"se vi+=n$VIM/.viminfo  "viminfo file name (作成する場所)
+se vi+=n~/.viminfo  "viminfo file name (作成する場所)
 "}}}
 "}}}
 
@@ -280,7 +277,8 @@ set confirm
 
 "-----------------------------------------------------------------------------
 "Window
-se lines=40 co=100 scrolloff=2
+se lines=40 co=100
+"se scrolloff=2
 se hh=0 pvh=0 ea
 se wmw=0
 se ch=2 "コマンドラインの高さ
@@ -360,7 +358,7 @@ aug END
 se wak =no
 
 "keybind timeout
-se to tm=3000 ttm=100
+se to tm=5000 ttm=100
 
 "<C-a><C-x>に影響
 se nf=hex
@@ -391,7 +389,7 @@ se fdm=marker cms=%s fdc=5 fdt=FoldCCtext()
 "Statusline
 se stl =%!Gs_StatusLine()
 "au WinEnter * setl stl=%!Gs_StatusLine()
-let g:shujuu_ceiling = 1
+let g:shujuu_top = 1
 let g:shujuu_bottom = 5
 
 function! Gs_StatusLine() "{{{
@@ -728,6 +726,43 @@ endif
 
 
 
+"=============================================================================
+"ファイルタイプ設定
+au BufRead,BufNewFile *.markdown,*.md    set ft=markdown
+autocmd FileType js setlocal ft=javascript
+
+augroup gitcommit
+  au!
+  au FileType gitcommit  setl nofoldenable tw=60
+augroup END
+
+au FileType snippet setl nofoldenable
+
+aug vimrc_help
+  au!
+  au FileType help nnoremap <buffer>q <C-w>c
+aug END
+
+aug vimrc_vim
+  au!
+  au FileType vim
+    \ inoremap <expr><buffer>\
+    \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
+aug END
+
+
+aug qf
+  au!
+  au FileType qf
+    \ noremap <buffer> q :cclose<CR>|
+    \ noremap <buffer> <CR> :.cc<CR>|
+    \ endif
+aug END
+
+
+
+
+
 
 
 
@@ -743,6 +778,7 @@ let maplocalleader = '_'
 noremap [space] <nop>
 nmap <Space> [space]
 nmap <C-k> [C-k]
+nmap <C-g> [C-g]
 
 "-----------------------------------------------------------------------------
 "No operation
@@ -770,7 +806,7 @@ noremap m <Nop>
 "-----------------------------------------------------------------------------
 "Substitute
 noremap ; :
-noremap : ;
+noremap + ;
 noremap - ^
 noremap S $
 nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
@@ -835,7 +871,7 @@ nnoremap [space]<C-j> :i<CR><CR>.<CR>
 nnoremap [space]a a<Space><Esc>
 nnoremap <C-Space> a<Space><Esc>
 nnoremap [space]i i<Space><Esc>
-nnoremap [space]y i<Space><Esc>la<Space><Esc>h
+nnoremap [space]s i<Space><Esc>la<Space><Esc>h
 
 
 "-----------------------------------------------------------------------------
@@ -849,7 +885,6 @@ nnoremap [space]K <C-w>}
 exe 'nnoremap '. s:bind_win. 's <C-w>s'
 exe 'nnoremap '. s:bind_win. 'b <C-w>v'
 exe 'nnoremap '. s:bind_win. 'o <C-w>o'
-exe 'nnoremap '. s:bind_win. 'q <C-w>c'
 "現在Bufを新しいタブページで開く
 nnoremap <silent> <C-w>; :tab split<CR>
 exe 'nnoremap <silent> '. s:bind_win. 'v :tab split<CR>'
@@ -861,6 +896,8 @@ noremap <SID>bd :bd<CR>
 nmap dn <SID>KeepWinBd
 noremap <SID>KeepWinBd :KeepWinBd<CR>
 nmap dq <C-w>c
+exe 'nnoremap '. s:bind_win. 'q <C-w>c'
+exe 'nnoremap '. s:bind_win. 'dd <C-w>c'
 nmap <silent>dv <SID>tabc
 nmap <silent>dgt <SID>tabc
 noremap <SID>tabc :tabc<CR>
@@ -882,6 +919,14 @@ nmap d,3 <SID>Cls_remoteWin3
 nmap d,4 <SID>Cls_remoteWin4
 nmap d,5 <SID>Cls_remoteWin5
 nmap d,6 <SID>Cls_remoteWin6
+nmap mdt <SID>Cls_remoteWin1
+nmap mdz <SID>Cls_remoteWin$
+nmap md1 <SID>Cls_remoteWin1
+nmap md2 <SID>Cls_remoteWin2
+nmap md3 <SID>Cls_remoteWin3
+nmap md4 <SID>Cls_remoteWin4
+nmap md5 <SID>Cls_remoteWin5
+nmap md6 <SID>Cls_remoteWin6
 nnoremap <SID>Cls_remoteWin$ :call <SID>Cls_remoteWin(winnr('$'))<CR>
 nnoremap <SID>Cls_remoteWin1 :call <SID>Cls_remoteWin(1)<CR>
 nnoremap <SID>Cls_remoteWin2 :call <SID>Cls_remoteWin(2)<CR>
@@ -967,21 +1012,23 @@ endfunction
 
 
 "次／前のバッファおよび次／前タブページへ
-nnoremap <silent> <C-S-Tab> :tabp<CR>
-nnoremap <silent> <C-Tab> :tabn<CR>
 nnoremap <silent> <M-h> :bp<CR>
 nnoremap <silent> <M-l> :bn<CR>
 nnoremap <silent> [space]h :bp<CR>
 nnoremap <silent> [space]l :bn<CR>
 nnoremap gr gT
-nnoremap <silent> [space]n gt
-nnoremap <silent> [space]p gT
+nnoremap [space]n gt
+nnoremap [space]p gT
+nnoremap [C-g]<C-g> gt
+nnoremap [C-g]g gT
+nnoremap <silent> <C-S-Tab> :tabp<CR>
+nnoremap <silent> <C-Tab> :tabn<CR>
 
 "次のウィンドウ・前のウィンドウへ
 nnoremap <M-j> <C-w>w
 nnoremap <M-k> <C-w>W
-nnoremap [space]j <C-w>w
-nnoremap [space]k <C-w>W
+nnoremap <silent>[space]j :call <SID>Roop_switchWin("j")<CR>
+nnoremap <silent>[space]k :call <SID>Roop_switchWin("k")<CR>
 exe 'nnoremap <silent>'. s:bind_win. 'h :call <SID>Roop_switchWin("h")<CR>'
 exe 'nnoremap <silent>'. s:bind_win. 'j :call <SID>Roop_switchWin("j")<CR>'
 exe 'nnoremap <silent>'. s:bind_win. 'k :call <SID>Roop_switchWin("k")<CR>'
@@ -1012,21 +1059,18 @@ exe 'nnoremap '. s:bind_win. '6 6<C-w><C-w>'
 
 
 "タブページを手繰る
-"call Keyswitcher#map('n', ['', 'r'], '<C-t>', ['<C-t>', '<SNR>'.s:SID().'_[Tabcmd]'])
-call Keyswitcher#map('n', ['', 'r'], '<C-t>', ['<C-t>', '[Tabcmd]'])
-nnoremap <silent> [Tabcmd]o :tabonly<CR>|"現在タブページ以外を閉じる
-nnoremap <silent> [Tabcmd]c :tabclose<CR>|"タブページ閉じる
-nnoremap <silent> [Tabcmd]fv :tabe $VIM/.vimrc<CR>
-nnoremap <silent> [Tabcmd]] :execute "tab tag ".expand('<cword>')<CR>|"カーソルドタグを新規タブページで開く
-nnoremap <silent> [Tabcmd][ :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
-nnoremap <silent> [Tabcmd]K :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
-nmap <M-t>  [Tabcmd]
+nnoremap <silent> [C-g]o :tabonly<CR>|"現在タブページ以外を閉じる
+nnoremap <silent> [C-g]c :tabclose<CR>|"タブページ閉じる
+nnoremap <silent> [C-g]fv :tabe $VIM/.vimrc<CR>
+nnoremap <silent> [C-g]] :execute "tab tag ".expand('<cword>')<CR>|"カーソルドタグを新規タブページで開く
+nnoremap <silent> [C-g][ :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
+nnoremap <silent> [C-g]K :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
 "}}}
 
 "-----------------------------------------------------------------------------
 "表示・GUI操作"{{{
 
-noremap z<C-g> :echo bufname("%")'['&fenc']['&ff']'(strftime("%Y-%m-%d %X",getftime(bufname("%")))) "["b:charCounterCount"字]" "0x"CursoredCharHex()"\n"FoldCCnavi()<CR>
+nnoremap z<C-g> :echo bufname("%")'['&fenc']['&ff']'(strftime("%Y-%m-%d %X",getftime(bufname("%")))) "["b:charCounterCount"字]" "0x"CursoredCharHex()"\n"FoldCCnavi()<CR>
 function! CursoredCharHex()"{{{
   let c = matchstr(getline('.'), '.', col('.') - 1)
   let c = iconv(c, &enc, &fenc)
@@ -1043,7 +1087,8 @@ endfunction
 "}}}
 
 nnoremap me :mes<CR>
-nnoremap ma :marks<CR>
+"nnoremap ma :marks<CR>
+nnoremap ma :<C-u>Unite mark<CR>
 
 "Fontzoom
 let g:fontzoom_no_default_key_mappings = 1
@@ -1300,25 +1345,24 @@ endfunction
 
 "-----------------------------------------------------------------------------
 "編集コマンド(Normal)
-let s:bind_reg = 't'
+let s:bind_reg = '<C-@>'
 
 nnoremap ,w :<C-u>w<CR>
 nnoremap ,q :<C-u>qa<CR>
 map Y y$
 noremap <F4> "+
 exe 'nnoremap '. s:bind_reg. ' "'
-exe 'nnoremap '. s:bind_reg. '@ "+'
+exe 'nnoremap '. s:bind_reg. '<C-@> "+'
 exe 'nnoremap '. s:bind_reg. '8 "+'
 
-map cy "*y
-map zy "*y
-map cp "*p
-map zp "*p
+map [C-g]y "*y
+map [C-g]d "*d
+map [C-g]p "*p
 
 
 "コメントアウト
 "[削]を付ける
-nmap <silent> [gs]d :call <SID>CommeToggleDelMarker()<CR>
+nmap <silent> [cm]d :call <SID>CommeToggleDelMarker()<CR>
 function! s:CommeToggleDelMarker() "{{{
   let cmsstart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
   let cmsend = matchstr(&cms,'\V%s\zs\.\+')
@@ -1330,8 +1374,8 @@ function! s:CommeToggleDelMarker() "{{{
   endif
 endfunction "}}}
 "★を挿入する
-nmap <silent> [gs]o :call <SID>CommeAddStar(0)<CR>
-nmap <silent> [gs]O :call <SID>CommeAddStar(1)<CR>
+nmap <silent> [cm]o :call <SID>CommeAddStar(0)<CR>
+nmap <silent> [cm]O :call <SID>CommeAddStar(1)<CR>
 function! s:CommeAddStar(append) "{{{
   let cmsstart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
   let cmsend = matchstr(&cms,'\V%s\zs\.\+')
@@ -1347,8 +1391,9 @@ endfunction "}}}
 "nnoremap ,. q:k<CR>
 nnoremap @: @:
 "ペーストしたテキストを再選択するBible3-15
-nnoremap <expr> gc '`[' . strpart(getregtype(), 0,1) . '`]'
-onoremap <silent> gc :normal gc<CR>
+nnoremap <expr> gb '`[' . strpart(getregtype(), 0,1) . '`]'
+onoremap <silent> gb :normal gb<CR>
+onoremap <silent> @@ :normal gb<CR>
 onoremap <silent> gv :normal gv<CR>
 "前回保存した状態にまでアンドゥ
 nnoremap [space]u :earlier 1f<CR>
@@ -1410,7 +1455,7 @@ nnoremap <silent>[op]sf   :<C-u>se swf! swf?<CR>
 nnoremap <silent>[op]ps   :let g:scroll_other_win_reverse = !g:scroll_other_win_reverse<CR>:echo 'scroll reverse'.g:scroll_other_win_reverse<CR>
 "}}}
 
-nnoremap <silent> <C-@> :call <SID>multikey_effect()<CR>
+nnoremap <silent> t :call <SID>multikey_effect()<CR>
 function! s:multikey_effect() "{{{
   if &rnu == 0
     setl rnu
@@ -1426,6 +1471,8 @@ endfunction
 "nnoremap ,ov :e $MYVIMRC<CR>
 nnoremap ,ov :e ~/dotfiles/.vimrc<CR>
 
+nnoremap ,og :e ~/.gitconfig<CR>
+
 "junkFile
 "noremap ,oj :JunkFile<CR>
 "vimscripttips
@@ -1440,7 +1487,7 @@ nnoremap ,ov :e ~/dotfiles/.vimrc<CR>
 
 nnoremap  ,xv :ReloadVimrc<CR>
 
-nnoremap <expr><C-g> ":\<C-u>h "
+nnoremap <expr>[C-g]<Space>    ":\<C-u>h "
 
 "-----------------------------------------------------------------------------
 
@@ -1504,21 +1551,19 @@ command! -count -nargs=1 ContinuousNumber
 "=============================================================================
 "Mapping Insert & CommandLine
 "-----------------------------------------------------------------------------
-let s:bind_left = 'k'
-let s:bind_right = 'f'
 let s:bind_comp = 'l'
 let s:bind_snip = 's'
 
 "InsertMode, CommandLineでの移動コマンド"{{{
-exe 'inoremap <C-'. s:bind_left. '> <Left>'
-exe 'inoremap <C-'. s:bind_right. '> <Right>'
-exe 'inoremap <M-'. s:bind_left. '> <S-Left>'
-exe 'inoremap <M-'. s:bind_right. '> <S-Right>'
+inoremap <C-k> <Left>
+inoremap <C-f> <Right>
+inoremap <M-k> <S-Left>
+inoremap <M-f> <S-Right>
 
-exe 'cnoremap <C-'. s:bind_left. '> <Left>'
-exe 'cnoremap <C-'. s:bind_right. '> <Right>'
-exe 'cnoremap <M-'. s:bind_left. '> <S-Left>'
-exe 'cnoremap <M-'. s:bind_right. '> <S-Right>'
+cnoremap <C-k> <Left>
+cnoremap <C-f> <Right>
+cnoremap <M-k> <S-Left>
+cnoremap <M-f> <S-Right>
 
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
@@ -1570,8 +1615,14 @@ inoremap <F4> <C-r>+
 cnoremap <F4> <C-r>+
 inoremap <C-r><C-e> <C-r>"
 cnoremap <C-r><C-e> <C-r>"
+inoremap <C-r><C-@> <C-r>+
+cnoremap <C-r><C-@> <C-r>+
 inoremap <C-r>@ <C-r>+
 cnoremap <C-r>@ <C-r>+
+inoremap <C-r><C-g> <C-r>+
+cnoremap <C-r><C-g> <C-r>+
+inoremap <expr><C-r><C-q> expand('%:t')
+cnoremap <expr><C-r><C-q> expand('%:t')
 inoremap <C-r>8 <C-r>+
 cnoremap <C-r>8 <C-r>+
 "バックスラッシュとかバーが打ちづらいから
@@ -1687,42 +1738,239 @@ endfunction
 
 
 
+command! -nargs=* -complete=file -bang Rename :call <SID>Rename("<args>", "<bang>")
+function! s:Rename(name, bang) "{{{
+  let crrpath = expand("%:p")
+  let v:errmsg = ""
+  silent! exe "saveas" . a:bang . " " . a:name
+  if v:errmsg =~# '^$\|^E329'
+    if expand("%:p") !=# crrpath && filewritable(expand("%:p"))
+      silent exe "bwipe! " . crrpath
+      if delete(crrpath)
+        echoerr "Could not delete " . crrpath
+      endif
+    endif
+  else
+    echoerr v:errmsg
+  endif
+endfunction
+"}}}
+AlterCommand ren[ame] Rename
+
 
 
 
 
 "=============================================================================
-"ファイルタイプ設定
-au BufRead,BufNewFile *.markdown,*.md    set ft=markdown
-autocmd FileType js setlocal ft=javascript
+"ミニプラグイン
+" Call a script local function."{{{
+" Usage:
+" - S('local_func')
+"   -> call s:local_func() in current file.
+" - S('plugin/hoge.vim:local_func', 'string', 10)
+"   -> call s:local_func('string', 10) in *plugin/hoge.vim.
+" - S('plugin/hoge:local_func("string", 10)')
+"   -> call s:local_func("string", 10) in *plugin/hoge(.vim)?.
+function! S(f, ...)
+  let [file, func] =a:f =~# ':' ?  split(a:f, ':') : [expand('%:p'), a:f]
+  let fname = matchstr(func, '^\w*')
 
-augroup gitcommit
-  au!
-  au FileType gitcommit  setl nofoldenable tw=60
-augroup END
+  " Get sourced scripts.
+  redir =>slist
+  scriptnames
+  redir END
 
-au FileType snippet setl nofoldenable
+  let filepat = '\V' . substitute(file, '\\', '/', 'g') . '\v%(\.vim)?$'
+  for s in split(slist, "\n")
+    let p = matchlist(s, '^\s*\(\d\+\):\s*\(.*\)$')
+    if empty(p)
+      continue
+    endif
+    let [nr, sfile] = p[1 : 2]
+    let sfile = fnamemodify(sfile, ':p:gs?\\?/?')
+    if sfile =~# filepat &&
+      \    exists(printf("*\<SNR>%d_%s", nr, fname))
+      let cfunc = printf("\<SNR>%d_%s", nr, func)
+      break
+    endif
+  endfor
 
-aug vimrc_help
-  au!
-  au FileType help nnoremap <buffer>q <C-w>c
-aug END
+  if !exists('nr')
+    echoerr Not sourced: ' . file
+    return
+  elseif !exists('cfunc')
+    let file = fnamemodify(file, ':p')
+    echoerr printf(
+      \    'File found, but function is not defined: %s: %s()', file, fname)
+    return
+  endif
 
-aug vimrc_vim
-  au!
-  au FileType vim
-    \ inoremap <expr><buffer>\
-    \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
-aug END
+  return 0 <= match(func, '^\w*\s*(.*)\s*$')
+    \      ? eval(cfunc) : call(cfunc, a:000)
+endfunction"}}}
+
+"指定したスクリプトファイルのスクリプトローカル変数を取得する - くふくふん"{{{
+command! SV echo ScriptVars(PathToSNR(expand('%:p')))
 
 
-aug qf
-  au!
-  au FileType qf
-    \ noremap <buffer> q :cclose<CR>|
-    \ noremap <buffer> <CR> :.cc<CR>|
-    \ endif
-aug END
+
+function! ScriptVarSource()
+  return "function! s:__get_script_variables()\n
+    \   return s:\n
+    \ endfunction"
+endfunction
+
+function! ScriptVars(snr)
+  return eval('<SNR>{a:snr}___get_script_variables()')
+endfunction
+
+function! ScriptVar(snr, var_name)
+  let d = ScriptVars(a:snr)
+  if !has_key(d, a:var_name)
+    throw 'ScriptVar: not found script variable "' . a:var_name . '".'
+  endif
+  return get(d, a:var_name)
+endfunction
+
+function! PathToSNR(path)
+  redir => _
+  silent scriptnames
+  redir END
+  redraw!
+
+  let names = split(_, "\n")
+  call filter(names, "matchstr(v:val, '^\\s*\\d*: \\zs.*') ==# a:path")
+
+  if empty(names)
+    throw 'PathToSNR: not convert the path "' . a:path . '".'
+  endif
+  return str2nr(matchstr(names[0], '^\s*\d*'))
+endfunction "}}}
+
+"" Show the diff between the current buffer and the last saved file. (from thinca) {{{
+"XXX: diff自体がうまく機能しなかった
+"
+"let g:V = vital#of('vital').load(
+"\ ['System.Filepath'],
+"\ ['Data.String'])
+"
+"nnoremap <silent>,fw :call <SID>diff_original()<CR>
+"function! s:diff_original()
+"  if exists('b:diff_current')
+"    execute bufwinnr(b:diff_current) 'wincmd w'
+"  endif
+"  if exists('b:diff_original')
+"    diffoff
+"    execute b:diff_original 'bwipeout'
+"    unlet b:diff_original
+"    return
+"  endif
+"
+"  let bufnr = bufnr('%')
+"  let ft = &l:filetype
+"  let fenc = &l:fileencoding
+"
+"  if &modified
+"    let source = '#' . bufnr
+"    let file = '[last save]'
+"  endif
+"  if !exists('source')
+"    silent! call g:V.system('svn info')
+"    if !g:V.get_last_status()
+"      let source = '!svn cat #' . bufnr
+"      let file = '[svn HEAD]'
+"    endif
+"  endif
+"  if !exists('source')
+"    silent! call g:V.system('bzr info')
+"    if !g:V.get_last_status()
+"      let source = '!bzr cat #' . bufnr
+"      let file = '[bzr tip]'
+"    endif
+"  endif
+"  if !exists('source')
+"    silent! let git_dir = g:V.system('git rev-parse --git-dir')
+"    if git_dir !=# ''
+"      let source = '!git cat-file blob HEAD:' .
+"        \ expand('#' . bufnr . ':p')[strlen(fnamemodify(git_dir, ':p')) - 5:]
+"      let source = substitute(source, '\\', '/', 'g')
+"      let file = '[git HEAD]'
+"    endif
+"  endif
+"
+"  if !exists('source')
+"    echo 'There is not the diff.'
+"    return
+"  endif
+"
+"  vertical new
+"
+"  let b:diff_current = bufnr
+"  let bufnr = bufnr('%')
+"  setlocal buftype=nofile
+"  let &l:filetype = ft
+"  let &l:fileencoding = fenc
+"  file `=file . fnamemodify(bufname(b:diff_current), ':.')`
+"
+"  silent! execute 'read' source
+"
+"  0 delete _
+"  diffthis
+"  wincmd p
+"  diffthis
+"  let b:diff_original = bufnr
+"endfunction
+"" }}}
+
+
+
+"YankRingっぽくyank/historiesを使う
+nnoremap <silent> [space]@ :<C-u>call Keyswitcher#switch('r', 'n')<CR>
+call Keyswitcher#map('n', ['r', 's'], '<C-n>', ['<Plug>(yank-replace-n)', ':cn<CR>'])
+call Keyswitcher#map('n', ['r', 's'], '<C-p>', ['<Plug>(yank-replace-p)', ':cp<CR>'])
+noremap <silent><Plug>(yank-replace-n) :call <SID>Yank_replace(1)<CR>
+noremap <silent><Plug>(yank-replace-p) :call <SID>Yank_replace(-1)<CR>
+let s:yank_histories_replace_idx = 0
+function! s:Yank_replace(fluct) "{{{
+  let yank_histories = s:__get_yank_histories()
+  if exists('s:yank_histories_cache') && s:yank_histories_cache != yank_histories
+    let s:yank_histories_replace_idx = 0
+  endif
+  let s:yank_histories_cache = copy(yank_histories)
+
+  let yank_histories_len = len(yank_histories)
+  let s:yank_histories_replace_idx += a:fluct
+  let s:yank_histories_replace_idx = s:yank_histories_replace_idx>=yank_histories_len? 0
+    \ : s:yank_histories_replace_idx<0 ? yank_histories_len-1
+    \ : s:yank_histories_replace_idx
+  echo s:yank_histories_replace_idx
+
+  let replace_content = get(yank_histories, s:yank_histories_replace_idx, '')
+
+  let [bgn, end] = [line("'["), line("']")]
+  if bgn != line('.') || bgn == 0 || end == 0
+  return
+endif
+let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
+call setreg('"', replace_content,)
+silent exe 'normal! u'
+silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
+call setreg('"', save_reg, save_regtype)
+endfunction
+"}}}
+function! s:__get_yank_histories() "{{{
+  let l = []
+  let c = unite#sources#history_yank#define().gather_candidates('','')
+  for pkd in c
+    call add(l, pkd.word)
+  endfor
+  return l
+endfunction
+"}}}
+
+
+
+
 
 
 
@@ -1786,9 +2034,12 @@ nnoremap ,zh :<C-u>Ref webdict ej<Space>
 nnoremap ZH :<C-u>Ref webdict ej <C-r><C-w>
 nnoremap ,zk :<C-u>Ref webdict kok<Space>
 nnoremap ZK :<C-u>Ref webdict kok <C-r><C-w>
+nnoremap ,zw :<C-u>Ref webdict wip<Space>
+nnoremap ZW :<C-u>Ref webdict wip <C-r><C-w>
 AlterCommand zh  Ref webdict ej
 AlterCommand zj  Ref webdict je
 AlterCommand zk  Ref webdict kok
+AlterCommand zw  Ref webdict wip
 "}}}
 
 
@@ -1876,6 +2127,7 @@ au FileType unite nmap <silent><buffer><expr> a
   \                 "\<Plug>(unite_choose_action)")
 au FileType unite nmap <buffer> A         <Plug>(unite_append_end)
 au FileType unite nmap <buffer> q         <Plug>(unite_exit)
+  au FileType unite imap <buffer> <C-q>         <Plug>(unite_exit)
 au FileType unite nmap <buffer> Q         <Plug>(unite_all_exit)
 au FileType unite nmap <buffer> <C-r>     <Plug>(unite_restart)
   au FileType unite nmap <buffer> @    <Plug>(unite_toggle_mark_current_candidate)
@@ -1898,7 +2150,7 @@ au FileType unite nmap <buffer> K         <Plug>(unite_skip_cursor_up)
 au FileType unite nmap <buffer> ?         <Plug>(unite_quick_help)
 au FileType unite nmap <buffer> <CR>      <Plug>(unite_do_default_action)
   au FileType unite nmap <buffer> <C-j> <Plug>(unite_do_default_action)
-au FileType unite nnoremap <silent><buffer><expr> d
+au FileType unite nnoremap <silent><buffer><expr> dd
   \ unite#smart_map('d', unite#do_action('delete'))
 au FileType unite nnoremap <silent><buffer><expr> b
   \ unite#smart_map('b', unite#do_action('bookmark'))
@@ -1952,7 +2204,25 @@ au FileType unite imap <silent><buffer><expr> x
 aug END
 
 AlterCommand u[nite] Unite
+AlterCommand ua Unite -auto-preview
+AlterCommand una Unite -auto-preview
 
+" custom_actions for unite. (from thinca)
+" echo action {{{
+" uniteのアクションがつまりどんなことを行うのかをプレビューする(candidateを一
+" 覧する)
+let s:unite_action = {
+\   'description': 'Echo the candidates for debug.',
+\   'is_selectable': 1,
+\ }
+
+function! s:unite_action.func(candidates)
+  PP a:candidates
+endfunction
+
+call unite#custom_action('common', 'echo', s:unite_action)
+unlet! s:unite_action
+ "}}}
 
 
 "unite-sorce
@@ -1977,14 +2247,17 @@ inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite history/yank\<CR>"
 
 
 "file/buf関係
-nnoremap ,afa :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
+nnoremap ,afl :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 nnoremap ,aff :<C-u>Unite -buffer-name=files file<CR>
-nnoremap ,afs :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
-nnoremap ,afm :<C-u>Unite -buffer-name=files file_mru<CR>
-nnoremap ,amf :<C-u>Unite -buffer-name=files file_mru<CR>
-nnoremap ,amd :<C-u>Unite -default-action=cd directory_mru<CR>
-nnoremap ,ap :<C-u>Unite -buffer-name=files buffer<CR>
+nnoremap ,afr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(expand('%:p:h:h'), ': ')<CR><CR>
+nnoremap ,afs :<C-u>UniteWithBufferDir -buffer-name=files -start-insert buffer file_mru bookmark file<CR>
+nnoremap ,fs :<C-u>UniteWithBufferDir -buffer-name=files -start-insert buffer file_mru bookmark file<CR>
+nnoremap ,afm :<C-u>Unite -buffer-name=files -start-insert file_mru<CR>
+nnoremap ,fm :<C-u>Unite -buffer-name=files -start-insert file_mru<CR>
+nnoremap ,ap :<C-u>Unite -buffer-name=files -start-insert buffer<CR>
+nnoremap mp :<C-u>Unite -buffer-name=files -start-insert buffer<CR>
 nnoremap ,av :<C-u>Unite -buffer-name=files buffer_tab<CR>
+nnoremap ,fv :<C-u>Unite -buffer-name=files buffer_tab<CR>
 nnoremap ,aa :<C-u>UniteBookmarkAdd<CR>
 nnoremap ,ab :<C-u>Unite bookmark<CR>
 "nnoremap ,au :<C-u>Unite buffer_deleted<CR>
@@ -1994,7 +2267,8 @@ nnoremap ,al :<C-u>Unite line -start-insert<CR>
 nnoremap ,ajc :<C-u>Unite change<CR>
 nnoremap ,ajj :<C-u>Unite jump<CR>
 nnoremap ,amm :<C-u>Unite mark<CR>
-  let g:unite_source_mark_marks = '`mlkjih".^MLKJIHabcdefgnopqrstuvwxyzABCDEFGNOPQRSTUVWXYZ012'
+  "let g:unite_source_mark_marks = '`mlkjih".^MLKJIHabcdefgnopqrstuvwxyzABCDEFGNOPQRSTUVWXYZ012'
+  let g:unite_source_mark_marks = '`abcdefghijkl".^ABCDEFGHIJKLmnopqrstuvwxyzMNOPQRSTUVWXYZ012'
 nnoremap ,ai :<C-u>Unite outline_indent<CR>
 nnoremap ,aia :<C-u>Unite outline_indent:a<CR>
 autocmd BufEnter *
@@ -2139,7 +2413,7 @@ let g:netrw_liststyle = 3 "常にtree view
 
 
 "vimshell.vim"{{{
-noremap <silent>,xs :let s:A = expand('%:p:h')| exe 'VimShellTab '. s:A|unlet s:A<CR>
+noremap <silent>,xs :let A = expand('%:p:h')| exe 'VimShellTab '. A|unlet A<CR>
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <buffer> <C-j> <Plug>(vimshell_enter)
 au FileType vimshell imap <buffer> <C-j> <Plug>(vimshell_enter)
@@ -2219,11 +2493,21 @@ let g:vimfiler_safe_mode_by_default = 0
 "nnoremap ,xf :VimFilerBufferDir -double -split -horizontal<CR>
 "nnoremap ,fd :VimFilerBufferDir -double -split -reverse<CR>
 nnoremap ,ff :VimFiler -split -horizontal -reverse<CR>
-nnoremap ,fv :VimFiler -split -horizontal -reverse $VIM<CR>
-nnoremap ,fa :VimFilerBufferDir -split -horizontal -reverse<CR>
+nnoremap ,fj :VimFiler -split -winwidth=24 -simple -reverse <C-r>=<SID>__Get_prjRoot()<CR><CR>
+nnoremap ,fov :VimFiler -split -horizontal -reverse $VIMFILES<CR>
+nnoremap ,fr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(<SID>__Get_prjRoot(), ': ')<CR><CR>
+nnoremap ,fl :VimFilerBufferDir -split -horizontal -reverse<CR>
 nnoremap ,fb :Unite -default-action=vimfiler bookmark<CR>
 nnoremap ,fd :Unite -default-action=vimfiler directory_mru<CR>
 "nnoremap <silent>,xf :<C-u>call vimfiler#switch_filer(join([expand('%:p:h')]), {'split': 1, 'double': 1, 'horizontal': 1})<CR>
+function! s:__Get_prjRoot() "{{{
+  let prjRootPath = finddir('.git', expand('%:p:h').';')
+  if empty(prjRootPath)
+    return expand('%:p:h:h')
+  endif
+  return fnamemodify(prjRootPath, ':h')
+endfunction
+"}}}
 
 aug vimrc_vimfiler
   au!
@@ -2236,7 +2520,7 @@ au FileType vimfiler nmap <buffer> k <Plug>(vimfiler_loop_cursor_up)
 au FileType vimfiler nmap <buffer> gg <Plug>(vimfiler_cursor_top)
 au FileType vimfiler nmap <buffer> <C-l> <Plug>(vimfiler_redraw_screen)
   au FileType vimfiler nmap <buffer> @ <Plug>(vimfiler_toggle_mark_current_line)
-au FileType vimfiler nmap <buffer> <S-Space> <Plug>(vimfiler_toggle_mark_current_line_up)
+  au FileType vimfiler nmap <buffer> ` <Plug>(vimfiler_toggle_mark_current_line_up)
 au FileType vimfiler nmap <buffer> <C-i> <Plug>(vimfiler_switch_to_other_window)
   au FileType vimfiler nmap <buffer> i <Plug>(vimfiler_switch_to_another_vimfiler)
   "au FileType vimfiler nmap <buffer> i :call <SID>Vimfiler_switch_to_other_window()<CR>
@@ -2247,7 +2531,7 @@ au FileType vimfiler nmap <buffer> zm <Plug>(vimfiler_move_file)
 au FileType vimfiler nmap <buffer> zd <Plug>(vimfiler_delete_file)
 au FileType vimfiler nmap <buffer> r <Plug>(vimfiler_rename_file)
 au FileType vimfiler nmap <buffer> K <Plug>(vimfiler_make_directory)
-au FileType vimfiler nmap <buffer> N <Plug>(vimfiler_new_file)
+au FileType vimfiler nmap <buffer> E <Plug>(vimfiler_new_file)
 au FileType vimfiler nmap <buffer> <CR> <Plug>(vimfiler_execute)
   au FileType vimfiler nmap <buffer> <C-j> <Plug>(vimfiler_execute)
 au FileType vimfiler nmap <buffer> l <Plug>(vimfiler_smart_l)
@@ -2258,11 +2542,13 @@ au FileType vimfiler nmap <buffer> L <Plug>(vimfiler_switch_to_drive)
 au FileType vimfiler nmap <buffer> ~ <Plug>(vimfiler_switch_to_home_directory)
 au FileType vimfiler nmap <buffer> \ <Plug>(vimfiler_switch_to_root_directory)
   au FileType vimfiler nmap <buffer> <C-h> <Plug>(vimfiler_switch_to_history_directory)
-au FileType vimfiler nmap <buffer> . <Plug>(vimfiler_toggle_visible_dot_files)
+au FileType vimfiler nmap <buffer> z. <Plug>(vimfiler_toggle_visible_dot_files)
 au FileType vimfiler nmap <buffer> H <Plug>(vimfiler_popup_shell)
-au FileType vimfiler nmap <buffer> e <Plug>(vimfiler_edit_file)
+au FileType vimfiler nmap <buffer> ee <Plug>(vimfiler_edit_file)
 "au FileType vimfiler nmap <buffer> E <Plug>(vimfiler_split_edit_file)
+  au FileType vimfiler nnoremap <silent><buffer><expr>es   vimfiler#do_action('split')
 au FileType vimfiler nmap <buffer> B <Plug>(vimfiler_edit_binary_file)
+  au FileType vimfiler nmap <buffer> er <Plug>(vimfiler_edit_binary_file)
 au FileType vimfiler nmap <buffer> ge <Plug>(vimfiler_execute_external_filer)
 au FileType vimfiler nmap <buffer> <RightMouse> <Plug>(vimfiler_execute_external_filer)
   au FileType vimfiler nmap <buffer> <C-CR> <Plug>(vimfiler_execute_external_filer)
@@ -2289,11 +2575,13 @@ au FileType vimfiler nmap <buffer> a <Plug>(vimfiler_choose_action)
 au FileType vimfiler nmap <buffer> Y <Plug>(vimfiler_pushd)
 au FileType vimfiler nmap <buffer> P <Plug>(vimfiler_popd)
 au FileType vimfiler nmap <buffer> t <Plug>(vimfiler_expand_tree)
+  au FileType vimfiler nmap <buffer> . <Plug>(vimfiler_expand_tree)
 au FileType vimfiler nmap <buffer> T <Plug>(vimfiler_expand_tree_recursive)
 au FileType vimfiler nmap <buffer> I <Plug>(vimfiler_cd_input_directory)
   au FileType vimfiler vmap <buffer> @ <Plug>(vimfiler_toggle_mark_selected_lines)
 "}}}
-  au FileType vimfiler nnoremap <silent><buffer><expr><C-k>   vimfiler#do_action('split')
+  au FileType vimfiler nnoremap <silent><buffer><expr>eb   vimfiler#do_action('vsplit')
+  au FileType vimfiler nnoremap <silent><buffer><expr>ev   vimfiler#do_action('tabopen')
   au FileType vimfiler nnoremap <silent>,ab :<C-u>Unite -default-action=vimfiler bookmark<CR>
   au FileType vimfiler nnoremap <silent>,ad :<C-u>Unite -default-action=vimfiler directory_mru<CR>
 aug END
@@ -2324,6 +2612,20 @@ let g:changelog_username ="LC <>"
 
 "-----------------------------------------------------------------------------
 "プラグイン 環境
+
+"neobundle
+">Lazyしていたpluginsを読み込む
+AlterCommand nbs[ource] NeoBundleSource
+AlterCommand nbc NeoBundleClean
+command! -nargs=0 NeoBundleUpdateShougo
+  \ NeoBundleUpdate
+  \ unite.vim vimshell vimfiler vimproc neobundle.vim neocomplcache neocomplcache-snippets-complete
+command! -nargs=0 NeoBundleUpdateMain
+  \ NeoBundleUpdate
+  \ vim-quickrun vital.vim open-browser.vim vim-submode vim-surround CamelCaseMotion
+
+
+
 
 "openbrowser.vim（カーソル下のURL,URIをブラウザで開く、または単語をブラウザで検索する）
 nmap ,xo <Plug>(openbrowser-smart-search)
@@ -2358,7 +2660,7 @@ let g:submode_timeoutlen = 5000
 nmap mm <Plug>(revolver-mark-local-typeB)
 nmap mM <Plug>(revolver-mark-global)
 nmap m<Space> <Plug>(revolver-mark-global)
-nmap mi <Plug>(revolver-mark-global)
+nmap mi <Plug>(revolver-mark-global-typeB)
 exe 'nmap '. s:bind_markj. ', <Plug>(revolver-jump-last-local-mark)zv'
 nnoremap z,m m
 "nmap <C-@><C-_> <Plug>(revolver-jump-last-local-mark)zv
@@ -2380,19 +2682,24 @@ exe 'noremap <silent>'. s:bind_win. 'u :LastBuf<CR>'
 "let g:NERDCreateDefaultMappings = 0
 "let g:NERDRemoveExtraSpaces = 1
 "let g:NERDSpacesDelims = 0
-nmap gs [gs]
-vmap gs [gs]
-nmap [gs]s <Plug>NERDCommenterToggle
-vmap [gs]s <Plug>NERDCommenterToggle
-nmap [gs]a <Plug>NERDCommenterAppend
-nmap [gs]9 <Plug>NERDCommenterToEOL
-vmap [gs]x <Plug>NERDCommenterSexy
-vmap [gs]b <Plug>NERDCommenterMinimal
+nmap gc [cm]
+vmap gc [cm]
+nmap [cm]c <Plug>NERDCommenterToggle
+vmap [cm]c <Plug>NERDCommenterToggle
+nmap [cm]a <Plug>NERDCommenterAppend
+nmap [cm]9 <Plug>NERDCommenterToEOL
+vmap [cm]x <Plug>NERDCommenterSexy
+vmap [cm]b <Plug>NERDCommenterMinimal
+
 
 
 "altercmd (other)
 AlterCommand g[it] Git
+AlterCommand grao Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
 AlterCommand c[tags] !start ctags %
+AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h')<CR> 
+AlterCommand sf setf
+
 
 
 "migemo.vim
@@ -2404,11 +2711,11 @@ noremap  m/ :<C-u>Migemo<CR>
 
 
 "neocomplcache.vim  Preference"{{{
-let g:neocomplcache_temporary_dir = $VIM.'/settings/.neocon' "ネオコンの一時情報を書き出すディレクトリ
+"let g:neocomplcache_temporary_dir = $VIM.'/settings/.neocon' "ネオコンの一時情報を書き出すディレクトリ
 "key:ft, value:辞書ファイルのpath >
 let g:neocomplcache_dictionary_filetype_lists = {
   \ 'default' : '',
-  \ 'vim' : $VIM.'/settings/neocon_dict/vim.dict',
+  \ 'vim' : '~/.neocon_user/neocon_dict/vim.dict',
   \ 'vimshell' : $HOME.'/.vimshell_hist',
   \ 'scheme' : $HOME.'/.gosh_completions'
   \ }
@@ -2447,8 +2754,8 @@ exe 'inoremap <expr><C-'. s:bind_comp. '>  neocomplcache#complete_common_string(
 "決定してポップアップを閉じる
 inoremap <expr><C-j>  pumvisible() ? neocomplcache#close_popup() : "\<C-j>"
 "キャンセルしてポップアップを閉じる
-"inoremap <expr><C-e>  pumvisible() ? eocomplcache#cancel_popup() : "\<End>"
-inoremap <expr><C-q>  eocomplcache#cancel_popup()
+inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<End>"
+"inoremap <expr><C-q>  neocomplcache#cancel_popup()
 "inoremap <expr><C-y>  eocomplcache#cancel_popup()
 "ネオコンによって挿入した補完を元に戻す
 inoremap <expr><C-\>     neocomplcache#undo_completion()
@@ -2459,7 +2766,8 @@ inoremap <expr><C-\>     neocomplcache#undo_completion()
 au FileType snippet  setl nobl
 au BufLeave *.snip setl nobl
 au FileType snippet  noremap <buffer>q <C-w>q
-let g:neocomplcache_snippets_dir = $VIM.'/settings/neocon_snippets' "スニペットプラグインディレクトリ
+au FileType snippet  inoremap <buffer><C-q> ${}<Left>
+let g:neocomplcache_snippets_dir = '~/.neocon_user/neocon_snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
 exe 'imap <expr><C-'. s:bind_snip. '>  neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
@@ -2478,6 +2786,9 @@ nmap      cs   <Plug>Csurround
 nmap      <C-s>   <Plug>Ysurround
 nmap      <C-s>s  <Plug>Yssurround
 nmap      <C-s>S   <Plug>Ysurround$
+nmap      gs   <Plug>Ysurround
+nmap      gss  <Plug>Yssurround
+nmap      gsS   <Plug>Ysurround$
 nmap      g<C-s>  <Plug>Ygsurround
 nmap      g<C-s>s <Plug>Ygssurround
 nmap      g<C-s>S  <Plug>Ygsurround$
@@ -2538,13 +2849,18 @@ xmap iw <Plug>(textobj-wiw-i)
 omap aw <Plug>(textobj-wiw-a)
 omap iw <Plug>(textobj-wiw-i)
 
+"textobj-between
+let g:textobj_between_no_default_key_mappings = 1
+xmap as <Plug>(textobj-between-a)
+xmap is <Plug>(textobj-between-i)
+omap as <Plug>(textobj-between-a)
+omap is <Plug>(textobj-between-i)
+xmap ae <Plug>(textobj-between-a)
+xmap ie <Plug>(textobj-between-i)
+omap ae <Plug>(textobj-between-a)
+omap ie <Plug>(textobj-between-i)
 
-call textobj#user#plugin('cword', {
-  \   '-': {
-  \     '*pattern*': '\k*\%#\k*',
-  \     'select': ['*',],
-  \   },
-  \ })
+call textobj#user#plugin('cword', {'-': {'*pattern*': '\k*\%#\k*', 'select': ['*',], }, })
 
 
 
@@ -2563,8 +2879,8 @@ let g:buftabs_only_basename=1  "バッファタブにパスを省略してファ
 let g:echodoc_enable_at_startup = 1
 
 "win-shujuukankei.vim
-exe 'nmap '. s:bind_win. 't <Plug>(win-shujuukankei-Dokuritsu)'
-exe 'nmap '. s:bind_win. 'y <Plug>(win-shujuukankei-Bankai)'
+exe 'nmap '. s:bind_win. 't <Plug>(win-shujuukankei-Raise)'
+exe 'nmap '. s:bind_win. 'z <Plug>(win-shujuukankei-Lower)'
 au FileType vimfiler,unite,vimshell    let b:shujuu_overtaker = 1
 
 "FoldCCnavi
@@ -2572,6 +2888,14 @@ let g:foldCCnavi_shorten = 30
 
 "-----------------------------------------------------------------------------
 "プラグイン GUI操作
+
+" quickhl.vim
+map ,xh <Plug>(quickhl-toggle)
+map ,xH <Plug>(quickhl-reset)
+
+
+
+
 
 
 
@@ -2583,145 +2907,6 @@ let g:foldCCnavi_shorten = 30
 
 
 
-" 関数
-"=====
-
-" Call a script local function."{{{
-" Usage:
-" - S('local_func')
-"   -> call s:local_func() in current file.
-" - S('plugin/hoge.vim:local_func', 'string', 10)
-"   -> call s:local_func('string', 10) in *plugin/hoge.vim.
-" - S('plugin/hoge:local_func("string", 10)')
-"   -> call s:local_func("string", 10) in *plugin/hoge(.vim)?.
-function! S(f, ...)
-  let [file, func] =a:f =~# ':' ?  split(a:f, ':') : [expand('%:p'), a:f]
-  let fname = matchstr(func, '^\w*')
-
-  " Get sourced scripts.
-  redir =>slist
-  scriptnames
-  redir END
-
-  let filepat = '\V' . substitute(file, '\\', '/', 'g') . '\v%(\.vim)?$'
-  for s in split(slist, "\n")
-    let p = matchlist(s, '^\s*\(\d\+\):\s*\(.*\)$')
-    if empty(p)
-      continue
-    endif
-    let [nr, sfile] = p[1 : 2]
-    let sfile = fnamemodify(sfile, ':p:gs?\\?/?')
-    if sfile =~# filepat &&
-      \    exists(printf("*\<SNR>%d_%s", nr, fname))
-      let cfunc = printf("\<SNR>%d_%s", nr, func)
-      break
-    endif
-  endfor
-
-  if !exists('nr')
-    echoerr Not sourced: ' . file
-    return
-  elseif !exists('cfunc')
-    let file = fnamemodify(file, ':p')
-    echoerr printf(
-      \    'File found, but function is not defined: %s: %s()', file, fname)
-    return
-  endif
-
-  return 0 <= match(func, '^\w*\s*(.*)\s*$')
-    \      ? eval(cfunc) : call(cfunc, a:000)
-endfunction"}}}
-
-"指定したスクリプトファイルのスクリプトローカル変数を取得する - くふくふん"{{{
-command! SV echo ScriptVars(PathToSNR(expand('%:p')))
-
-
-
-function! ScriptVarSource()
-  return "function! s:__get_script_variables()\n
-    \   return s:\n
-    \ endfunction"
-endfunction
-
-function! ScriptVars(snr)
-  return eval('<SNR>{a:snr}___get_script_variables()')
-endfunction
-
-function! ScriptVar(snr, var_name)
-  let d = ScriptVars(a:snr)
-  if !has_key(d, a:var_name)
-    throw 'ScriptVar: not found script variable "' . a:var_name . '".'
-  endif
-  return get(d, a:var_name)
-endfunction
-
-function! PathToSNR(path)
-  redir => _
-  silent scriptnames
-  redir END
-  redraw!
-
-  let names = split(_, "\n")
-  call filter(names, "matchstr(v:val, '^\\s*\\d*: \\zs.*') ==# a:path")
-
-  if empty(names)
-    throw 'PathToSNR: not convert the path "' . a:path . '".'
-  endif
-  return str2nr(matchstr(names[0], '^\s*\d*'))
-endfunction "}}}
-
-
-
-"YankRingっぽくyank/historiesを使う
-nnoremap <silent> [space]@ :<C-u>call Keyswitcher#switch('r', 'n')<CR>
-call Keyswitcher#map('n', ['r', 's'], '<C-n>', ['<Plug>(yank-replace-n)', ':cn<CR>'])
-call Keyswitcher#map('n', ['r', 's'], '<C-p>', ['<Plug>(yank-replace-p)', ':cp<CR>'])
-noremap <silent><Plug>(yank-replace-n) :call <SID>Yank_replace(1)<CR>
-noremap <silent><Plug>(yank-replace-p) :call <SID>Yank_replace(-1)<CR>
-let s:yank_histories_replace_idx = 0
-function! s:Yank_replace(fluct) "{{{
-  let yank_histories = s:__get_yank_histories()
-  if exists('s:yank_histories_cache') && s:yank_histories_cache != yank_histories
-    let s:yank_histories_replace_idx = 0
-  endif
-  let s:yank_histories_cache = copy(yank_histories)
-
-  let yank_histories_len = len(yank_histories)
-  let s:yank_histories_replace_idx += a:fluct
-  let s:yank_histories_replace_idx = s:yank_histories_replace_idx>=yank_histories_len? 0
-    \ : s:yank_histories_replace_idx<0 ? yank_histories_len-1
-    \ : s:yank_histories_replace_idx
-  echo s:yank_histories_replace_idx
-
-  let replace_content = get(yank_histories, s:yank_histories_replace_idx, '')
-
-  let [bgn, end] = [line("'["), line("']")]
-  if bgn != line('.') || bgn == 0 || end == 0
-  return
-endif
-let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
-call setreg('"', replace_content,)
-silent exe 'normal! u'
-silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
-call setreg('"', save_reg, save_regtype)
-endfunction
-"}}}
-function! s:__get_yank_histories() "{{{
-  let l = []
-  let c = unite#sources#history_yank#define().gather_candidates('','')
-  for pkd in c
-    call add(l, pkd.word)
-  endfor
-  return l
-endfunction
-"}}}
-
-
-
-
-
-" 各種プラグイン設定
-"===================
 
 
 
@@ -3002,81 +3187,14 @@ endfunction
 command! -bar -bang -nargs=? -complete=file Scouter
   \        echo Scouter(empty(<q-args>) ? $MYVIMRC : expand(<q-args>), <bang>0)
 
-unlet s:bind_win s:bind_left s:bind_right s:bind_comp s:bind_snip s:bind_markj s:bind_reg
+unlet s:bind_win s:bind_comp s:bind_snip s:bind_markj s:bind_reg
 
 "-----------------------------------------------------------------------------
 
-"from thinca
 
-"" Show the diff between the current buffer and the last saved file. {{{
-"" TODO: Become plugin.
-"function! s:diff_original()
-"  if exists('b:diff_current')
-"    execute bufwinnr(b:diff_current) 'wincmd w'
-"  endif
-"  if exists('b:diff_original')
-"    diffoff
-"    execute b:diff_original 'bwipeout'
-"    unlet b:diff_original
-"    return
-"  endif
-"
-"  let bufnr = bufnr('%')
-"  let ft = &l:filetype
-"  let fenc = &l:fileencoding
-"
-"  if &modified
-"    let source = '#' . bufnr
-"    let file = '[last save]'
-"  endif
-"  if !exists('source')
-"    silent! call g:V.system('svn info')
-"    if !g:V.get_last_status()
-"      let source = '!svn cat #' . bufnr
-"      let file = '[svn HEAD]'
-"    endif
-"  endif
-"  if !exists('source')
-"    silent! call g:V.system('bzr info')
-"    if !g:V.get_last_status()
-"      let source = '!bzr cat #' . bufnr
-"      let file = '[bzr tip]'
-"    endif
-"  endif
-"  if !exists('source')
-"    silent! let git_dir = g:V.system('git rev-parse --git-dir')
-"    if git_dir !=# ''
-"      let source = '!git cat-file blob HEAD:' .
-"        \ expand('#' . bufnr . ':p')[strlen(fnamemodify(git_dir, ':p')) - 5:]
-"      let source = substitute(source, '\\', '/', 'g')
-"      let file = '[git HEAD]'
-"    endif
-"  endif
-"
-"  if !exists('source')
-"    echo 'There is not the diff.'
-"    return
-"  endif
-"
-"  vertical new
-"
-"  let b:diff_current = bufnr
-"  let bufnr = bufnr('%')
-"  setlocal buftype=nofile
-"  let &l:filetype = ft
-"  let &l:fileencoding = fenc
-"  file `=file . fnamemodify(bufname(b:diff_current), ':.')`
-"
-"  silent! execute 'read' source
-"
-"  0 delete _
-"  diffthis
-"  wincmd p
-"  diffthis
-"  let b:diff_original = bufnr
-"endfunction
-"nnoremap <silent> <Space>diff :call <SID>diff_original()<CR>
-"" }}}
+
+
+
 
 
 "終了時エラー確認
@@ -3092,7 +3210,6 @@ set verbosefile=/tmp/vim.log
 "Idea etc
 "
 "カーソル位置から前後数行を対象にコマンドを実行する（画面から見える位置に限定して）
-"au WinLeave WinEnter を利用して、別窓に映ったとき、カーソルがあった場所に痕跡を残す
 "自動で関数の始まりから終わりまでが見える大きさにウィンドウサイズ変更
 "コメント接頭辞に<CR>で属性変更 ] c] a]
 "前回の保存からの変更点をhlさせる
@@ -3102,7 +3219,6 @@ set verbosefile=/tmp/vim.log
 "アンド検索（一件目がhitした後二件目のwordで一件目の前後数行を検索
 "
 "-----------------------------------------------------------------------------
-"関数を削除するテキストオブジェクト　例えばfun('aaa')で実行で'aaa'だけになる
 "次の空白文字へ
 "レインボーブランケットをsyntaxにインポート
 "マーキングコメント。"[削] とか"★とかを付け外しする（ノーマルコメント←→特殊コメント）
@@ -3118,5 +3234,8 @@ set verbosefile=/tmp/vim.log
 "テスト用不思議変数g:tess01 g:tess02 "通常の変数の機能+変異を記録
 "unite より使いやすいカラー一覧
 "u]コマンドライン型unite
+"uniteをメモ帳・todoリストとして使う。要素の追加・削除がその場で行える
+"uniteチートシート.同上。
+"長い辞書変数を適当に改行した後uniteで閲覧できるようにする
 
 
