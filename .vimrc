@@ -2534,7 +2534,7 @@ let g:vimfiler_safe_mode_by_default = 0
 "nnoremap ,xf :VimFilerBufferDir -double -split -horizontal<CR>
 "nnoremap ,fd :VimFilerBufferDir -double -split -reverse<CR>
 nnoremap ,ff :VimFiler -split -horizontal -reverse<CR>
-nnoremap ,fj :VimFiler -split -winwidth=24 -simple -reverse <C-r>=<SID>__Get_prjRoot()<CR><CR>
+nnoremap ,fj :VimFiler -split -winwidth=24 -simple -reverse -explorer <C-r>=<SID>__Get_prjRoot()<CR><CR>
 nnoremap ,fov :VimFiler -split -horizontal -reverse $VIMFILES<CR>
 nnoremap ,fr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(<SID>__Get_prjRoot(), ': ')<CR><CR>
 nnoremap ,fl :VimFilerBufferDir -split -horizontal -reverse<CR>
@@ -2579,6 +2579,7 @@ au FileType vimfiler nmap <buffer> l <Plug>(vimfiler_smart_l)
 au FileType vimfiler nmap <buffer> x <Plug>(vimfiler_execute_system_associated)
 au FileType vimfiler nmap <buffer> <2-LeftMouse> <Plug>(vimfiler_execute_system_associated)
 au FileType vimfiler nmap <buffer> h <Plug>(vimfiler_smart_h)
+au FileType vimfiler nmap <buffer> <BS> <Plug>(vimfiler_switch_to_parent_directory)
 au FileType vimfiler nmap <buffer> L <Plug>(vimfiler_switch_to_drive)
 au FileType vimfiler nmap <buffer> ~ <Plug>(vimfiler_switch_to_home_directory)
 au FileType vimfiler nmap <buffer> \ <Plug>(vimfiler_switch_to_root_directory)
@@ -2738,8 +2739,10 @@ vmap [cm]b <Plug>NERDCommenterMinimal
 AlterCommand g[it] Git
 AlterCommand grao Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
 AlterCommand c[tags] !start ctags %
-AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h')<CR> 
+AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h')<CR>
 AlterCommand sf setf
+AlterCommand so so %
+AlterCommand me mes
 
 
 
@@ -2813,10 +2816,11 @@ let g:neocomplcache_snippets_dir = '~/.neocon_user/neocon_snippets' "スニペ�
 exe 'imap <expr><C-'. s:bind_snip. '>  neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
 "スニペットを編集する
-noremap ,os :<C-u>wincmd s| NeoComplCacheEditSnippets<CR>
-noremap ,oS :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
-noremap ,ors :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
+nnoremap ,os :<C-u>wincmd s| NeoComplCacheEditSnippets<CR>
+nnoremap ,oS :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
+nnoremap ,ors :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
 "}}}
+
 
 
 
