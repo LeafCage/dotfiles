@@ -61,7 +61,7 @@ NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vimfiler', {'depends': 'Shougo/unite.vim'}
 NeoBundle 'tsukkee/lingr-vim'
 NeoBundle 'tpope/vim-fugitive'
-NeoBundleLazy 'pocket7878/presen-vim'
+NeoBundle 'pocket7878/presen-vim', {'depends':  'pocket7878/curses-vim'}
 NeoBundle 'thinca/vim-ref'
 NeoBundle 'thinca/vim-quickrun'
 "NeoBundle 'mattn/gist-vim'
@@ -80,6 +80,7 @@ exe 'NeoBundle "vim-jp/vital.vim"' | "最近なぜかNeoBundleからアップデ
 exe "NeoBundle 'thinca/vim-openbuf'" | "unite-vim_hacksがこれに依存
 "exe "NeoBundle 'mattn/wwwrenderer-vim'" | "webpage(only text)を返す
 "exe "NeoBundle 'mattn/webapi-vim'" | "
+NeoBundle 'pocket7878/curses-vim'
 
 "--------------------------------------
 "環境
