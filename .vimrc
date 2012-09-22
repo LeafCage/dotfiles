@@ -62,6 +62,7 @@ NeoBundle 'Shougo/vimfiler', {'depends': 'Shougo/unite.vim'}
 NeoBundle 'tsukkee/lingr-vim'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'pocket7878/presen-vim', {'depends':  'pocket7878/curses-vim'}
+NeoBundle 'thinca/vim-showtime'
 NeoBundle 'thinca/vim-ref'
 NeoBundle 'thinca/vim-quickrun'
 "NeoBundle 'mattn/gist-vim'
