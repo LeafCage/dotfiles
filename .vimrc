@@ -1487,6 +1487,8 @@ nnoremap ,og :e ~/.gitconfig<CR>
   \ if exists('#autowrite')| augroup! autowrite| endif<CR>
 
 nnoremap  ,xv :ReloadVimrc<CR>
+nnoremap  [C-k]v :ReloadVimrc<CR>
+nnoremap  [C-k]s :so %<CR>
 
 nnoremap <expr>[C-g]<Space>    ":\<C-u>h "
 
@@ -1620,17 +1622,20 @@ inoremap <C-r><C-@> <C-r>+
 cnoremap <C-r><C-@> <C-r>+
 inoremap <C-r>@ <C-r>+
 cnoremap <C-r>@ <C-r>+
+inoremap <C-r>8 <C-r>+
+cnoremap <C-r>8 <C-r>+
 inoremap <C-r><C-g> <C-r>+
 cnoremap <C-r><C-g> <C-r>+
 inoremap <expr><C-r><C-q> expand('%:t')
 cnoremap <expr><C-r><C-q> expand('%:t')
-inoremap <C-r>8 <C-r>+
-cnoremap <C-r>8 <C-r>+
 "バックスラッシュとかバーが打ちづらいから
 inoremap <C-b> \
 cnoremap <C-b> \
 inoremap <M-b> <Bar>
 cnoremap <M-b> <Bar>
+inoremap <C-@> <Esc>
+cnoremap <C-@> <Esc>
+vnoremap <C-@> <Esc>
 
 "-----------------------------------------------------------------------------
 "InsertModeでの編集コマンド
@@ -1638,12 +1643,12 @@ inoremap <C-x><C-a> <C-a>
   "< 直前の挿入を再度挿入
 inoremap <C-z> <C-d>
 inoremap <C-c> <Esc>
-inoremap <C-@> <Esc>
-cnoremap <C-@> <Esc>
-vnoremap <C-@> <Esc>
-"入力した文字を大文字・小文字化(madein thinca)
+"入力した文字を大文字・小文字化(from thinca)
 inoremap <C-g><C-u> <ESC>gUvbgi
 inoremap <C-g><C-l> <ESC>guvbgi
+imap <C-Space>    <Tab><Tab>
+imap <C-Tab>    <Tab><Tab>
+imap <M-Space>    <Tab><Tab>
 
 "-----------------------------------------------------------------------------
 "CommandLineでの編集コマンド
