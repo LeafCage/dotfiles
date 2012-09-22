@@ -61,7 +61,7 @@ NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vimfiler', {'depends': 'Shougo/unite.vim'}
 NeoBundle 'tsukkee/lingr-vim'
 NeoBundle 'tpope/vim-fugitive'
-NeoBundleLazy 'pocket7878/presen-vim'
+NeoBundle 'pocket7878/presen-vim', {'depends':  'pocket7878/curses-vim'}
 NeoBundle 'thinca/vim-ref'
 NeoBundle 'thinca/vim-quickrun'
 "NeoBundle 'mattn/gist-vim'
@@ -80,6 +80,7 @@ exe 'NeoBundle "vim-jp/vital.vim"' | "最近なぜかNeoBundleからアップデ
 exe "NeoBundle 'thinca/vim-openbuf'" | "unite-vim_hacksがこれに依存
 "exe "NeoBundle 'mattn/wwwrenderer-vim'" | "webpage(only text)を返す
 "exe "NeoBundle 'mattn/webapi-vim'" | "
+NeoBundle 'pocket7878/curses-vim'
 
 "--------------------------------------
 "環境
@@ -1486,6 +1487,8 @@ nnoremap ,og :e ~/.gitconfig<CR>
   \ if exists('#autowrite')| augroup! autowrite| endif<CR>
 
 nnoremap  ,xv :ReloadVimrc<CR>
+nnoremap  [C-k]v :ReloadVimrc<CR>
+nnoremap  [C-k]s :so %<CR>
 
 nnoremap <expr>[C-g]<Space>    ":\<C-u>h "
 
@@ -1619,17 +1622,20 @@ inoremap <C-r><C-@> <C-r>+
 cnoremap <C-r><C-@> <C-r>+
 inoremap <C-r>@ <C-r>+
 cnoremap <C-r>@ <C-r>+
+inoremap <C-r>8 <C-r>+
+cnoremap <C-r>8 <C-r>+
 inoremap <C-r><C-g> <C-r>+
 cnoremap <C-r><C-g> <C-r>+
 inoremap <expr><C-r><C-q> expand('%:t')
 cnoremap <expr><C-r><C-q> expand('%:t')
-inoremap <C-r>8 <C-r>+
-cnoremap <C-r>8 <C-r>+
 "バックスラッシュとかバーが打ちづらいから
 inoremap <C-b> \
 cnoremap <C-b> \
 inoremap <M-b> <Bar>
 cnoremap <M-b> <Bar>
+inoremap <C-@> <Esc>
+cnoremap <C-@> <Esc>
+vnoremap <C-@> <Esc>
 
 "-----------------------------------------------------------------------------
 "InsertModeでの編集コマンド
@@ -1637,12 +1643,12 @@ inoremap <C-x><C-a> <C-a>
   "< 直前の挿入を再度挿入
 inoremap <C-z> <C-d>
 inoremap <C-c> <Esc>
-inoremap <C-@> <Esc>
-cnoremap <C-@> <Esc>
-vnoremap <C-@> <Esc>
-"入力した文字を大文字・小文字化(madein thinca)
+"入力した文字を大文字・小文字化(from thinca)
 inoremap <C-g><C-u> <ESC>gUvbgi
 inoremap <C-g><C-l> <ESC>guvbgi
+imap <C-Space>    <Tab><Tab>
+imap <C-Tab>    <Tab><Tab>
+imap <M-Space>    <Tab><Tab>
 
 "-----------------------------------------------------------------------------
 "CommandLineでの編集コマンド
@@ -2406,6 +2412,47 @@ unlet s:menubar
 "}}}
 "}}}
 
+
+"やたら長い変数をechoするとき見やすく表示
+function! s:Unite_echo_var(args) "{{{
+  exe 'Unite output_in_multiline:echo\ '. escape(a:args, ': ')
+endfunction
+"}}}
+let s:source = {
+      \ 'name' : 'output_in_multiline',
+      \ 'description' : 'candidates from Vim command output',
+      \ 'default_action' : 'yank',
+      \ }
+function! s:source.gather_candidates(args, context)"{{{
+  if type(get(a:args, 0, '')) == type([])
+    " Use args directly.
+    let result = a:args[0]
+  else
+    let command = join(a:args, ' ')
+    if command == ''
+      let command = input('Please input Vim command: ', '', 'command')
+    endif
+
+    redir => output
+    silent! execute command
+    redir END
+
+    let result = split(output, '\r\n\|\n\|,\zs')
+  endif
+
+  return map(result, '{
+        \ "word" : v:val,
+        \ "kind" : "word",
+        \ "is_multiline" : 1,
+        \ }')
+endfunction"}}}
+call unite#define_source(s:source)
+unlet s:source
+command! -complete=var -nargs=+ UniteEchoVar  call <SID>Unite_echo_var(<q-args>)
+
+
+
+
 "--------------------------------------
 "プラグイン ファイラー
 "netrw
@@ -2493,7 +2540,7 @@ let g:vimfiler_safe_mode_by_default = 0
 "nnoremap ,xf :VimFilerBufferDir -double -split -horizontal<CR>
 "nnoremap ,fd :VimFilerBufferDir -double -split -reverse<CR>
 nnoremap ,ff :VimFiler -split -horizontal -reverse<CR>
-nnoremap ,fj :VimFiler -split -winwidth=24 -simple -reverse <C-r>=<SID>__Get_prjRoot()<CR><CR>
+nnoremap ,fj :VimFiler -split -winwidth=24 -simple -reverse -explorer <C-r>=<SID>__Get_prjRoot()<CR><CR>
 nnoremap ,fov :VimFiler -split -horizontal -reverse $VIMFILES<CR>
 nnoremap ,fr :<C-u>Unite -buffer-name=files -start-insert file_rec:<C-r>=escape(<SID>__Get_prjRoot(), ': ')<CR><CR>
 nnoremap ,fl :VimFilerBufferDir -split -horizontal -reverse<CR>
@@ -2538,6 +2585,7 @@ au FileType vimfiler nmap <buffer> l <Plug>(vimfiler_smart_l)
 au FileType vimfiler nmap <buffer> x <Plug>(vimfiler_execute_system_associated)
 au FileType vimfiler nmap <buffer> <2-LeftMouse> <Plug>(vimfiler_execute_system_associated)
 au FileType vimfiler nmap <buffer> h <Plug>(vimfiler_smart_h)
+au FileType vimfiler nmap <buffer> <BS> <Plug>(vimfiler_switch_to_parent_directory)
 au FileType vimfiler nmap <buffer> L <Plug>(vimfiler_switch_to_drive)
 au FileType vimfiler nmap <buffer> ~ <Plug>(vimfiler_switch_to_home_directory)
 au FileType vimfiler nmap <buffer> \ <Plug>(vimfiler_switch_to_root_directory)
@@ -2697,8 +2745,10 @@ vmap [cm]b <Plug>NERDCommenterMinimal
 AlterCommand g[it] Git
 AlterCommand grao Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
 AlterCommand c[tags] !start ctags %
-AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h')<CR> 
+AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h')<CR>
 AlterCommand sf setf
+AlterCommand so so %
+AlterCommand me mes
 
 
 
@@ -2772,10 +2822,11 @@ let g:neocomplcache_snippets_dir = '~/.neocon_user/neocon_snippets' "スニペ�
 exe 'imap <expr><C-'. s:bind_snip. '>  neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
 "スニペットを編集する
-noremap ,os :<C-u>wincmd s| NeoComplCacheEditSnippets<CR>
-noremap ,oS :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
-noremap ,ors :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
+nnoremap ,os :<C-u>wincmd s| NeoComplCacheEditSnippets<CR>
+nnoremap ,oS :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
+nnoremap ,ors :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
 "}}}
+
 
 
 
@@ -2907,18 +2958,9 @@ map ,xH <Plug>(quickhl-reset)
 
 
 
-
-
-
-
-
-
 "vim-vcs.vim
 "設定用辞書変数
 "    let g:vcs#config = {'alias':{'st':'status'},}
-
-
-
 
 
 
@@ -2928,176 +2970,6 @@ map ,xH <Plug>(quickhl-reset)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"  "--------------QFixHowm----------------"{{{
-let QFixHowm_Key           = '_'
-" キーマップ(2ストローク目)
-let QFixHowm_KeyB          = ''
-
-" メモファイルの保存場所
-let howm_dir               = '~/howm'
-" メモファイルのファイル名
-let howm_filename          = "%Y/%m/%Y-%m-%d-%H%M%S.txt"
-" メモファイルのエンコーディング
-let howm_fileencoding      = &enc
-" メモファイルの改行コード
-let howm_fileformat        = &ff
-" ファイルタイプ指定
-let QFixHowm_FileType      = 'howm_memo'
-
-
-"ファイル/テンプレート"{{{
-"「新規エントリのテンプレート」
-
-" クイックメモファイル
-let QFixHowm_QuickMemoFile = 'Quickmemo.txt'
-" 日記メモファイル
-let QFixHowm_DiaryFile     = '%Y/%m/%Y-%m-%d-000000.txt'
-" ペアファイル保存場所
-let QFixHowm_PairLinkDir   = 'pairlink'
-" キーワード保存ファイル
-let QFixHowm_keywordfile   = '~/.howm-keys'
-
-" タイトル記号
-let QFixHowm_Title = '='
-" テンプレート
-let QFixHowm_Template = [
-  \ "%TITLE% %TAG%",
-  \ "%DATE%",
-  \ ""
-  \]
-" テンプレート(カーソル移動)
-let QFixHowm_Cmd_NewEntry = "$a"
-" テンプレートに挿入されるタグ
-let QFixHowm_DefaultTag   = ''
-"}}}
-"オートリンクでファイルを開く
-let QFixHowm_Wiki = 1
-" Wikiスタイルリンクは対応ファイルを開く場合の保存ディレクトリ
-let QFixHowm_WikiDir = 'wiki'
-
-
-"  " QFixHowmで、メモをとる
-"  let howm_dir = '$VIM/siic/howm'
-"  let howm_filename = '%Y-%m-%d-%H%M%S.howm'
-"  let howm_fileencoding = 'cp932'
-"  let howm_fileformat = 'dos'
-"  
-"  "Howmコマンドキーマップ
-"  let QFixHowm_Key = ','
-"  "Howmコマンドの2ストローク目キーマップ
-"  let QFixHowm_KeyB = ''
-"  
-"  "クイックメモファイル名
-"  "let QFixHowm_QuickMemoFile = 'Qmem-00-%Y-%m-00-000000.howm'
-"  let QFixHowm_QuickMemoFile = 'Qmem001.howm'
-"  
-"  "オートリンク上のタグジャンプを使用する/しない
-"  let QFixHowm_UseAutoLinkTags = 1
-"  "tagsファイルを作成するディレクトリ
-"  let QFixHowm_TagsDir = howm_dir
-"  
-"  
-"  "QuickfixウィンドウをON/OFF
-"  "この設定例ではgsが使用できなくなります。好みに応じて変更して下さい。
-"  nnoremap <silent> ,q :ToggleQFixWin<CR>
-"  
-"  " カテゴリタグユーザアクションロック([ ]の上で<CR>でカテゴリ切り替え)
-"  nnoremap <silent> g,ht :<C-u>call QFixHowmCreateNewFileWithTag('[ ]')<CR>
-"  let QFixHowm_UserSwActionLock = ['[ ]', '[:private]', '[:work]', '[:vim]']
-"  
-"  
-"  "---==タイトルを付けるのも面倒な場合==---
-"  "タイトルに何も書かれていない場合、エントリ内から適当な文を探して設定する。
-"  "文字数は半角換算で最大 QFixHowm_Replace_Title_len 文字まで使用する。0なら何もしない。
-"  let QFixHowm_Replace_Title_Len = 64
-"  
-"  "対象になるのは QFixHowm_Replace_Title_Pattern の正規表現に一致するタイトルパターン。
-"  "デフォルトでは次の正規表現が設定されている。
-"  "let QFixHowm_Replace_Title_Pattern = '^'.escape(g:QFixHowm_Title, g:QFixHowm_EscapeTitle).'\s*\(\[[^\]]*\]\s*\)\=$'
-"  
-"  "新規エントリの際、本文から書き始める。
-"  "let QFixHowm_Cmd_New = "i"." \<CR>\<C-r>=strftime(\"[%Y-%m-%d %H:%M]\")\<CR>\<CR>\<ESC>$a"
-"  ",Cで挿入される新規エントリのコマンド
-"  "let QFixHowm_Key_Cmd_C = "o<ESC>".QFixHowm_Cmd_New"}}}
-
-
-""  "--------------VimOrganizer----------------"{{{
-""  " stuff below here is necessary for VimOrganizer to work right
-""  "
-""  " use this colorscheme or integrate it into an existing colorscheme
-""  ""colorscheme org_dark	""カラースキームの設定は、.gvimrcに宣言した
-""  
-""  " g:org_agenda_dirs specify directories that, along with 
-""  " their subtrees, are searched for list of .org files when
-""  " accessing EditAgendaFiles().  Specify your own here, otherwise
-""  " default will be for g:org_agenda_dirs to hold single
-""  " directory which is directory of the first .org file opened
-""  " in current Vim instance:
-""  " Below is line I use in my Windows install:
-""  let g:org_agenda_dirs=["D:\siic\org_agenda","c:/users/herbert/desktop"]
-""  
-""  " vars below are used to define default todo list and
-""  " default tag list.  will be changed in near future so
-""  " that these are defined by config lines in each .org
-""  " file itself, but now these are where you can change things:
-""  let g:org_todo_setup='todo | done'
-""  " while g:org_tag_setup is itself a string
-""  let g:org_tag_setup='{@home(h) @work(w) @tennisclub(t)} \n {easy(e) hard(d)} \n {computer(c) phone(p)}'
-""  
-""  " leave these as is:
-""   "" autocmd! 現在のグループ*.orgに対するすべてのautocommandを削除
-""  au! bufread,bufwrite,bufwritepost,bufnewfile *.org 
-""  au bufread,bufnewfile *.org            call org#SetOrgFileType()
-""  au bufread,bufnewfile *.org            call OrgExpandWithoutText(b:v.global_cycle_levels_to_show)
-""  au bufread *.org :PreLoadTags
-""  au BufWrite *.org :PreWriteTags
-""  au BufWritePost *.org :PostWriteTags
-""  
-""  " below are two examples of Org-mode "hook" functions
-""  " These present opportunities for end-user customization
-""  " of how VimOrganizer works.  For more info see the 
-""  " documentation for hooks in Emacs' Org-mode documentation:
-""  " http://orgmode.org/worg/org-configs/org-hooks.php#sec-1_40
-""  
-""  " These two hooks are currently the only ones enabled in 
-""  " the VimOrganizer codebase, but they are easy to add so if
-""  " there's a particular hook you want go ahead and request it
-""  " or look for where these hooks are implemented in 
-""  " /ftplugin/org.vim and use them as example for placing your
-""  " own hooks in VimOrganizer:
-""  function! Org_property_changed_functions(line,key, val)
-""          "call confirm("prop changed: ".a:line."--key:".a:key." val:".a:val)
-""  endfunction
-""  function! Org_after_todo_state_change_hook(line,state1, state2)
-""          "call ConfirmDrawer("LOGBOOK")
-""          "let str = ": - State: " . Pad(a:state2,10) . "   from: " . Pad(a:state1,10) .
-""          "            \ '    [' . Timestamp() . ']'
-""          "call append(line("."), repeat(' ',len(matchstr(getline(line(".")),'^\s*'))) . str)
-""          
-""  endfunction
-""  
-""  
-""  let g:agenda_files = ['agenda.org','d:/hom/VimOrganizer/agenda.org']
-""  
-""  nmap <F9> :execute "normal! o<".Timestamp().'>'<cr>
-""  imap <F9> <c-r>=' <'.Timestamp().'>'<cr>"}}}
 
 
 
