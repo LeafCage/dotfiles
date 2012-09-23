@@ -31,13 +31,11 @@ endif
 if has('vim_starting')
   if isdirectory(expand('$HOME/vimfiles', ':p'))
     let $VIMFILES = $HOME. '/vimfiles'
-    set runtimepath+=$HOME/vimfiles/neobundle/neobundle.vim
-    call neobundle#rc(expand('$HOME/vimfiles/neobundle'))
   else
     let $VIMFILES = $VIM. '/vimfiles'
-    set runtimepath+=$VIM/vimfiles/neobundle/neobundle.vim
-    call neobundle#rc(expand('$VIM/vimfiles/neobundle'))
   endif
+  set runtimepath+=$VIMFILES/neobundle/neobundle.vim
+  call neobundle#rc(expand('$VIMFILES/neobundle'))
 endif
 "}}}
 "}}}
@@ -134,6 +132,8 @@ exe "NeoBundle 'tsukkee/unite-help'" |
 NeoBundle 'tyru/current-func-info.vim'
 exe "NeoBundle 'https://github.com/ujihisa/neco-look.git'" | "要look.exe
 NeoBundle 'h1mesuke/unite-outline'
+NeoBundle 'thinca/vim-prettyprint'
+NeoBundle 'thinca/vim-scouter'
 "NeoBundle 'Shougo/echodoc'
 "NeoBundleLazy 'choplin/unite-vim_hacks', {'depends', 'thinca/vim-openbuf'}
 NeoBundle 'rbtnn/sign.vim'
@@ -447,7 +447,7 @@ if has('syntax')
 endif
 
 "i_CTRL-cでstatusLineの色が変更されない問題を修正
-inoremap <silent><C-c> <C-c>:call <SID>Cng_stlcolor('Leave')<CR>
+"inoremap <silent><C-c> <C-c>:call <SID>Cng_stlcolor('Leave')<CR>
 
 let s:slhlcmd = ''
 function! s:Cng_stlColor(mode) "{{{
@@ -3049,16 +3049,6 @@ autocmd BufCreate *.alter call s:alterbuf_load()
 "autocmd CursorMoved * redraw
 
 
-function! Scouter(file, ...)
-  let pat = '^\s*$\|^\s*"'
-  let lines = readfile(a:file)
-  if !a:0 || !a:1
-    let lines = split(substitute(join(lines, "\n"), '\n\s*\\', '', 'g'), "\n")
-  endif
-  return len(filter(lines,'v:val !~ pat'))
-endfunction
-command! -bar -bang -nargs=? -complete=file Scouter
-  \        echo Scouter(empty(<q-args>) ? $MYVIMRC : expand(<q-args>), <bang>0)
 
 unlet s:bind_win s:bind_comp s:bind_snip s:bind_markj s:bind_reg
 
