@@ -2415,41 +2415,11 @@ unlet s:menubar
 
 
 "やたら長い変数をechoするとき見やすく表示
-function! s:Unite_echo_var(args) "{{{
-  exe 'Unite output_in_multiline:echo\ '. escape(a:args, ': ')
+function! s:Unite_PP(args) "{{{
+  exe 'Unite output:PP\ '. escape(a:args, ': ')
 endfunction
 "}}}
-let s:source = {
-      \ 'name' : 'output_in_multiline',
-      \ 'description' : 'candidates from Vim command output',
-      \ 'default_action' : 'yank',
-      \ }
-function! s:source.gather_candidates(args, context)"{{{
-  if type(get(a:args, 0, '')) == type([])
-    " Use args directly.
-    let result = a:args[0]
-  else
-    let command = join(a:args, ' ')
-    if command == ''
-      let command = input('Please input Vim command: ', '', 'command')
-    endif
-
-    redir => output
-    silent! execute command
-    redir END
-
-    let result = split(output, '\r\n\|\n\|,\zs')
-  endif
-
-  return map(result, '{
-        \ "word" : v:val,
-        \ "kind" : "word",
-        \ "is_multiline" : 1,
-        \ }')
-endfunction"}}}
-call unite#define_source(s:source)
-unlet s:source
-command! -complete=var -nargs=+ UniteEchoVar  call <SID>Unite_echo_var(<q-args>)
+command! -complete=var -nargs=+ UPP  call <SID>Unite_PP(<q-args>)
 
 
 
