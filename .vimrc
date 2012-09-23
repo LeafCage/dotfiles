@@ -381,7 +381,7 @@ se sm mat=1  "括弧の対応表示時間
 "特殊UI
 
 "補完を有効にする
-set completeopt=menu,menuone,longest,preview
+set completeopt=menu,menuone,preview
 
 "折り畳み
 se fdm=marker cms=%s fdc=5 fdt=FoldCCtext()
