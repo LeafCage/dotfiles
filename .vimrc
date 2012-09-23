@@ -1956,13 +1956,13 @@ function! s:Yank_replace(fluct) "{{{
 
   let [bgn, end] = [line("'["), line("']")]
   if bgn != line('.') || bgn == 0 || end == 0
-  return
-endif
-let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
-call setreg('"', replace_content,)
-silent exe 'normal! u'
-silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
-call setreg('"', save_reg, save_regtype)
+    return
+  endif
+  let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
+  call setreg('"', replace_content,)
+  silent exe 'normal! u'
+  silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
+  call setreg('"', save_reg, save_regtype)
 endfunction
 "}}}
 function! s:__get_yank_histories() "{{{
