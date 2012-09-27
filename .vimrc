@@ -136,7 +136,7 @@ NeoBundle 'thinca/vim-prettyprint'
 NeoBundle 'thinca/vim-scouter'
 "NeoBundle 'Shougo/echodoc'
 "NeoBundleLazy 'choplin/unite-vim_hacks', {'depends', 'thinca/vim-openbuf'}
-NeoBundle 'rbtnn/sign.vim'
+NeoBundleLazy 'rbtnn/sign.vim'
 
 "--------------------------------------
 "GUI操作
@@ -811,6 +811,7 @@ noremap ; :
 noremap + ;
 noremap - ^
 noremap S $
+noremap <C-s> $
 nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
 call submode#enter_with('gjgk', 'nv', '', 'gj', 'gj')
 call submode#enter_with('gjgk', 'nv', '', 'gk', 'gk')
@@ -2716,7 +2717,7 @@ vmap [cm]b <Plug>NERDCommenterMinimal
 AlterCommand g[it] Git
 AlterCommand grao Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
 AlterCommand c[tags] !start ctags %
-AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h')<CR>
+AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h:h')<CR>
 AlterCommand sf setf
 AlterCommand so so %
 AlterCommand me mes
@@ -2790,7 +2791,7 @@ au FileType snippet  noremap <buffer>q <C-w>q
 au FileType snippet  inoremap <buffer><C-q> ${}<Left>
 let g:neocomplcache_snippets_dir = '~/.neocon_user/neocon_snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
-exe 'imap <expr><C-'. s:bind_snip. '>  neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
+exe 'imap <expr><C-'. s:bind_snip. '>  Textsquash#Expandable() ? Textsquash#Expand() : neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
 "スニペットを編集する
 nnoremap ,os :<C-u>wincmd s| NeoComplCacheEditSnippets<CR>
@@ -2800,14 +2801,16 @@ nnoremap ,ors :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
 
 
 
+"Textsquash
+let g:textsquash_word = {'_': '[&@0-9_a-zA-Z:\[\]'']'}
+au FileType squash  noremap <buffer>q <C-w>q
+nnoremap <silent>,oq     :<C-u>call Textsquash#Open_squashfile('split')<CR>
+
 
 "surround.vim "{{{
 let g:surround_no_mappings = 1
 nmap      ds   <Plug>Dsurround
 nmap      cs   <Plug>Csurround
-nmap      <C-s>   <Plug>Ysurround
-nmap      <C-s>s  <Plug>Yssurround
-nmap      <C-s>S   <Plug>Ysurround$
 nmap      gs   <Plug>Ysurround
 nmap      gss  <Plug>Yssurround
 nmap      gsS   <Plug>Ysurround$
@@ -2815,7 +2818,6 @@ nmap      g<C-s>  <Plug>Ygsurround
 nmap      g<C-s>s <Plug>Ygssurround
 nmap      g<C-s>S  <Plug>Ygsurround$
 xmap      s    <Plug>Vsurround
-xmap      <C-s>   <Plug>VSurround
 xmap      g<C-s>   <Plug>Vgsurround
 nmap      ys   <Plug>Ysurround
 nmap      yS   <Plug>Ygsurround
@@ -3018,6 +3020,13 @@ autocmd BufCreate *.alter call s:alterbuf_load()
 
 "autocmd CursorMoved * redraw
 
+
+"vitalモジュールの挙動確認用
+let g:Vital = vital#of('vital').load(
+\  ['System.Filepath'],
+\  ['Data.List'],
+\  ['Lclib.String'],
+\  ['Data.String'])
 
 
 unlet s:bind_win s:bind_comp s:bind_snip s:bind_markj s:bind_reg
