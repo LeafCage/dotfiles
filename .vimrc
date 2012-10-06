@@ -2285,7 +2285,7 @@ nnoremap ,amm :<C-u>Unite mark<CR>
   let g:unite_source_mark_marks = '`abcdefghijkl".^ABCDEFGHIJKLmnopqrstuvwxyzMNOPQRSTUVWXYZ012'
 nnoremap ,ai :<C-u>Unite outline_indent<CR>
 nnoremap ,aia :<C-u>Unite outline_indent:a<CR>
-autocmd BufEnter *
+"autocmd BufEnter *
   \   if empty(&buftype)
   \|      nnoremap <buffer> <C-]> :<C-u>UniteWithCursorWord -immediately tag<CR>
   \|  endif
