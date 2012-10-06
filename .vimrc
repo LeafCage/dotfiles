@@ -2879,12 +2879,63 @@ xmap as <Plug>(textobj-between-a)
 xmap is <Plug>(textobj-between-i)
 omap as <Plug>(textobj-between-a)
 omap is <Plug>(textobj-between-i)
-xmap ae <Plug>(textobj-between-a)
-xmap ie <Plug>(textobj-between-i)
-omap ae <Plug>(textobj-between-a)
-omap ie <Plug>(textobj-between-i)
 
 call textobj#user#plugin('cword', {'-': {'*pattern*': '\k*\%#\k*', 'select': ['*',], }, })
+let textobj_star = {'select-a': 'a*', 'select-i': 'i*',
+  \ '*select-a-function*': 's:Textobj_star_a', '*select-i-function*': 's:Textobj_star_i', '*sfile*': expand('<sfile>')}
+let textobj_bar = {'select-a': 'a<Bar>', 'select-i': 'i<Bar>',
+  \ '*select-a-function*': 's:Textobj_bar_a', '*select-i-function*': 's:Textobj_bar_i', '*sfile*': expand('<sfile>')}
+let textobj_dot = {'select-a': 'a.', 'select-i': 'i.',
+  \ '*select-a-function*': 's:Textobj_dot_a', '*select-i-function*': 's:Textobj_dot_i', '*sfile*': expand('<sfile>')}
+function! s:Textobj_star_a() "{{{
+  return s:__textobj_piece('*', 'a')
+endfunction
+"}}}
+function! s:Textobj_star_i() "{{{
+  return s:__textobj_piece('*', 'i')
+endfunction
+"}}}
+function! s:Textobj_bar_a() "{{{
+  return s:__textobj_piece('|', 'a')
+endfunction
+"}}}
+function! s:Textobj_bar_i() "{{{
+  return s:__textobj_piece('|', 'i')
+endfunction
+"}}}
+function! s:Textobj_dot_a() "{{{
+  return s:__textobj_piece('.', 'a')
+endfunction
+"}}}
+function! s:Textobj_dot_i() "{{{
+  return s:__textobj_piece('.', 'i')
+endfunction
+"}}}
+function! s:__textobj_piece(char, i6a) "{{{
+  let save_view = winsaveview()
+  let crrline = line('.')
+  if a:i6a == 'i'
+    let b = search('\M'. a:char.'\[^'.a:char .']', 'bce', crrline)
+  else
+    let b = search('\M'. a:char, 'bce', crrline)
+  endif
+  let bgn = getpos('.')
+
+  if a:i6a == 'i'
+    let e = search('\M\[^'. a:char .']\ze'. a:char, '', crrline)
+  else
+    let e = search('\M'. a:char, '', crrline)
+  endif
+  let end = getpos('.')
+
+  if b==0 || e==0 || len(a:char)>1
+    return
+  endif
+  call winrestview(save_view)
+  return ['v', bgn, end]
+endfunction
+"}}}
+call textobj#user#plugin('piece', {'star': textobj_star, 'bar': textobj_bar, 'dot': textobj_dot})
 
 
 
