@@ -756,8 +756,8 @@ aug END
 aug qf
   au!
   au FileType qf
-    \ noremap <buffer> q :cclose<CR>|
-    \ noremap <buffer> <CR> :.cc<CR>|
+    \ noremap <buffer> q :cclose<CR><Bar>
+    \ noremap <buffer> <CR> :.cc<CR><Bar>
     \ endif
 aug END
 
@@ -1420,7 +1420,7 @@ nnoremap [op]t8   :<C-u>setl ts=8 sw=8 sts=8<CR>
 nnoremap <silent>[op]r   :<C-u>let &rnu = !&rnu<CR>
 nnoremap <silent>[op]n   :<C-u>let &nu = !&nu<CR>
 nnoremap <silent>[op]l   :<C-u>let &list = !&list<CR>
-nnoremap <silent>[op]m   :<C-u>if &go=~'m'| set go-=m| else| set go+=m| endif<CR>
+nnoremap <silent>[op]m   :<C-u>if &go=~'m'<Bar> set go-=m<Bar> else<Bar> set go+=m<Bar> endif<CR>
 nnoremap <silent>[op]cc   :<C-u>let &cc = empty(&cc) ? '+1' : ''<CR>
 nnoremap <silent>[op]cg   :<C-u>let &cuc = !&cuc<CR>
 nnoremap <silent>[op]cl   :<C-u>let &cul = !&cul<CR>
@@ -1432,9 +1432,9 @@ nnoremap <silent>[op]fm   :<C-u>let &fdm = &fdm=='marker'?'expr':&fdm=='expr'?'d
 nnoremap <silent>[op]a   :<C-u>se ai! ai?<CR>
 set pastetoggle=<F12> "NOTE: paste mode 中は'ai'無効
 "&foに ro を加えたり外したり（コメント文字自動挿入）
-nnoremap <silent>[op]fr   :<C-u>if &fo=~'[ro]'| setl fo-=ro| echo 'fo -=ro'| else| setl fo+=ro| echo 'fo +=ro'|endif<CR>
+nnoremap <silent>[op]fr   :<C-u>if &fo=~'[ro]'<Bar> setl fo-=ro<Bar> echo 'fo -=ro'<Bar> else<Bar> setl fo+=ro<Bar> echo 'fo +=ro'<Bar>endif<CR>
 "&foに t を加えたり外したり（&tw自動折り返し）
-nnoremap <silent>[op]ft   :<C-u>if &fo=~'[tc]'| setl fo-=tc| echo 'fo -=tc'| else| setl fo+=tc| echo 'fo +=tc'|endif<CR>
+nnoremap <silent>[op]ft   :<C-u>if &fo=~'[tc]'<Bar> setl fo-=tc<Bar> echo 'fo -=tc'<Bar> else<Bar> setl fo+=tc<Bar> echo 'fo +=tc'<Bar>endif<CR>
 nnoremap <silent>[op]sw   :<C-u>se ws! ws?<CR>
 nnoremap <silent>[op]sc   :<C-u>se ic! ic?<CR>
 nnoremap <silent>[op]si   :<C-u>se is! is?<CR>
@@ -1478,8 +1478,8 @@ nnoremap ,og :e ~/.gitconfig<CR>
 "ファイルタイプを追加する
 "自動でバックアップするタイプになる
 "noremap ,t  :set filetype+=.autowrite<CR>
-"noremap ,T  :set filetype-=.autowrite|
-  \ if exists('#autowrite')| augroup! autowrite| endif<CR>
+"noremap ,T  :set filetype-=.autowrite<Bar>
+  \ if exists('#autowrite')<Bar> augroup! autowrite<Bar> endif<CR>
 
 nnoremap  ,xv :ReloadVimrc<CR>
 nnoremap  [C-k]v :ReloadVimrc<CR>
@@ -1490,7 +1490,7 @@ nnoremap <expr>[C-g]<Space>    ":\<C-u>h "
 "-----------------------------------------------------------------------------
 
 "テスト変数
-nnoremap [C-k]tu :unlet g:test01 |unlet g:test02 |unlet g:test03 |unlet g:test04<CR>
+nnoremap [C-k]tu :unlet g:test01 <Bar>unlet g:test02 <Bar>unlet g:test03 <Bar>unlet g:test04<CR>
 nnoremap [C-k]tt :call <SID>display_test_vars()<CR>
 nnoremap [C-k]tk :call PeekEcho()<CR>
 function! s:display_test_vars() "{{{
@@ -2214,7 +2214,7 @@ au FileType unite imap <silent><buffer><expr> x
   au FileType unite nnoremap <buffer><expr><C-s>      unite#mappings#set_current_filters(
     \ empty(unite#mappings#get_current_filters()) ? ['sorter_reverse'] : [])
   "no_quit切換
-  au FileType unite nnoremap <buffer><C-@>   :let b:unite.context.no_quit = !b:unite.context.no_quit|echo b:unite.context.no_quit<CR>
+  au FileType unite nnoremap <buffer><C-@>   :let b:unite.context.no_quit = !b:unite.context.no_quit<Bar>echo b:unite.context.no_quit<CR>
 aug END
 
 AlterCommand u[nite] Unite
@@ -2438,7 +2438,7 @@ let g:netrw_liststyle = 3 "常にtree view
 
 
 "vimshell.vim"{{{
-noremap <silent>,xs :let A = expand('%:p:h')| exe 'VimShellTab '. A|unlet A<CR>
+noremap <silent>,xs :let A = expand('%:p:h')<Bar> exe 'VimShellTab '. A<Bar>unlet A<CR>
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <buffer> <C-j> <Plug>(vimshell_enter)
 au FileType vimshell imap <buffer> <C-j> <Plug>(vimshell_enter)
@@ -2805,9 +2805,9 @@ let g:neocomplcache_snippets_dir = '~/.neocon_user/neocon_snippets' "スニペ�
 exe 'imap <expr><C-'. s:bind_snip. '>  Textsquash#Expandable() ? Textsquash#Expand() : neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
 "スニペットを編集する
-nnoremap ,os :<C-u>wincmd s| NeoComplCacheEditSnippets<CR>
-nnoremap ,oS :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
-nnoremap ,ors :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
+nnoremap ,os :<C-u>wincmd s<Bar> NeoComplCacheEditSnippets<CR>
+nnoremap ,oS :<C-u>wincmd s<Bar> NeoComplCacheEditRuntimeSnippets<CR>
+nnoremap ,ors :<C-u>wincmd s<Bar> NeoComplCacheEditRuntimeSnippets<CR>
 "}}}
 
 
