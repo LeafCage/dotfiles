@@ -2683,6 +2683,7 @@ let g:submode_timeoutlen = 5000
 
 
 "revolver.vim
+let g:revolver_register_recording_cylinder = "vwxy"
 nmap mm <Plug>(revolver-mark-local-typeB)
 nmap mM <Plug>(revolver-mark-global)
 nmap m<Space> <Plug>(revolver-mark-global)
