@@ -1531,6 +1531,19 @@ function! s:Fixed_zf() range "{{{
 endfunction
 "}}}
 
+"from TIM Labs kana
+vnoremap <expr> I  <SID>Force_blockwise_visual('I')
+vnoremap <expr> A  <SID>Force_blockwise_visual('A')
+function! s:Force_blockwise_visual(next_key) "{{{
+  if mode() ==# 'v'
+    return "\<C-v>" . a:next_key
+  elseif mode() ==# 'V'
+    return "\<C-v>0o$" . a:next_key
+  else  " mode() ==# "\<C-v>"
+    return a:next_key
+  endif
+endfunction"}}}
+
 "0,0,0などの並んだ数字を選択して連番にするコマンドhttp://d.hatena.ne.jp/fuenor/20090907/1252315621
 vnoremap <silent> <F4><C-a> :ContinuousNumber <C-a><CR>
 vnoremap <silent> <F4><C-x> :ContinuousNumber <C-x><CR>
