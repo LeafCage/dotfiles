@@ -776,7 +776,7 @@ aug END
 "=============================================================================
 "Mapping Basis
 let mapleader = '\'
-let maplocalleader = '_'
+let maplocalleader = '\\'
 noremap [space] <nop>
 nmap <Space> [space]
 nmap <C-k> [C-k]
@@ -820,11 +820,6 @@ call submode#map('gjgk', 'nv', '', 'j', 'gj')
 call submode#map('gjgk', 'nv', '', 'k', 'gk')
 "nnoremap gj j|nnoremap gk k|vnoremap gj j|vnoremap gk k
 nnoremap z<C-l> <C-l>
-"-----------------------------------------------------------------------------
-"Alternative
-
-"undoフラグはctrlを押しっぱなしでも有効
-inoremap <c-g><c-u> <c-g>u
 
 "-----------------------------------------------------------------------------
 "Compensation
@@ -887,7 +882,7 @@ nnoremap [space]K <C-w>}
 
 exe 'nnoremap '. s:bind_win. 's <C-w>s'
 exe 'nnoremap '. s:bind_win. 'b <C-w>v'
-exe 'nnoremap '. s:bind_win. 'o <C-w>o'
+exe 'nnoremap '. s:bind_win. 'oo <C-w>o'
 "現在Bufを新しいタブページで開く
 nnoremap <silent> <C-w>; :tab split<CR>
 exe 'nnoremap <silent> '. s:bind_win. 'v :tab split<CR>'
@@ -899,7 +894,6 @@ noremap <SID>bd :bd<CR>
 nmap dn <SID>KeepWinBd
 noremap <SID>KeepWinBd :KeepWinBd<CR>
 nmap dq <C-w>c
-exe 'nnoremap '. s:bind_win. 'q <C-w>c'
 exe 'nnoremap '. s:bind_win. 'dd <C-w>c'
 nmap <silent>dv <SID>tabc
 nmap <silent>dgt <SID>tabc
@@ -1206,16 +1200,13 @@ noremap <SID>Put_SearchStartSign  :<C-u>call <SID>Put_SearchStartSign(0)<CR>
 let s:bind_markj = '@'
 "カーソル移動コマンド(Normal,Omap)"{{{
 
+noremap _ +
+
 noremap [space]w W
 noremap [space]b B
 noremap [space]e E
 noremap [space]ge gE
-omap <C-w> W
-omap i<C-w> iW
-omap a<C-w> aW
-omap <C-b> B
-omap <C-e> E
-omap g<C-e> gE
+omap <C-w> iW
 
 "'%'コマンドを拡張する#Bible4-10
 runtime macros/matchit.vim
@@ -1351,7 +1342,8 @@ endfunction
 let s:bind_reg = '<C-@>'
 
 nnoremap ,w :<C-u>w<CR>
-nnoremap ,q :<C-u>qa<CR>
+nnoremap ,qq :<C-u>qa<CR>
+nnoremap ,q, :<C-u>qa<CR>
 map Y y$
 noremap <F4> "+
 exe 'nnoremap '. s:bind_reg. ' "'
@@ -1393,6 +1385,7 @@ endfunction "}}}
 "直前のコマンドを再度実行する
 "nnoremap ,. q:k<CR>
 nnoremap @: @:
+nmap c. @:
 "ペーストしたテキストを再選択するBible3-15
 nnoremap <expr> gb '`[' . strpart(getregtype(), 0,1) . '`]'
 onoremap <silent> gb :normal gb<CR>
@@ -2685,7 +2678,7 @@ exe 'nmap '. s:bind_markj. ', <Plug>(revolver-jump-last-local-mark)zv'
 nnoremap z,m m
 "nmap <C-@><C-_> <Plug>(revolver-jump-last-local-mark)zv
 "let g:revolver_register_enable_logging = 2
-nmap zq <Plug>(revolver-register-recording)
+nmap mq <Plug>(revolver-register-recording)
 nnoremap z,q q
 
 
@@ -2694,6 +2687,9 @@ let g:lastbuf_level= 2
 exe 'noremap <silent>'. s:bind_win. 'u :LastBuf<CR>'
 
 
+"unite-recording
+nmap z@ <Plug>(unite-recording-execute)
+nnoremap ,ar :<C-u>Unite recording<CR>
 
 "-----------------------------------------------------------------------------
 "プラグイン 入力
@@ -2714,13 +2710,14 @@ vmap [cm]b <Plug>NERDCommenterMinimal
 
 
 "altercmd (other)
-AlterCommand g[it] Git
-AlterCommand grao Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
-AlterCommand c[tags] !start ctags %
+AlterCommand g[it]     Git
+AlterCommand grao  Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
+AlterCommand c[tags]  !start ctags %
 AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h:h')<CR>
-AlterCommand sf setf
-AlterCommand so so %
-AlterCommand me mes
+AlterCommand sf     setf
+AlterCommand so     so %
+AlterCommand me    mes
+AlterCommand 41.    h 41.6
 
 
 
@@ -2804,7 +2801,10 @@ nnoremap ,ors :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
 "Textsquash
 let g:textsquash_word = {'_': '[&@0-9_a-zA-Z:\[\]'']'}
 au FileType squash  noremap <buffer>q <C-w>q
-nnoremap <silent>,oq     :<C-u>call Textsquash#Open_squashfile('split')<CR>
+nnoremap <silent>,oq     :<C-u>call Textsquash#Open_squashfile('split', &ft)<CR>
+nnoremap <silent>,oQ     :<C-u>call Textsquash#Open_squashfile('split', '_')<CR>
+nmap ,oq    <Plug>(textsquash-open-current-filetype-squashfile)
+nmap ,oQ    <Plug>(textsquash-open-default-squashfile)
 
 
 "surround.vim "{{{
