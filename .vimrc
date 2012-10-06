@@ -730,12 +730,12 @@ endif
 
 "=============================================================================
 "ファイルタイプ設定
-au BufRead,BufNewFile *.markdown,*.md    set ft=markdown
+au BufRead,BufNewFile *.markdown,*.md    set ft=markdown nofoldenable
 autocmd FileType js setlocal ft=javascript
 
 augroup gitcommit
   au!
-  au FileType gitcommit  setl nofoldenable tw=60
+  au FileType gitcommit  setl nofoldenable nomodeline tw=60 fenc=utf-8
 augroup END
 
 au FileType snippet setl nofoldenable
