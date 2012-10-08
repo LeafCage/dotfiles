@@ -87,6 +87,7 @@ NeoBundle 'thinca/vim-quickrun'
 "exe "NeoBundle 'kien/ctrlp.vim'" | "カレントファイルにアクセスする
 "NeoBundle 'vim-scripts/vimwiki'
 "NeoBundle 'https://github.com/fuenor/qfixhowm.git'
+NeoBundle 'kannokanno/vimtest'
 
 "--------------------------------------
 "ライブラリ
@@ -754,7 +755,7 @@ endif
 
 "=============================================================================
 "ファイルタイプ設定
-au BufRead,BufNewFile *.markdown,*.md    set ft=markdown nofoldenable
+au BufRead,BufNewFile *.markdown,*.md    setl ft=markdown nofoldenable
 autocmd FileType js setlocal ft=javascript
 
 augroup gitcommit
@@ -906,7 +907,7 @@ nnoremap [space]K <C-w>}
 
 exe 'nnoremap '. s:bind_win. 's <C-w>s'
 exe 'nnoremap '. s:bind_win. 'b <C-w>v'
-exe 'nnoremap '. s:bind_win. 'oo <C-w>o'
+exe 'nnoremap '. s:bind_win. 'om <C-w>o'
 "現在Bufを新しいタブページで開く
 nnoremap <silent> <C-w>; :tab split<CR>
 exe 'nnoremap <silent> '. s:bind_win. 'v :tab split<CR>'
@@ -1419,6 +1420,10 @@ onoremap <silent> gv :normal gv<CR>
 nnoremap [space]u :earlier 1f<CR>
 "タグ検索をUniteで置き換える
 "nnoremap <silent>  <C-]>  :<C-u>UniteWithCursorWord -immediately tag<CR>
+
+"インデントを合わせて貼り付け
+nnoremap ]p p`[=`]
+nnoremap [p P`[=`]
 
 
 "-----------------------------------------------------------------------------
@@ -2726,7 +2731,9 @@ exe 'noremap <silent>'. s:bind_win. 'u :LastBuf<CR>'
 
 
 "unite-recording
-nmap z@ <Plug>(unite-recording-execute)
+nmap ZZ <Plug>(unite-recording-execute)
+nmap @@ <Plug>(unite-recording-execute)
+nnoremap ZB     :<C-u>UniteRecordingBegin<CR>
 nnoremap ,ar :<C-u>Unite recording<CR>
 
 "-----------------------------------------------------------------------------
@@ -2755,7 +2762,8 @@ AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h:h')<CR>
 AlterCommand sf     setf
 AlterCommand so     so %
 AlterCommand me    mes
-AlterCommand 41.    h 41.6
+AlterCommand fl    h function-list
+AlterCommand h41    h function-list
 
 
 
