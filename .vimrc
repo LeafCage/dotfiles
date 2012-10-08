@@ -709,13 +709,20 @@ au GUIEnter * set vb t_vb=
 
 "Font "{{{
 if has('win32')
-  set gfn=MeiryoKe_Gothic:h8:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  set gfn=Migu_1M:h10:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  "set gfn=MeiryoKe_Gothic:h8:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  if hostname() == 'TC4400'
+    set gfn=Migu_1M:h10:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  endif
   if hostname() == 'SIICP11ALJ'
     set gfn=Migu_1M:h13:cSHIFTJIS,\ MS_Gothic:h14:cSHIFTJIS
   endif
   if hostname() == 'ATSUTO'
     "set gfn=Migu_1M:h15:cSHIFTJIS,\ MS_Gothic:h14:cSHIFTJIS
     "set gfn=Migu_1M:h17:cSHIFTJIS,\ MS_Gothic:h14:cSHIFTJIS
+    set gfn=Migu_1M:h11:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  endif
+  if hostname() =~ '\u\+-PC'
     set gfn=Migu_1M:h11:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
   endif
   "set gfn=Migu_1M:h9:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
