@@ -23,21 +23,36 @@ se fileformats=dos,unix,mac
 
 "$HOME がないとき、$VIM/TMPHOME を $HOME にする "{{{
 if !exists("$HOME")
-  let $HOME=$VIM. '/TMPHOME'
+  if isdirectory('/hom')
+    let $HOME='/hom'
+  else
+    let $HOME=$VIM. '/TMPHOME'
+  endif
 endif
+"}}}
+
+"$PATHを追加{{{
+function! s:Add_path(path) "{{{
+  if $PATH !~ a:path
+    let $PATH .= a:path. ';'
+  endif
+endfunction
+"}}}
+let $PATH .= ';'
+call s:Add_path('/bnr/cmd/MinGW/bin')
+call s:Add_path('/bnr/cmd/path')
+call s:Add_path('/bnr/cmd/PortableGit-1.7.11-preview20120620/bin')
 "}}}
 
 "$VIMFILES "{{{
 if has('vim_starting')
   if isdirectory(expand('$HOME/vimfiles', ':p'))
     let $VIMFILES = $HOME. '/vimfiles'
-    set runtimepath+=$HOME/vimfiles/neobundle/neobundle.vim
-    call neobundle#rc(expand('$HOME/vimfiles/neobundle'))
   else
     let $VIMFILES = $VIM. '/vimfiles'
-    set runtimepath+=$VIM/vimfiles/neobundle/neobundle.vim
-    call neobundle#rc(expand('$VIM/vimfiles/neobundle'))
   endif
+  set runtimepath+=$VIMFILES/neobundle/neobundle.vim
+  call neobundle#rc(expand('$VIMFILES/neobundle'))
 endif
 "}}}
 "}}}
@@ -72,6 +87,7 @@ NeoBundle 'thinca/vim-quickrun'
 "exe "NeoBundle 'kien/ctrlp.vim'" | "カレントファイルにアクセスする
 "NeoBundle 'vim-scripts/vimwiki'
 "NeoBundle 'https://github.com/fuenor/qfixhowm.git'
+NeoBundle 'kannokanno/vimtest'
 
 "--------------------------------------
 "ライブラリ
@@ -134,9 +150,11 @@ exe "NeoBundle 'tsukkee/unite-help'" |
 NeoBundle 'tyru/current-func-info.vim'
 exe "NeoBundle 'https://github.com/ujihisa/neco-look.git'" | "要look.exe
 NeoBundle 'h1mesuke/unite-outline'
+NeoBundle 'thinca/vim-prettyprint'
+NeoBundle 'thinca/vim-scouter'
 "NeoBundle 'Shougo/echodoc'
 "NeoBundleLazy 'choplin/unite-vim_hacks', {'depends', 'thinca/vim-openbuf'}
-NeoBundle 'rbtnn/sign.vim'
+NeoBundleLazy 'rbtnn/sign.vim'
 
 "--------------------------------------
 "GUI操作
@@ -381,7 +399,7 @@ se sm mat=1  "括弧の対応表示時間
 "特殊UI
 
 "補完を有効にする
-set completeopt=menu,menuone,longest,preview
+set completeopt=menu,menuone,preview
 
 "折り畳み
 se fdm=marker cms=%s fdc=5 fdt=FoldCCtext()
@@ -447,7 +465,7 @@ if has('syntax')
 endif
 
 "i_CTRL-cでstatusLineの色が変更されない問題を修正
-inoremap <silent><C-c> <C-c>:call <SID>Cng_stlcolor('Leave')<CR>
+"inoremap <silent><C-c> <C-c>:call <SID>Cng_stlcolor('Leave')<CR>
 
 let s:slhlcmd = ''
 function! s:Cng_stlColor(mode) "{{{
@@ -692,13 +710,20 @@ au GUIEnter * set vb t_vb=
 
 "Font "{{{
 if has('win32')
-  set gfn=MeiryoKe_Gothic:h8:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  set gfn=Migu_1M:h10:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  "set gfn=MeiryoKe_Gothic:h8:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  if hostname() == 'TC4400'
+    set gfn=Migu_1M:h10:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  endif
   if hostname() == 'SIICP11ALJ'
     set gfn=Migu_1M:h13:cSHIFTJIS,\ MS_Gothic:h14:cSHIFTJIS
   endif
   if hostname() == 'ATSUTO'
     "set gfn=Migu_1M:h15:cSHIFTJIS,\ MS_Gothic:h14:cSHIFTJIS
     "set gfn=Migu_1M:h17:cSHIFTJIS,\ MS_Gothic:h14:cSHIFTJIS
+    set gfn=Migu_1M:h11:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  endif
+  if hostname() =~ '\u\+-PC'
     set gfn=Migu_1M:h11:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
   endif
   "set gfn=Migu_1M:h9:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
@@ -730,12 +755,12 @@ endif
 
 "=============================================================================
 "ファイルタイプ設定
-au BufRead,BufNewFile *.markdown,*.md    set ft=markdown
+au BufRead,BufNewFile *.markdown,*.md    setl ft=markdown nofoldenable
 autocmd FileType js setlocal ft=javascript
 
 augroup gitcommit
   au!
-  au FileType gitcommit  setl nofoldenable tw=60
+  au FileType gitcommit  setl nofoldenable nomodeline tw=60 fenc=utf-8
 augroup END
 
 au FileType snippet setl nofoldenable
@@ -756,8 +781,8 @@ aug END
 aug qf
   au!
   au FileType qf
-    \ noremap <buffer> q :cclose<CR>|
-    \ noremap <buffer> <CR> :.cc<CR>|
+    \ noremap <buffer> q :cclose<CR><Bar>
+    \ noremap <buffer> <CR> :.cc<CR><Bar>
     \ endif
 aug END
 
@@ -776,7 +801,7 @@ aug END
 "=============================================================================
 "Mapping Basis
 let mapleader = '\'
-let maplocalleader = '_'
+let maplocalleader = '\\'
 noremap [space] <nop>
 nmap <Space> [space]
 nmap <C-k> [C-k]
@@ -811,6 +836,7 @@ noremap ; :
 noremap + ;
 noremap - ^
 noremap S $
+noremap <C-s> $
 nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
 call submode#enter_with('gjgk', 'nv', '', 'gj', 'gj')
 call submode#enter_with('gjgk', 'nv', '', 'gk', 'gk')
@@ -819,11 +845,6 @@ call submode#map('gjgk', 'nv', '', 'j', 'gj')
 call submode#map('gjgk', 'nv', '', 'k', 'gk')
 "nnoremap gj j|nnoremap gk k|vnoremap gj j|vnoremap gk k
 nnoremap z<C-l> <C-l>
-"-----------------------------------------------------------------------------
-"Alternative
-
-"undoフラグはctrlを押しっぱなしでも有効
-inoremap <c-g><c-u> <c-g>u
 
 "-----------------------------------------------------------------------------
 "Compensation
@@ -886,7 +907,7 @@ nnoremap [space]K <C-w>}
 
 exe 'nnoremap '. s:bind_win. 's <C-w>s'
 exe 'nnoremap '. s:bind_win. 'b <C-w>v'
-exe 'nnoremap '. s:bind_win. 'o <C-w>o'
+exe 'nnoremap '. s:bind_win. 'om <C-w>o'
 "現在Bufを新しいタブページで開く
 nnoremap <silent> <C-w>; :tab split<CR>
 exe 'nnoremap <silent> '. s:bind_win. 'v :tab split<CR>'
@@ -898,7 +919,6 @@ noremap <SID>bd :bd<CR>
 nmap dn <SID>KeepWinBd
 noremap <SID>KeepWinBd :KeepWinBd<CR>
 nmap dq <C-w>c
-exe 'nnoremap '. s:bind_win. 'q <C-w>c'
 exe 'nnoremap '. s:bind_win. 'dd <C-w>c'
 nmap <silent>dv <SID>tabc
 nmap <silent>dgt <SID>tabc
@@ -1205,16 +1225,13 @@ noremap <SID>Put_SearchStartSign  :<C-u>call <SID>Put_SearchStartSign(0)<CR>
 let s:bind_markj = '@'
 "カーソル移動コマンド(Normal,Omap)"{{{
 
+noremap _ +
+
 noremap [space]w W
 noremap [space]b B
 noremap [space]e E
 noremap [space]ge gE
-omap <C-w> W
-omap i<C-w> iW
-omap a<C-w> aW
-omap <C-b> B
-omap <C-e> E
-omap g<C-e> gE
+omap <C-w> iW
 
 "'%'コマンドを拡張する#Bible4-10
 runtime macros/matchit.vim
@@ -1350,7 +1367,8 @@ endfunction
 let s:bind_reg = '<C-@>'
 
 nnoremap ,w :<C-u>w<CR>
-nnoremap ,q :<C-u>qa<CR>
+nnoremap ,qq :<C-u>qa<CR>
+nnoremap ,q, :<C-u>qa<CR>
 map Y y$
 noremap <F4> "+
 exe 'nnoremap '. s:bind_reg. ' "'
@@ -1392,6 +1410,7 @@ endfunction "}}}
 "直前のコマンドを再度実行する
 "nnoremap ,. q:k<CR>
 nnoremap @: @:
+nmap c. @:
 "ペーストしたテキストを再選択するBible3-15
 nnoremap <expr> gb '`[' . strpart(getregtype(), 0,1) . '`]'
 onoremap <silent> gb :normal gb<CR>
@@ -1401,6 +1420,10 @@ onoremap <silent> gv :normal gv<CR>
 nnoremap [space]u :earlier 1f<CR>
 "タグ検索をUniteで置き換える
 "nnoremap <silent>  <C-]>  :<C-u>UniteWithCursorWord -immediately tag<CR>
+
+"インデントを合わせて貼り付け
+nnoremap ]p p`[=`]
+nnoremap [p P`[=`]
 
 
 "-----------------------------------------------------------------------------
@@ -1426,7 +1449,7 @@ nnoremap [op]t8   :<C-u>setl ts=8 sw=8 sts=8<CR>
 nnoremap <silent>[op]r   :<C-u>let &rnu = !&rnu<CR>
 nnoremap <silent>[op]n   :<C-u>let &nu = !&nu<CR>
 nnoremap <silent>[op]l   :<C-u>let &list = !&list<CR>
-nnoremap <silent>[op]m   :<C-u>if &go=~'m'| set go-=m| else| set go+=m| endif<CR>
+nnoremap <silent>[op]m   :<C-u>if &go=~'m'<Bar> set go-=m<Bar> else<Bar> set go+=m<Bar> endif<CR>
 nnoremap <silent>[op]cc   :<C-u>let &cc = empty(&cc) ? '+1' : ''<CR>
 nnoremap <silent>[op]cg   :<C-u>let &cuc = !&cuc<CR>
 nnoremap <silent>[op]cl   :<C-u>let &cul = !&cul<CR>
@@ -1438,9 +1461,9 @@ nnoremap <silent>[op]fm   :<C-u>let &fdm = &fdm=='marker'?'expr':&fdm=='expr'?'d
 nnoremap <silent>[op]a   :<C-u>se ai! ai?<CR>
 set pastetoggle=<F12> "NOTE: paste mode 中は'ai'無効
 "&foに ro を加えたり外したり（コメント文字自動挿入）
-nnoremap <silent>[op]fr   :<C-u>if &fo=~'[ro]'| setl fo-=ro| echo 'fo -=ro'| else| setl fo+=ro| echo 'fo +=ro'|endif<CR>
+nnoremap <silent>[op]fr   :<C-u>if &fo=~'[ro]'<Bar> setl fo-=ro<Bar> echo 'fo -=ro'<Bar> else<Bar> setl fo+=ro<Bar> echo 'fo +=ro'<Bar>endif<CR>
 "&foに t を加えたり外したり（&tw自動折り返し）
-nnoremap <silent>[op]ft   :<C-u>if &fo=~'[tc]'| setl fo-=tc| echo 'fo -=tc'| else| setl fo+=tc| echo 'fo +=tc'|endif<CR>
+nnoremap <silent>[op]ft   :<C-u>if &fo=~'[tc]'<Bar> setl fo-=tc<Bar> echo 'fo -=tc'<Bar> else<Bar> setl fo+=tc<Bar> echo 'fo +=tc'<Bar>endif<CR>
 nnoremap <silent>[op]sw   :<C-u>se ws! ws?<CR>
 nnoremap <silent>[op]sc   :<C-u>se ic! ic?<CR>
 nnoremap <silent>[op]si   :<C-u>se is! is?<CR>
@@ -1484,8 +1507,8 @@ nnoremap ,og :e ~/.gitconfig<CR>
 "ファイルタイプを追加する
 "自動でバックアップするタイプになる
 "noremap ,t  :set filetype+=.autowrite<CR>
-"noremap ,T  :set filetype-=.autowrite|
-  \ if exists('#autowrite')| augroup! autowrite| endif<CR>
+"noremap ,T  :set filetype-=.autowrite<Bar>
+  \ if exists('#autowrite')<Bar> augroup! autowrite<Bar> endif<CR>
 
 nnoremap  ,xv :ReloadVimrc<CR>
 nnoremap  [C-k]v :ReloadVimrc<CR>
@@ -1496,7 +1519,7 @@ nnoremap <expr>[C-g]<Space>    ":\<C-u>h "
 "-----------------------------------------------------------------------------
 
 "テスト変数
-nnoremap [C-k]tu :unlet g:test01 |unlet g:test02 |unlet g:test03 |unlet g:test04<CR>
+nnoremap [C-k]tu :unlet g:test01 <Bar>unlet g:test02 <Bar>unlet g:test03 <Bar>unlet g:test04<CR>
 nnoremap [C-k]tt :call <SID>display_test_vars()<CR>
 nnoremap [C-k]tk :call PeekEcho()<CR>
 function! s:display_test_vars() "{{{
@@ -1536,6 +1559,19 @@ function! s:Fixed_zf() range "{{{
   call setline(a:lastline, getline(a:lastline). cmsStart.fmr[1].cmsEnd)
 endfunction
 "}}}
+
+"from TIM Labs kana
+vnoremap <expr> I  <SID>Force_blockwise_visual('I')
+vnoremap <expr> A  <SID>Force_blockwise_visual('A')
+function! s:Force_blockwise_visual(next_key) "{{{
+  if mode() ==# 'v'
+    return "\<C-v>" . a:next_key
+  elseif mode() ==# 'V'
+    return "\<C-v>0o$" . a:next_key
+  else  " mode() ==# "\<C-v>"
+    return a:next_key
+  endif
+endfunction"}}}
 
 "0,0,0などの並んだ数字を選択して連番にするコマンドhttp://d.hatena.ne.jp/fuenor/20090907/1252315621
 vnoremap <silent> <F4><C-a> :ContinuousNumber <C-a><CR>
@@ -1956,13 +1992,13 @@ function! s:Yank_replace(fluct) "{{{
 
   let [bgn, end] = [line("'["), line("']")]
   if bgn != line('.') || bgn == 0 || end == 0
-  return
-endif
-let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
-call setreg('"', replace_content,)
-silent exe 'normal! u'
-silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
-call setreg('"', save_reg, save_regtype)
+    return
+  endif
+  let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
+  call setreg('"', replace_content,)
+  silent exe 'normal! u'
+  silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
+  call setreg('"', save_reg, save_regtype)
 endfunction
 "}}}
 function! s:__get_yank_histories() "{{{
@@ -2207,7 +2243,7 @@ au FileType unite imap <silent><buffer><expr> x
   au FileType unite nnoremap <buffer><expr><C-s>      unite#mappings#set_current_filters(
     \ empty(unite#mappings#get_current_filters()) ? ['sorter_reverse'] : [])
   "no_quit切換
-  au FileType unite nnoremap <buffer><C-@>   :let b:unite.context.no_quit = !b:unite.context.no_quit|echo b:unite.context.no_quit<CR>
+  au FileType unite nnoremap <buffer><C-@>   :let b:unite.context.no_quit = !b:unite.context.no_quit<Bar>echo b:unite.context.no_quit<CR>
 aug END
 
 AlterCommand u[nite] Unite
@@ -2278,7 +2314,7 @@ nnoremap ,amm :<C-u>Unite mark<CR>
   let g:unite_source_mark_marks = '`abcdefghijkl".^ABCDEFGHIJKLmnopqrstuvwxyzMNOPQRSTUVWXYZ012'
 nnoremap ,ai :<C-u>Unite outline_indent<CR>
 nnoremap ,aia :<C-u>Unite outline_indent:a<CR>
-autocmd BufEnter *
+"autocmd BufEnter *
   \   if empty(&buftype)
   \|      nnoremap <buffer> <C-]> :<C-u>UniteWithCursorWord -immediately tag<CR>
   \|  endif
@@ -2415,41 +2451,11 @@ unlet s:menubar
 
 
 "やたら長い変数をechoするとき見やすく表示
-function! s:Unite_echo_var(args) "{{{
-  exe 'Unite output_in_multiline:echo\ '. escape(a:args, ': ')
+function! s:Unite_PP(args) "{{{
+  exe 'Unite output:PP\ '. escape(a:args, ': ')
 endfunction
 "}}}
-let s:source = {
-      \ 'name' : 'output_in_multiline',
-      \ 'description' : 'candidates from Vim command output',
-      \ 'default_action' : 'yank',
-      \ }
-function! s:source.gather_candidates(args, context)"{{{
-  if type(get(a:args, 0, '')) == type([])
-    " Use args directly.
-    let result = a:args[0]
-  else
-    let command = join(a:args, ' ')
-    if command == ''
-      let command = input('Please input Vim command: ', '', 'command')
-    endif
-
-    redir => output
-    silent! execute command
-    redir END
-
-    let result = split(output, '\r\n\|\n\|,\zs')
-  endif
-
-  return map(result, '{
-        \ "word" : v:val,
-        \ "kind" : "word",
-        \ "is_multiline" : 1,
-        \ }')
-endfunction"}}}
-call unite#define_source(s:source)
-unlet s:source
-command! -complete=var -nargs=+ UniteEchoVar  call <SID>Unite_echo_var(<q-args>)
+command! -complete=var -nargs=+ UPP  call <SID>Unite_PP(<q-args>)
 
 
 
@@ -2461,7 +2467,7 @@ let g:netrw_liststyle = 3 "常にtree view
 
 
 "vimshell.vim"{{{
-noremap <silent>,xs :let A = expand('%:p:h')| exe 'VimShellTab '. A|unlet A<CR>
+noremap <silent>,xs :let A = expand('%:p:h')<Bar> exe 'VimShellTab '. A<Bar>unlet A<CR>
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <buffer> <C-j> <Plug>(vimshell_enter)
 au FileType vimshell imap <buffer> <C-j> <Plug>(vimshell_enter)
@@ -2706,6 +2712,7 @@ let g:submode_timeoutlen = 5000
 
 
 "revolver.vim
+let g:revolver_register_recording_cylinder = "vwxy"
 nmap mm <Plug>(revolver-mark-local-typeB)
 nmap mM <Plug>(revolver-mark-global)
 nmap m<Space> <Plug>(revolver-mark-global)
@@ -2714,7 +2721,7 @@ exe 'nmap '. s:bind_markj. ', <Plug>(revolver-jump-last-local-mark)zv'
 nnoremap z,m m
 "nmap <C-@><C-_> <Plug>(revolver-jump-last-local-mark)zv
 "let g:revolver_register_enable_logging = 2
-nmap zq <Plug>(revolver-register-recording)
+nmap mq <Plug>(revolver-register-recording)
 nnoremap z,q q
 
 
@@ -2723,6 +2730,11 @@ let g:lastbuf_level= 2
 exe 'noremap <silent>'. s:bind_win. 'u :LastBuf<CR>'
 
 
+"unite-recording
+nmap ZZ <Plug>(unite-recording-execute)
+nmap @@ <Plug>(unite-recording-execute)
+nnoremap ZB     :<C-u>UniteRecordingBegin<CR>
+nnoremap ,ar :<C-u>Unite recording<CR>
 
 "-----------------------------------------------------------------------------
 "プラグイン 入力
@@ -2743,13 +2755,15 @@ vmap [cm]b <Plug>NERDCommenterMinimal
 
 
 "altercmd (other)
-AlterCommand g[it] Git
-AlterCommand grao Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
-AlterCommand c[tags] !start ctags %
-AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h')<CR>
-AlterCommand sf setf
-AlterCommand so so %
-AlterCommand me mes
+AlterCommand g[it]     Git
+AlterCommand grao  Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
+AlterCommand c[tags]  !start ctags %
+AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h:h')<CR>
+AlterCommand sf     setf
+AlterCommand so     so %
+AlterCommand me    mes
+AlterCommand fl    h function-list
+AlterCommand h41    h function-list
 
 
 
@@ -2820,24 +2834,29 @@ au FileType snippet  noremap <buffer>q <C-w>q
 au FileType snippet  inoremap <buffer><C-q> ${}<Left>
 let g:neocomplcache_snippets_dir = '~/.neocon_user/neocon_snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
-exe 'imap <expr><C-'. s:bind_snip. '>  neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
+exe 'imap <expr><C-'. s:bind_snip. '>  Textsquash#Expandable() ? Textsquash#Expand() : neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
 "スニペットを編集する
-nnoremap ,os :<C-u>wincmd s| NeoComplCacheEditSnippets<CR>
-nnoremap ,oS :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
-nnoremap ,ors :<C-u>wincmd s| NeoComplCacheEditRuntimeSnippets<CR>
+nnoremap ,os :<C-u>wincmd s<Bar> NeoComplCacheEditSnippets<CR>
+nnoremap ,oS :<C-u>wincmd s<Bar> NeoComplCacheEditRuntimeSnippets<CR>
+nnoremap ,ors :<C-u>wincmd s<Bar> NeoComplCacheEditRuntimeSnippets<CR>
 "}}}
 
 
+
+"Textsquash
+let g:textsquash_word = {'_': '[&@0-9_a-zA-Z:\[\]'']'}
+au FileType squash  noremap <buffer>q <C-w>q
+nnoremap <silent>,oq     :<C-u>call Textsquash#Open_squashfile('split', &ft)<CR>
+nnoremap <silent>,oQ     :<C-u>call Textsquash#Open_squashfile('split', '_')<CR>
+nmap ,oq    <Plug>(textsquash-open-current-filetype-squashfile)
+nmap ,oQ    <Plug>(textsquash-open-default-squashfile)
 
 
 "surround.vim "{{{
 let g:surround_no_mappings = 1
 nmap      ds   <Plug>Dsurround
 nmap      cs   <Plug>Csurround
-nmap      <C-s>   <Plug>Ysurround
-nmap      <C-s>s  <Plug>Yssurround
-nmap      <C-s>S   <Plug>Ysurround$
 nmap      gs   <Plug>Ysurround
 nmap      gss  <Plug>Yssurround
 nmap      gsS   <Plug>Ysurround$
@@ -2845,7 +2864,6 @@ nmap      g<C-s>  <Plug>Ygsurround
 nmap      g<C-s>s <Plug>Ygssurround
 nmap      g<C-s>S  <Plug>Ygsurround$
 xmap      s    <Plug>Vsurround
-xmap      <C-s>   <Plug>VSurround
 xmap      g<C-s>   <Plug>Vgsurround
 nmap      ys   <Plug>Ysurround
 nmap      yS   <Plug>Ygsurround
@@ -2907,12 +2925,63 @@ xmap as <Plug>(textobj-between-a)
 xmap is <Plug>(textobj-between-i)
 omap as <Plug>(textobj-between-a)
 omap is <Plug>(textobj-between-i)
-xmap ae <Plug>(textobj-between-a)
-xmap ie <Plug>(textobj-between-i)
-omap ae <Plug>(textobj-between-a)
-omap ie <Plug>(textobj-between-i)
 
 call textobj#user#plugin('cword', {'-': {'*pattern*': '\k*\%#\k*', 'select': ['*',], }, })
+let textobj_star = {'select-a': 'a*', 'select-i': 'i*',
+  \ '*select-a-function*': 's:Textobj_star_a', '*select-i-function*': 's:Textobj_star_i', '*sfile*': expand('<sfile>')}
+let textobj_bar = {'select-a': 'a<Bar>', 'select-i': 'i<Bar>',
+  \ '*select-a-function*': 's:Textobj_bar_a', '*select-i-function*': 's:Textobj_bar_i', '*sfile*': expand('<sfile>')}
+let textobj_dot = {'select-a': 'a.', 'select-i': 'i.',
+  \ '*select-a-function*': 's:Textobj_dot_a', '*select-i-function*': 's:Textobj_dot_i', '*sfile*': expand('<sfile>')}
+function! s:Textobj_star_a() "{{{
+  return s:__textobj_piece('*', 'a')
+endfunction
+"}}}
+function! s:Textobj_star_i() "{{{
+  return s:__textobj_piece('*', 'i')
+endfunction
+"}}}
+function! s:Textobj_bar_a() "{{{
+  return s:__textobj_piece('|', 'a')
+endfunction
+"}}}
+function! s:Textobj_bar_i() "{{{
+  return s:__textobj_piece('|', 'i')
+endfunction
+"}}}
+function! s:Textobj_dot_a() "{{{
+  return s:__textobj_piece('.', 'a')
+endfunction
+"}}}
+function! s:Textobj_dot_i() "{{{
+  return s:__textobj_piece('.', 'i')
+endfunction
+"}}}
+function! s:__textobj_piece(char, i6a) "{{{
+  let save_view = winsaveview()
+  let crrline = line('.')
+  if a:i6a == 'i'
+    let b = search('\M'. a:char.'\[^'.a:char .']', 'bce', crrline)
+  else
+    let b = search('\M'. a:char, 'bce', crrline)
+  endif
+  let bgn = getpos('.')
+
+  if a:i6a == 'i'
+    let e = search('\M\[^'. a:char .']\ze'. a:char, '', crrline)
+  else
+    let e = search('\M'. a:char, '', crrline)
+  endif
+  let end = getpos('.')
+
+  if b==0 || e==0 || len(a:char)>1
+    return
+  endif
+  call winrestview(save_view)
+  return ['v', bgn, end]
+endfunction
+"}}}
+call textobj#user#plugin('piece', {'star': textobj_star, 'bar': textobj_bar, 'dot': textobj_dot})
 
 
 
@@ -3049,16 +3118,13 @@ autocmd BufCreate *.alter call s:alterbuf_load()
 "autocmd CursorMoved * redraw
 
 
-function! Scouter(file, ...)
-  let pat = '^\s*$\|^\s*"'
-  let lines = readfile(a:file)
-  if !a:0 || !a:1
-    let lines = split(substitute(join(lines, "\n"), '\n\s*\\', '', 'g'), "\n")
-  endif
-  return len(filter(lines,'v:val !~ pat'))
-endfunction
-command! -bar -bang -nargs=? -complete=file Scouter
-  \        echo Scouter(empty(<q-args>) ? $MYVIMRC : expand(<q-args>), <bang>0)
+"vitalモジュールの挙動確認用
+let g:Vital = vital#of('vital').load(
+\  ['System.Filepath'],
+\  ['Data.List'],
+\  ['Lclib.String'],
+\  ['Data.String'])
+
 
 unlet s:bind_win s:bind_comp s:bind_snip s:bind_markj s:bind_reg
 
