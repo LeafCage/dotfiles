@@ -23,8 +23,25 @@ se fileformats=dos,unix,mac
 
 "$HOME がないとき、$VIM/TMPHOME を $HOME にする "{{{
 if !exists("$HOME")
-  let $HOME=$VIM. '/TMPHOME'
+  if isdirectory('/hom')
+    let $HOME='/hom'
+  else
+    let $HOME=$VIM. '/TMPHOME'
+  endif
 endif
+"}}}
+
+"$PATHを追加{{{
+function! s:Add_path(path) "{{{
+  if $PATH !~ a:path
+    let $PATH .= a:path. ';'
+  endif
+endfunction
+"}}}
+let $PATH .= ';'
+call s:Add_path('/bnr/cmd/MinGW/bin')
+call s:Add_path('/bnr/cmd/path')
+call s:Add_path('/bnr/cmd/PortableGit-1.7.11-preview20120620/bin')
 "}}}
 
 "$VIMFILES "{{{
