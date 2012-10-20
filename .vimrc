@@ -42,6 +42,7 @@ let $PATH .= ';'
 call s:Add_path('/bnr/cmd/MinGW/bin')
 call s:Add_path('/bnr/cmd/path')
 call s:Add_path('/bnr/cmd/PortableGit-1.7.11-preview20120620/bin')
+call s:Add_path('C:/Program Files/Java/jdk1.7.0_09/bin')
 "}}}
 
 "$VIMFILES "{{{
@@ -87,13 +88,12 @@ NeoBundle 'thinca/vim-quickrun'
 "exe "NeoBundle 'kien/ctrlp.vim'" | "カレントファイルにアクセスする
 "NeoBundle 'vim-scripts/vimwiki'
 "NeoBundle 'https://github.com/fuenor/qfixhowm.git'
-NeoBundle 'kannokanno/vimtest'
 
 "--------------------------------------
 "ライブラリ
 NeoBundle 'Shougo/vimproc'
 NeoBundle 'tomtom/tlib_vim'
-exe 'NeoBundle "vim-jp/vital.vim"' | "最近なぜかNeoBundleからアップデートできない
+NeoBundle "vim-jp/vital.vim"
 exe "NeoBundle 'thinca/vim-openbuf'" | "unite-vim_hacksがこれに依存
 "exe "NeoBundle 'mattn/wwwrenderer-vim'" | "webpage(only text)を返す
 "exe "NeoBundle 'mattn/webapi-vim'" | "
@@ -109,6 +109,7 @@ NeoBundle 'kana/vim-submode'
 "exe "NeoBundle 'thinca/vim-localrc'" | "特定dir以下に.lvimrcを置くとdir以下のfileだけで設定反映
 NeoBundle 'Rykka/lastbuf.vim'
 NeoBundle 'LeafCage/revolver.vim'
+NeoBundle 'osyo-manga/vim-reanimate'
 
 "--------------------------------------
 "拡張文章
@@ -119,12 +120,13 @@ NeoBundleLazy 'motemen/hatena-vim'
 "--------------------------------------
 "入力・移動
 NeoBundle 'Shougo/neocomplcache'
-  NeoBundle 'Shougo/neocomplcache-snippets-complete', {'depends': 'Shougo/neocomplcache'}
+  NeoBundle 'Shougo/neosnippet'
 NeoBundle 'kana/vim-textobj-user'
   exe "NeoBundle 'h1mesuke/textobj-wiw'" | "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
   NeoBundle 'kana/vim-textobj-indent'
   exe "NeoBundle 'thinca/vim-textobj-plugins'" | "中身はtextobj-between
   NeoBundle 'anyakichi/vim-textobj-xbrackets'
+NeoBundle 'LeafCage/unite-recording'
 NeoBundle 'anyakichi/vim-surround'
 NeoBundle 'scrooloose/nerdcommenter'
 "NeoBundle 'tomtom/tcomment_vim'
@@ -155,6 +157,7 @@ NeoBundle 'thinca/vim-scouter'
 "NeoBundle 'Shougo/echodoc'
 "NeoBundleLazy 'choplin/unite-vim_hacks', {'depends', 'thinca/vim-openbuf'}
 NeoBundleLazy 'rbtnn/sign.vim'
+"NeoBundle 'LeafCage/win-shujuukankei.vim'
 
 "--------------------------------------
 "GUI操作
@@ -710,11 +713,8 @@ au GUIEnter * set vb t_vb=
 
 "Font "{{{
 if has('win32')
-  set gfn=Migu_1M:h10:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
   "set gfn=MeiryoKe_Gothic:h8:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
-  if hostname() == 'TC4400'
-    set gfn=Migu_1M:h10:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
-  endif
+  set gfn=Migu_1M:h11:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
   if hostname() == 'SIICP11ALJ'
     set gfn=Migu_1M:h13:cSHIFTJIS,\ MS_Gothic:h14:cSHIFTJIS
   endif
@@ -763,7 +763,6 @@ augroup gitcommit
   au FileType gitcommit  setl nofoldenable nomodeline tw=60 fenc=utf-8
 augroup END
 
-au FileType snippet setl nofoldenable
 
 aug vimrc_help
   au!
@@ -787,7 +786,20 @@ aug qf
 aug END
 
 
-
+aug vimrc_java
+  au!
+  au FileType java
+    \ inoremap <expr><C-q> <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
+aug END
+function! s:IsEndSemicolon() "{{{
+  let c = getline(".")[col("$")-2]
+  if c != ';'
+    return 1
+  else
+    return 0
+  endif
+endfunction
+"}}}
 
 
 
@@ -806,6 +818,7 @@ noremap [space] <nop>
 nmap <Space> [space]
 nmap <C-k> [C-k]
 nmap <C-g> [C-g]
+nmap @ [@]
 
 "-----------------------------------------------------------------------------
 "No operation
@@ -907,10 +920,11 @@ nnoremap [space]K <C-w>}
 
 exe 'nnoremap '. s:bind_win. 's <C-w>s'
 exe 'nnoremap '. s:bind_win. 'b <C-w>v'
-exe 'nnoremap '. s:bind_win. 'om <C-w>o'
+exe 'nnoremap '. s:bind_win. 'o <C-w>o'
+exe 'nnoremap '. s:bind_win. 'o <C-w>o'
 "現在Bufを新しいタブページで開く
-nnoremap <silent> <C-w>; :tab split<CR>
 exe 'nnoremap <silent> '. s:bind_win. 'v :tab split<CR>'
+exe 'nnoremap <silent> '. s:bind_win. 't :tab split<CR>'
 "ウィンドウレイアウトを保持したままバッファを閉じるコマンド
 com! KeepWinBd let kwbd_bn= bufnr("%") |bn |exe "bd ".kwbd_bn |unlet kwbd_bn
 
@@ -1222,7 +1236,7 @@ noremap <SID>Put_SearchStartSign  :<C-u>call <SID>Put_SearchStartSign(0)<CR>
 
 
 "-----------------------------------------------------------------------------
-let s:bind_markj = '@'
+let s:bind_markj = '[@]'
 "カーソル移動コマンド(Normal,Omap)"{{{
 
 noremap _ +
@@ -1307,7 +1321,7 @@ noremap [space]t [z
 noremap [space]z ]z
 
 "下二桁指定ジャンプ from ujm
-command! -count=1 -nargs=0 GoToTheLine silent execute getpos('.')[1][:-len(v:count)-1] . v:count
+command! -count=1 -nargs=0 GoToTheLine silent exe line('.')[:-len(v:count)-1] . v:count
 nnoremap <silent> gl :GoToTheLine<Cr>
 "}}}
 
@@ -1368,7 +1382,7 @@ let s:bind_reg = '<C-@>'
 
 nnoremap ,w :<C-u>w<CR>
 nnoremap ,qq :<C-u>qa<CR>
-nnoremap ,q, :<C-u>qa<CR>
+nnoremap ,qu :<C-u>qa<CR>
 map Y y$
 noremap <F4> "+
 exe 'nnoremap '. s:bind_reg. ' "'
@@ -1409,12 +1423,12 @@ endfunction "}}}
 
 "直前のコマンドを再度実行する
 "nnoremap ,. q:k<CR>
-nnoremap @: @:
+nnoremap [@]: @:
 nmap c. @:
 "ペーストしたテキストを再選択するBible3-15
 nnoremap <expr> gb '`[' . strpart(getregtype(), 0,1) . '`]'
 onoremap <silent> gb :normal gb<CR>
-onoremap <silent> @@ :normal gb<CR>
+onoremap <silent> [@]@ :normal gb<CR>
 onoremap <silent> gv :normal gv<CR>
 "前回保存した状態にまでアンドゥ
 nnoremap [space]u :earlier 1f<CR>
@@ -1424,7 +1438,6 @@ nnoremap [space]u :earlier 1f<CR>
 "インデントを合わせて貼り付け
 nnoremap ]p p`[=`]
 nnoremap [p P`[=`]
-
 
 "-----------------------------------------------------------------------------
 "設定を切り替える
@@ -1494,9 +1507,11 @@ endfunction
 "あるバッファを開く
 ".vimrcをすぐに開くコマンド
 "nnoremap ,ov :e $MYVIMRC<CR>
-nnoremap ,ov :e ~/dotfiles/.vimrc<CR>
+nmap cov <SID>o_vimrc
+nnoremap <SID>o_vimrc :e ~/dotfiles/.vimrc<CR>
 
-nnoremap ,og :e ~/.gitconfig<CR>
+nmap cog <SID>o_gitconfig
+nnoremap <SID>o_gitconfig :e ~/.gitconfig<CR>
 
 "junkFile
 "noremap ,oj :JunkFile<CR>
@@ -2159,7 +2174,8 @@ let g:unite_source_history_yank_enable = 1  "unite-history/yankを有効化す�
 
 aug vimrc_unite
   au!
-  au FileType unite setl wfh|wincmd =
+  au FileType unite    setl wfh|wincmd =
+  "au BufNewFile,BufWinEnter \[unite\]\ -\ action   let g:unite_enable_start_insert = 1
 
 "unite basic-Keymaps "{{{
 let g:unite_no_default_keymappings = 1
@@ -2277,7 +2293,7 @@ AlterCommand nbi  Unite -auto-quit neobundle/install
 AlterCommand nbu  Unite neobundle/update
 AlterCommand nbl  Unite neobundle/log
 AlterCommand nbus
-  \ Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neocomplcache-snippets-complete
+  \ Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neosnippet
 AlterCommand nbum
   \ Unite neobundle/install:vim-quickrun:vital.vim:open-browser.vim:vim-submode:vim-surround:CamelCaseMotion
 
@@ -2468,10 +2484,12 @@ let g:netrw_liststyle = 3 "常にtree view
 
 "vimshell.vim"{{{
 noremap <silent>,xs :let A = expand('%:p:h')<Bar> exe 'VimShellTab '. A<Bar>unlet A<CR>
+noremap <silent>,ss :let A = expand('%:p:h')<Bar> exe 'VimShell -split '. A<Bar>unlet A<CR>
+let g:vimshell_split_command = '8split'
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <buffer> <C-j> <Plug>(vimshell_enter)
 au FileType vimshell imap <buffer> <C-j> <Plug>(vimshell_enter)
-au FileType vimshell nnoremap <silent> <buffer> q :tabc<CR>
+au FileType vimshell nnoremap <silent> <buffer> q <C-w>c
 "au FileType vimshell nmap <buffer> q <Plug>(vimshell_exit)
   "< NOTE: exitが正常化されるまでの暫定
 au FileType vimshell nnoremap ,ab :<C-u>Unite -default-action=cd bookmark<CR>
@@ -2674,7 +2692,7 @@ AlterCommand nbs[ource] NeoBundleSource
 AlterCommand nbc NeoBundleClean
 command! -nargs=0 NeoBundleUpdateShougo
   \ NeoBundleUpdate
-  \ unite.vim vimshell vimfiler vimproc neobundle.vim neocomplcache neocomplcache-snippets-complete
+  \ unite.vim vimshell vimfiler vimproc neobundle.vim neocomplcache neosnippet
 command! -nargs=0 NeoBundleUpdateMain
   \ NeoBundleUpdate
   \ vim-quickrun vital.vim open-browser.vim vim-submode vim-surround CamelCaseMotion
@@ -2732,8 +2750,9 @@ exe 'noremap <silent>'. s:bind_win. 'u :LastBuf<CR>'
 
 "unite-recording
 nmap ZZ <Plug>(unite-recording-execute)
-nmap @@ <Plug>(unite-recording-execute)
-nnoremap ZB     :<C-u>UniteRecordingBegin<CR>
+nnoremap [@]@ @@
+nnoremap mq     :<C-u>UniteRecordingBegin<CR>
+nmap m@ <Plug>(unite-recording-execute)
 nnoremap ,ar :<C-u>Unite recording<CR>
 
 "-----------------------------------------------------------------------------
@@ -2827,19 +2846,23 @@ inoremap <expr><C-\>     neocomplcache#undo_completion()
 "ネオコン設定変更操作
 "}}}
 
-"neocomplcache-snippets-complete "{{{
+"neosnippet "{{{
 au FileType snippet  setl nobl
+au FileType snippet setl nofoldenable
 au BufLeave *.snip setl nobl
 au FileType snippet  noremap <buffer>q <C-w>q
 au FileType snippet  inoremap <buffer><C-q> ${}<Left>
-let g:neocomplcache_snippets_dir = '~/.neocon_user/neocon_snippets' "スニペットプラグインディレクトリ
+let g:neosnippet#snippets_directory = '~/.neocon_user/neocon_snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
-exe 'imap <expr><C-'. s:bind_snip. '>  Textsquash#Expandable() ? Textsquash#Expand() : neocomplcache#sources#snippets_complete#force_expandable() ? "\<Plug>(neocomplcache_snippets_force_expand)" : "\<Plug>(neocomplcache_snippets_force_jump)"'
+imap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : neosnippet#expandable() ? "\<Plug>(neosnippet_expand)" : "\<Plug>(neosnippet_jump)"
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
 "スニペットを編集する
-nnoremap ,os :<C-u>wincmd s<Bar> NeoComplCacheEditSnippets<CR>
-nnoremap ,oS :<C-u>wincmd s<Bar> NeoComplCacheEditRuntimeSnippets<CR>
-nnoremap ,ors :<C-u>wincmd s<Bar> NeoComplCacheEditRuntimeSnippets<CR>
+nmap cos <SID>o_snip
+nnoremap <SID>o_snip :NeoSnippetEdit -split -horizontal -direction=aboveleft<CR>
+nmap coS <SID>o_Snip
+nnoremap <SID>o_Snip :NeoSnippetEdit -runtime -split -horizontal -direction=aboveleft<CR>
+nmap cors <SID>o_rsnip
+nnoremap <SID>o_rsnip :NeoSnippetEdit -runtime -split -horizontal -direction=aboveleft<CR>
 "}}}
 
 
@@ -2847,10 +2870,8 @@ nnoremap ,ors :<C-u>wincmd s<Bar> NeoComplCacheEditRuntimeSnippets<CR>
 "Textsquash
 let g:textsquash_word = {'_': '[&@0-9_a-zA-Z:\[\]'']'}
 au FileType squash  noremap <buffer>q <C-w>q
-nnoremap <silent>,oq     :<C-u>call Textsquash#Open_squashfile('split', &ft)<CR>
-nnoremap <silent>,oQ     :<C-u>call Textsquash#Open_squashfile('split', '_')<CR>
-nmap ,oq    <Plug>(textsquash-open-current-filetype-squashfile)
-nmap ,oQ    <Plug>(textsquash-open-default-squashfile)
+nmap coq    <Plug>(textsquash-open-current-filetype-squashfile)
+nmap coQ    <Plug>(textsquash-open-default-squashfile)
 
 
 "surround.vim "{{{
