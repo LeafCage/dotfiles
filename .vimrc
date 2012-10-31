@@ -98,6 +98,7 @@ exe "NeoBundle 'thinca/vim-openbuf'" | "unite-vim_hacksがこれに依存
 "exe "NeoBundle 'mattn/wwwrenderer-vim'" | "webpage(only text)を返す
 "exe "NeoBundle 'mattn/webapi-vim'" | "
 NeoBundle 'pocket7878/curses-vim'
+NeoBundle 'LeafCage/ref-javadoc', {'depends': 'thinca/vim-ref'}
 
 "--------------------------------------
 "環境
@@ -398,6 +399,7 @@ se sm mat=1  "括弧の対応表示時間
 
 
 
+
 "=============================================================================
 "特殊UI
 
@@ -679,7 +681,7 @@ se fcs +=diff:-
 
 
 let &sbr = '> ' "折り返された行の先頭に表示する文字列
-se cpo +=n  "'sbr'を行番号の間に表示させる
+se cpoptions +=n  "'showbreak'を行番号の間に表示させる
 
 
 se guioptions=
@@ -1320,14 +1322,19 @@ call submode#map('fd-jmp', 'n', '', 'b', ']z')
 noremap [space]t [z
 noremap [space]z ]z
 
-"下二桁指定ジャンプ from ujm
+"下二桁指定ジャンプ from ujm (XXX: zf{motion}の指定に出来れば)
 command! -count=1 -nargs=0 GoToTheLine silent exe line('.')[:-len(v:count)-1] . v:count
 nnoremap <silent> gl :GoToTheLine<Cr>
+"function! GoToTheLine() "{{{
+"  exe 'normal! '. line('.')[:-len(v:count)-1] . v:count. 'gg'
+"endfunction
+""}}}
+"nnoremap <silent> gl    :call GoToTheLine()<CR>
 "}}}
 
 "-----------------------------------------------------------------------------
 "折り畳み操作
-noremap <silent><C-h> :call <SID>Smart_FoldCloser()<CR>
+nnoremap <silent><C-h> :call <SID>Smart_FoldCloser()<CR>
 function! s:Smart_FoldCloser() "{{{
   if foldlevel('.') == 0
     normal! zM
@@ -1508,9 +1515,11 @@ endfunction
 ".vimrcをすぐに開くコマンド
 "nnoremap ,ov :e $MYVIMRC<CR>
 nmap cov <SID>o_vimrc
+nmap ,ov <SID>o_vimrc
 nnoremap <SID>o_vimrc :e ~/dotfiles/.vimrc<CR>
 
 nmap cog <SID>o_gitconfig
+nmap ,og <SID>o_gitconfig
 nnoremap <SID>o_gitconfig :e ~/.gitconfig<CR>
 
 "junkFile
@@ -2066,6 +2075,7 @@ endfunction
 "ref.vim"{{{
 au FileType ref-* nnoremap <silent><buffer>   q   :close<CR>
 let g:ref_phpmanual_path = 'D:/dic/vim-ref/php-chunked-xhtml'
+let g:ref_javadoc_path = 'D:/dic/vim-ref/java6api'
 
 "webdictサイトの設定
 let g:ref_source_webdict_sites = {}
@@ -2096,10 +2106,13 @@ nnoremap ,zk :<C-u>Ref webdict kok<Space>
 nnoremap ZK :<C-u>Ref webdict kok <C-r><C-w>
 nnoremap ,zw :<C-u>Ref webdict wip<Space>
 nnoremap ZW :<C-u>Ref webdict wip <C-r><C-w>
+nnoremap ,zv :<C-u>Ref javadoc<Space>
 AlterCommand zh  Ref webdict ej
 AlterCommand zj  Ref webdict je
 AlterCommand zk  Ref webdict kok
 AlterCommand zw  Ref webdict wip
+AlterCommand zw  Ref webdict wip
+AlterCommand zv  Ref javadoc
 "}}}
 
 
@@ -2263,6 +2276,7 @@ au FileType unite imap <silent><buffer><expr> x
   "no_quit切換
   au FileType unite nnoremap <buffer><C-@>   :let b:unite.context.no_quit = !b:unite.context.no_quit<Bar>echo b:unite.context.no_quit<CR>
 aug END
+
 
 AlterCommand u[nite] Unite
 AlterCommand ua Unite -auto-preview
@@ -2785,10 +2799,12 @@ AlterCommand grao  Git remote add origin git@github.com:LeafCage/.git<Left><Left
 AlterCommand c[tags]  !start ctags %
 AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h:h')<CR>
 AlterCommand sf     setf
+AlterCommand ft     setf
 AlterCommand so     so %
 AlterCommand me    mes
 AlterCommand fl    h function-list
 AlterCommand h41    h function-list
+AlterCommand ja[va]     !java
 
 
 
@@ -2889,7 +2905,9 @@ nnoremap <SID>a_Snip :NeoSnippetEdit -runtime -split -horizontal -direction=abov
 let g:textsquash_word = {'_': '[&@0-9_a-zA-Z:\[\]'']'}
 au FileType squash  noremap <buffer>q <C-w>q
 nmap coq    <Plug>(textsquash-open-current-filetype-squashfile)
+nmap ,oq    <Plug>(textsquash-open-current-filetype-squashfile)
 nmap coQ    <Plug>(textsquash-open-default-squashfile)
+nmap ,oQ    <Plug>(textsquash-open-default-squashfile)
 
 
 "surround.vim "{{{
