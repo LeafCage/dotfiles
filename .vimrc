@@ -2287,6 +2287,10 @@ unlet! s:unite_action
 "unite-sorce
 "------------------
 "{{{
+"unite-action
+"actionではinsert-modeで始める
+call unite#set_profile('action', 'context', {'start_insert' : 1})
+
 "unite neobundle
 AlterCommand nb   Unite neobundle
 AlterCommand nbi  Unite -auto-quit neobundle/install
