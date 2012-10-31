@@ -437,7 +437,8 @@ function! Gs_StatusLine() "{{{
     \ '%3n-'. '%.40('. crrbuf_path. '%)'.
     \ '%m%R%H%W%y %('. fenc8ff .'%) '.
     \ info . funclnum. '%='.
-    \ '%14(~%L~  %l,%v%)%< %P'
+    \ '%14(%l-%{line("$")-line(".")}, %3v%)%<'
+    "\ .' %P'
     "\ '['. '%{winnr()}'. '%7*%{'.string(win_shujuukankei).'[w:shujuu]}%*'. ']'.
     "\ '%#%{ShujuuColor()}#'. '%{g:win_shujuukankei[w:shujuu]}%*'. '%13([%L] %l,%v%)%< %P'
     "\ '%#ShujuuMaster#'. '%{g:win_shujuukankei[w:shujuu]}%*'. '%13([%L] %l,%v%)%< %P'
