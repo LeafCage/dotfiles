@@ -1574,6 +1574,7 @@ function! s:Fixed_zf() range "{{{
   call setline(a:lastline, getline(a:lastline). cmsStart.fmr[1].cmsEnd)
 endfunction
 "}}}
+snoremap <C-c> <C-c>a
 
 "from TIM Labs kana
 vnoremap <expr> I  <SID>Force_blockwise_visual('I')
@@ -1666,6 +1667,7 @@ endfunction"}}}
 "InsertMode, CommandLineでの編集コマンド
 inoremap <C-d>  <Del>
 cnoremap <C-d> <Del>
+inoremap <C-w>    <C-o>db
 inoremap <F4> <C-r>+
 cnoremap <F4> <C-r>+
 inoremap <C-r><C-e> <C-r>"
@@ -2858,15 +2860,27 @@ au FileType snippet  noremap <buffer>q <C-w>q
 au FileType snippet  inoremap <buffer><C-q> ${}<Left>
 let g:neosnippet#snippets_directory = '~/.neocon_user/neocon_snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
-imap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : neosnippet#expandable() ? "\<Plug>(neosnippet_expand)" : "\<Plug>(neosnippet_jump)"
+imap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<Plug>(neosnippet_expand_or_jump)"
+smap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<Plug>(neosnippet_expand_or_jump)"
+"smap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<BS>\<BS>\<BS>a\<Plug>(neosnippet_jump)"
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
 "スニペットを編集する
 nmap cos <SID>o_snip
+nmap ,os <SID>o_snip
 nnoremap <SID>o_snip :NeoSnippetEdit -split -horizontal -direction=aboveleft<CR>
 nmap coS <SID>o_Snip
+nmap ,oS <SID>o_Snip
 nnoremap <SID>o_Snip :NeoSnippetEdit -runtime -split -horizontal -direction=aboveleft<CR>
 nmap cors <SID>o_rsnip
+nmap ,ors <SID>o_rsnip
 nnoremap <SID>o_rsnip :NeoSnippetEdit -runtime -split -horizontal -direction=aboveleft<CR>
+
+nmap coas <SID>a_snip
+nmap ,oas <SID>a_snip
+nnoremap <SID>a_snip :NeoSnippetEdit -split -horizontal -direction=aboveleft _<CR>
+nmap coaS <SID>a_Snip
+nmap ,oaS <SID>a_Snip
+nnoremap <SID>a_Snip :NeoSnippetEdit -runtime -split -horizontal -direction=aboveleft _<CR>
 "}}}
 
 
