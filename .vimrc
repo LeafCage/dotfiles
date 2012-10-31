@@ -780,17 +780,16 @@ aug END
 
 aug qf
   au!
-  au FileType qf
-    \ noremap <buffer> q :cclose<CR><Bar>
-    \ noremap <buffer> <CR> :.cc<CR><Bar>
-    \ endif
+  au FileType qf  noremap <buffer>q    :cclose<CR>
+  au FileType qf  noremap <buffer><CR>    :.cc<CR>
 aug END
 
 
 aug vimrc_java
   au!
-  au FileType java
-    \ inoremap <expr><C-q> <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
+  au FileType java  inoremap <expr><C-q>    <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
+  au FileType java  inoremap <C-_>    <C-o>${<CR>
+  au FileType java  nnoremap ,c    :!javac %<CR>
 aug END
 function! s:IsEndSemicolon() "{{{
   let c = getline(".")[col("$")-2]
