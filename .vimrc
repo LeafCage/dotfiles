@@ -1334,7 +1334,7 @@ nnoremap <silent> gl :GoToTheLine<Cr>
 
 "-----------------------------------------------------------------------------
 "折り畳み操作
-nnoremap <silent><C-h> :call <SID>Smart_FoldCloser()<CR>
+nnoremap <silent><C-z> :call <SID>Smart_FoldCloser()<CR>
 function! s:Smart_FoldCloser() "{{{
   if foldlevel('.') == 0
     normal! zM
@@ -1539,6 +1539,9 @@ nnoremap  [C-k]v :ReloadVimrc<CR>
 nnoremap  [C-k]s :so %<CR>
 
 nnoremap <expr>[C-g]<Space>    ":\<C-u>h "
+
+":helpを3倍の速度で引く
+nnoremap <C-h>  :<C-u>help<Space>
 
 "-----------------------------------------------------------------------------
 
@@ -2819,12 +2822,13 @@ noremap  m/ :<C-u>Migemo<CR>
 "neocomplcache.vim  Preference"{{{
 "let g:neocomplcache_temporary_dir = $VIM.'/settings/.neocon' "ネオコンの一時情報を書き出すディレクトリ
 "key:ft, value:辞書ファイルのpath >
-let g:neocomplcache_dictionary_filetype_lists = {
-  \ 'default' : '',
-  \ 'vim' : '~/.neocon_user/neocon_dict/vim.dict',
-  \ 'vimshell' : $HOME.'/.vimshell_hist',
-  \ 'scheme' : $HOME.'/.gosh_completions'
-  \ }
+let g:neocomplcache_dictionary_filetype_lists = {}
+let g:neocomplcache_dictionary_filetype_lists.default = ''
+let g:neocomplcache_dictionary_filetype_lists.vim = '~/.neocon_user/neocon_dict/vim.dict'
+let g:neocomplcache_dictionary_filetype_lists.java = '~/.neocon_user/neocon_dict/java.dict'
+let g:neocomplcache_dictionary_filetype_lists.vimshell = $HOME.'/.vimshell_hist'
+let g:neocomplcache_dictionary_filetype_lists.scheme = $HOME.'/.gosh_completions'
+
 
 let g:neocomplcache_enable_at_startup = 1 "ネオコン有効化
 let g:neocomplcache_enable_prefetch = 1 "以前のバージョンの挙動にする。
