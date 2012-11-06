@@ -2885,6 +2885,7 @@ imap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<Plug>(neosn
 smap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<Plug>(neosnippet_expand_or_jump)"
 "smap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<BS>\<BS>\<BS>a\<Plug>(neosnippet_jump)"
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
+xmap <expr><C-s>  "\<Plug>(neosnippet_expand_target)"
 "スニペットを編集する
 nmap cos <SID>o_snip
 nmap ,os <SID>o_snip
