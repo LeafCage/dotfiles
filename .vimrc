@@ -2079,6 +2079,7 @@ endfunction
 au FileType ref-* nnoremap <silent><buffer>   q   :close<CR>
 let g:ref_phpmanual_path = 'D:/dic/vim-ref/php-chunked-xhtml'
 let g:ref_javadoc_path = 'D:/dic/vim-ref/java6api'
+let g:ref_javadoc_cmd = 'lynx -dump -width=120 -nonumbers %s'
 
 "webdictサイトの設定
 let g:ref_source_webdict_sites = {}
