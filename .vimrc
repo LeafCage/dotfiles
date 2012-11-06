@@ -1334,7 +1334,7 @@ nnoremap <silent> gl :GoToTheLine<Cr>
 
 "-----------------------------------------------------------------------------
 "折り畳み操作
-nnoremap <silent><C-z> :call <SID>Smart_FoldCloser()<CR>
+nnoremap <silent><C-_> :call <SID>Smart_FoldCloser()<CR>
 function! s:Smart_FoldCloser() "{{{
   if foldlevel('.') == 0
     normal! zM
