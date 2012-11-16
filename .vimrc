@@ -105,7 +105,6 @@ NeoBundle 'LeafCage/ref-javadoc', {'depends': 'thinca/vim-ref'}
 "exe "NeoBundle 'kana/vim-tabpagecd'" | "TabPage毎にcrrdirを持てるようにする
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'Shougo/neobundle.vim'
-NeoBundle 'tpope/vim-pathogen'
 NeoBundle 'kana/vim-submode'
 "exe "NeoBundle 'thinca/vim-localrc'" | "特定dir以下に.lvimrcを置くとdir以下のfileだけで設定反映
 NeoBundle 'Rykka/lastbuf.vim'
@@ -169,15 +168,11 @@ NeoBundle 'thinca/vim-fontzoom'
 exe "NeoBundle 'ujihisa/unite-colorscheme'" |
 NeoBundle 'pasela/unite-webcolorname'
 
+
+NeoBundleLocal ~/vimfiles/bundle/
 filetype plugin indent on  "ファイル判定をonにする
 "}}}
 
-"pathogen.vim"{{{
-  filetype off "一度ファイル判定をoffにしないとftdetectをロードしてくれないので。
-  call pathogen#runtime_append_all_bundles()
-  call pathogen#helptags()
-  filetype plugin indent on  "ファイル判定をonにする
-"}}}
 
 call altercmd#load() "altercmdをこのvimrc内で有効にする
 
@@ -716,6 +711,8 @@ au GUIEnter * set vb t_vb=
 
 "Font "{{{
 if has('win32')
+  set printfont=Migu_1M:h7 "注意: windowsでは encoding=cp932 でないとhardcopyできない
+
   "set gfn=MeiryoKe_Gothic:h8:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
   set gfn=Migu_1M:h11:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
   if hostname() == 'SIICP11ALJ'
@@ -1763,9 +1760,6 @@ endfunction
 command! -nargs=* -complete=help TH  tab help <args>
 AlterCommand th TH
 
-".vimrcをリロードする
-command! ReloadVimrc  source $MYVIMRC
-AlterCommand rv ReloadVimrc
 
 
 "パターンとファイル名を逆にしたgrep
@@ -2115,7 +2109,6 @@ AlterCommand zh  Ref webdict ej
 AlterCommand zj  Ref webdict je
 AlterCommand zk  Ref webdict kok
 AlterCommand zw  Ref webdict wip
-AlterCommand zw  Ref webdict wip
 AlterCommand zv  Ref javadoc
 "}}}
 
@@ -2285,6 +2278,7 @@ aug END
 AlterCommand u[nite] Unite
 AlterCommand ua Unite -auto-preview
 AlterCommand una Unite -auto-preview
+AlterCommand unp Unite -auto-preview
 
 " custom_actions for unite. (from thinca)
 " echo action {{{
@@ -2806,9 +2800,11 @@ AlterCommand sf     setf
 AlterCommand ft     setf
 AlterCommand so     so %
 AlterCommand me    mes
+AlterCommand rv source $MYVIMRC
 AlterCommand fl    h function-list
 AlterCommand h41    h function-list
 AlterCommand ja[va]     !java
+AlterCommand jc   !javac -d ../classes
 
 
 
@@ -3208,6 +3204,7 @@ set verbosefile=/tmp/vim.log
 "
 "vimfilerにハードリンク(2000~XP)などを作らせるコマンド用意
 "
+"unite printout
 "
 "Idea etc
 "
