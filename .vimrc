@@ -77,7 +77,7 @@ NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vimfiler', {'depends': 'Shougo/unite.vim'}
 NeoBundle 'tsukkee/lingr-vim'
 NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'pocket7878/presen-vim', {'depends':  'pocket7878/curses-vim'}
+NeoBundleLazy 'pocket7878/presen-vim', {'depends':  'pocket7878/curses-vim'}
 NeoBundle 'thinca/vim-showtime'
 NeoBundle 'thinca/vim-ref'
 NeoBundle 'thinca/vim-quickrun'
@@ -94,7 +94,7 @@ NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'Shougo/vimproc'
 NeoBundle 'tomtom/tlib_vim'
 NeoBundle "vim-jp/vital.vim"
-exe "NeoBundle 'thinca/vim-openbuf'" | "unite-vim_hacksがこれに依存
+NeoBundle 'thinca/vim-openbuf' "unite-vim_hacksがこれに依存
 "exe "NeoBundle 'mattn/wwwrenderer-vim'" | "webpage(only text)を返す
 "exe "NeoBundle 'mattn/webapi-vim'" | "
 NeoBundle 'pocket7878/curses-vim'
@@ -105,52 +105,64 @@ NeoBundle 'LeafCage/ref-javadoc', {'depends': 'thinca/vim-ref'}
 "exe "NeoBundle 'kana/vim-tabpagecd'" | "TabPage毎にcrrdirを持てるようにする
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'Shougo/neobundle.vim'
+NeoBundle 'kana/vim-arpeggio'
 NeoBundle 'kana/vim-submode'
 "exe "NeoBundle 'thinca/vim-localrc'" | "特定dir以下に.lvimrcを置くとdir以下のfileだけで設定反映
 NeoBundle 'Rykka/lastbuf.vim'
 NeoBundle 'LeafCage/revolver.vim'
 NeoBundle 'osyo-manga/vim-reanimate'
+NeoBundleLazy 'koron/minimap-vim'
+NeoBundle 'kana/vim-altr' "現在バッファから開くファイルを類推して開く
 
 "--------------------------------------
 "拡張文章
 "NeoBundle 'vim-jp/vimdoc-ja'
-exe "NeoBundle 'https://github.com/ujihisa/mdv.git'" | "VimHacksで使われている拡張Markdown
+NeoBundle 'https://github.com/ujihisa/mdv.git' "VimHacksで使われている拡張Markdown
 NeoBundleLazy 'motemen/hatena-vim'
+
+
+"--------------------------------------
+"テスト
+NeoBundleLazy 'h1mesuke/vim-benchmark'
+NeoBundle 'kannokanno/vimtest'
 
 "--------------------------------------
 "入力・移動
 NeoBundle 'Shougo/neocomplcache'
   NeoBundle 'Shougo/neosnippet'
+NeoBundle 'kana/vim-operator-user'
+  NeoBundle 'kana/vim-operator-replace' "レジスタにあるものとoperator指定したものを置き換え
 NeoBundle 'kana/vim-textobj-user'
-  exe "NeoBundle 'h1mesuke/textobj-wiw'" | "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
+  NeoBundle 'h1mesuke/textobj-wiw' "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
   NeoBundle 'kana/vim-textobj-indent'
-  exe "NeoBundle 'thinca/vim-textobj-plugins'" | "中身はtextobj-between
+  NeoBundle 'thinca/vim-textobj-plugins' "中身はtextobj-between
   NeoBundle 'anyakichi/vim-textobj-xbrackets'
-NeoBundle 'LeafCage/unite-recording'
 NeoBundle 'anyakichi/vim-surround'
 NeoBundle 'scrooloose/nerdcommenter'
+NeoBundle 'deris/columnjump'
+NeoBundle 'LeafCage/unite-recording'
 "NeoBundle 'tomtom/tcomment_vim'
 NeoBundle 'bkad/CamelCaseMotion'
 "NeoBundle 'kana/vim-smartword'
 "NeoBundle 'kana/vim-smartchr'
-exe "NeoBundle 'thinca/vim-poslist'" | "Bible 3-13
-exe "NeoBundle 'thinca/vim-visualstar'" | " *検索 #B3-14
-exe "NeoBundleLazy 'https://github.com/vim-scripts/DrawIt.git'" | "図を描写する #Bible5-4
-exe "NeoBundleLazy 'https://github.com/vim-scripts/Align.git'" | "高機能なテキストファイル整形ツール #Bible5-11
+NeoBundle 'thinca/vim-poslist' "Bible 3-13
+NeoBundle 'thinca/vim-visualstar' " *検索 #B3-14
+NeoBundleLazy 'https://github.com/vim-scripts/DrawIt.git' "図を描写する #Bible5-4
+NeoBundleLazy 'https://github.com/vim-scripts/Align.git' "高機能なテキストファイル整形ツール #Bible5-11
 NeoBundleLazy 'https://github.com/tpope/vim-speeddating.git'
 
 "--------------------------------------
 "コマンドライン
-exe "NeoBundle 'thinca/vim-ambicmd'" | "コマンド名省入力 ex)NeoBundleUpdate > NBU
-exe "NeoBundle 'tyru/vim-altercmd'" | "コマンドのエイリアスを作る tyru版あり #B9-6
+NeoBundle 'thinca/vim-ambicmd' "コマンド名省入力 ex)NeoBundleUpdate > NBU
+NeoBundle 'tyru/vim-altercmd' "コマンドのエイリアスを作る tyru版あり #B9-6
 
 "--------------------------------------
 "情報表示
-exe "NeoBundle 'tacroe/unite-mark'" | "マーク一覧を表示
-exe "NeoBundle 'tsukkee/unite-tag'" |
-exe "NeoBundle 'tsukkee/unite-help'" |
+NeoBundle 'tacroe/unite-mark' "マーク一覧を表示
+NeoBundle 'tsukkee/unite-tag'
+NeoBundle 'tsukkee/unite-help'
 NeoBundle 'tyru/current-func-info.vim'
-exe "NeoBundle 'https://github.com/ujihisa/neco-look.git'" | "要look.exe
+NeoBundle 'https://github.com/ujihisa/neco-look.git' "要look.exe
 NeoBundle 'h1mesuke/unite-outline'
 NeoBundle 'thinca/vim-prettyprint'
 NeoBundle 'thinca/vim-scouter'
@@ -158,23 +170,41 @@ NeoBundle 'thinca/vim-scouter'
 "NeoBundleLazy 'choplin/unite-vim_hacks', {'depends', 'thinca/vim-openbuf'}
 NeoBundleLazy 'rbtnn/sign.vim'
 "NeoBundle 'LeafCage/win-shujuukankei.vim'
+NeoBundleLazy 'taglist.vim' "ctagsを利用して :Tlistで変数関数定義一覧バッファ作成
+NeoBundleLazy 'TagHighlight' "ctagsの情報を利用してハイライト
+"NeoBundle 'errormarker.vim'
+NeoBundleLazy 'jceb/vim-hier' "quickfixエラー箇所をハイライト
 
 "--------------------------------------
 "GUI操作
-exe "NeoBundle 't9md/vim-quickhl'" | "複数の検索ハイライト
+NeoBundle 't9md/vim-quickhl' "複数の検索ハイライト
+"NeoBundle 'altercation/vim-colors-solarized' "なんか良いらしいcolorscheme
 NeoBundle 'tyru/winmove.vim'
 NeoBundle 'thinca/vim-fontzoom'
 "exe "NeoBundle 'ujihisa/unite-font'" | "動かない
-exe "NeoBundle 'ujihisa/unite-colorscheme'" |
+NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'pasela/unite-webcolorname'
 
+"--------------------------------------
+"filetype拡張
+NeoBundleLazy 'thinca/vim-ft-vim_fold'
+NeoBundleLazy 'cocoa.vim' "Objective-C
+NeoBundle 'javacomplete'
+NeoBundle 'Javascript-OmniCompletion-with-YUI-and-j'
+"NeoBundle 'mikelue/vim-maven-plugin' "Apache Maven project
+"NeoBundle 'groovy.vim'
+"NeoBundle 'derekwyatt/vim-scala'
 
+
+"--------------------------------------
+"pathogenの代わり
 NeoBundleLocal ~/vimfiles/bundle/
 filetype plugin indent on  "ファイル判定をonにする
 "}}}
 
 
 call altercmd#load() "altercmdをこのvimrc内で有効にする
+call arpeggio#load() "arpeggioをこのvimrc内で有効にする
 
 
 "-----------------------------------------------------------------------------
@@ -262,8 +292,7 @@ se fo +=M  "マルチバイト文字連結時空白を挿入しない
 se fo +=m  "マルチバイト文字でも整形を有効にする
 
 "改行時にコメントしない(上手く動いていない(上書きされてる))
-"aug vimrc_fo
-"  au!
+"aug vimrc
 "  au FileType * setlocal fo-=ro
 "aug END
 "}}}
@@ -296,7 +325,7 @@ set confirm
 
 "-----------------------------------------------------------------------------
 "Window
-se lines=40 co=100
+se lines=40 co=130
 "se scrolloff=2
 se hh=0 pvh=0 ea
 se wmw=0
@@ -362,8 +391,7 @@ se bs=indent,eol,start
 "}}}
 
 " ファイルを開いたら前回のカーソル位置へ移動 TODO:mkviewに置き換える
-aug vimrc_ex
-  au!
+aug vimrc_editting
   au BufReadPost *
     \ if line("'\"") > 1 && line("'\"") <= line('$') |
     \   exe "normal! g`\"" |
@@ -499,8 +527,13 @@ function! Gs_TabLine() "{{{
 
   "FoldCCnavi
   if exists('*FoldCCnavi')
-    let info .= '%#TabLineInfo#'.substitute(strtrans(substitute(FoldCCnavi()[-70:],'\s>\s','%#TabLineFill#> %#TabLineInfo#','g')), '<\x\x>','','g') . '%0* '
-    "let info .= '%#TabLineInfo#%.60('.substitute(FoldCCnavi(),'\s>\s',' >','g').'%)%0* '
+  try
+    let foldinfo = join(foldCC#ret_navilist(), '%#TabLineFill#> %#TabLineInfo#')
+    let info .= '%#TabLineInfo#'. foldinfo. '%0* '
+  catch
+    echo 'FoldCC: 何らかのエラー 詳細: g:foldCC_err'
+    let g:foldCC_err = v:exception
+  endtry
   endif
 
   "Keyswitcherの状態
@@ -586,7 +619,7 @@ endfunction
 "}}}
 
 "窓にカーソルの痕跡を残す
-aug vimrc_CursorTrack
+aug vimrc_colorscheme
   au!
   "au WinLeave * match CursorTrack /\%#/
   "au WinEnter * match none
@@ -594,7 +627,6 @@ aug END
 
 "-----------------------------------------------------------------------------
 aug vimrc_colorscheme
-  au!
   au ColorScheme *
     \ call <SID>CursorIM() |
     \ call <SID>StatusLineNC_fixer() |
@@ -755,38 +787,37 @@ endif
 
 "=============================================================================
 "ファイルタイプ設定
+aug vimrc_au
+  au!
+aug END
+
 au BufRead,BufNewFile *.markdown,*.md    setl ft=markdown nofoldenable
 autocmd FileType js setlocal ft=javascript
 
-augroup gitcommit
-  au!
+augroup vimrc_au
   au FileType gitcommit  setl nofoldenable nomodeline tw=60 fenc=utf-8
 augroup END
 
 
-aug vimrc_help
-  au!
+aug vimrc_au
   au FileType help nnoremap <buffer>q <C-w>c
 aug END
 
-aug vimrc_vim
-  au!
+aug vimrc_au
   au FileType vim
     \ inoremap <expr><buffer>\
     \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
 aug END
 
 
-aug qf
-  au!
+aug vimrc_au
   au FileType qf  noremap <buffer>q    :cclose<CR>
   au FileType qf  noremap <buffer><CR>    :.cc<CR>
 aug END
+au QuickfixCmdPost * if !empty(getqflist()) | cwindow | endif
 
-
-aug vimrc_java
-  au!
-  au FileType java  inoremap <expr><C-q>    <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
+aug vimrc_au
+  au FileType java  inoremap <expr><C-@>    <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
   au FileType java  inoremap <C-_>    <C-o>${<CR>
   au FileType java  nnoremap ,c    :!javac %<CR>
 aug END
@@ -818,6 +849,7 @@ nmap <Space> [space]
 nmap <C-k> [C-k]
 nmap <C-g> [C-g]
 nmap @ [@]
+omap @ [@]
 
 "-----------------------------------------------------------------------------
 "No operation
@@ -836,6 +868,7 @@ inoremap <M-j> <Nop>
 "誤爆防止
 nnoremap ZZ <Nop>
 nnoremap q <Nop>
+nnoremap <C-q> <Nop>
 noremap zq q
 noremap z@ @
 
@@ -849,14 +882,28 @@ noremap + ;
 noremap - ^
 noremap S $
 noremap <C-s> $
-nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
-call submode#enter_with('gjgk', 'nv', '', 'gj', 'gj')
-call submode#enter_with('gjgk', 'nv', '', 'gk', 'gk')
-call submode#leave_with('gjgk', 'nv', '', '<Esc>')
-call submode#map('gjgk', 'nv', '', 'j', 'gj')
-call submode#map('gjgk', 'nv', '', 'k', 'gk')
+"nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
+nmap <Plug>(arpeggio-default:j) <SID>gj
+nmap <Plug>(arpeggio-default:k) <SID>gk
+vmap <Plug>(arpeggio-default:j) <SID>gj
+vmap <Plug>(arpeggio-default:k) <SID>gk
+nnoremap <SID>gj gj|vnoremap <SID>gj gj
+nnoremap <SID>gk gk|vnoremap <SID>gk gk
+
+nmap <expr>gj   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-forward)"
+nmap <expr>gk   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-backward)"
+vmap <expr>gj   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-forward)"
+vmap <expr>gk   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-backward)"
+nnoremap <SID>j j|vnoremap <SID>j j
+nnoremap <SID>k k|vnoremap <SID>k k
 "nnoremap gj j|nnoremap gk k|vnoremap gj j|vnoremap gk k
+"call submode#enter_with('gjgk', 'nv', '', 'gj', 'j')
+"call submode#enter_with('gjgk', 'nv', '', 'gk', 'k')
+"call submode#leave_with('gjgk', 'nv', '', '<Esc>')
+"call submode#map('gjgk', 'nv', '', 'j', 'j')
+"call submode#map('gjgk', 'nv', '', 'k', 'k')
 nnoremap z<C-l> <C-l>
+nnoremap z<C-t> <C-t>
 
 "-----------------------------------------------------------------------------
 "Compensation
@@ -918,11 +965,10 @@ let s:bind_win = 'm'
 nnoremap [space]K <C-w>}
 
 exe 'nnoremap '. s:bind_win. 's <C-w>s'
-exe 'nnoremap '. s:bind_win. 'b <C-w>v'
+exe 'nnoremap '. s:bind_win. 'v <C-w>v'
 exe 'nnoremap '. s:bind_win. 'o <C-w>o'
 exe 'nnoremap '. s:bind_win. 'o <C-w>o'
 "現在Bufを新しいタブページで開く
-exe 'nnoremap <silent> '. s:bind_win. 'v :tab split<CR>'
 exe 'nnoremap <silent> '. s:bind_win. 't :tab split<CR>'
 "ウィンドウレイアウトを保持したままバッファを閉じるコマンド
 com! KeepWinBd let kwbd_bn= bufnr("%") |bn |exe "bd ".kwbd_bn |unlet kwbd_bn
@@ -933,7 +979,9 @@ nmap dn <SID>KeepWinBd
 noremap <SID>KeepWinBd :KeepWinBd<CR>
 nmap dq <C-w>c
 exe 'nnoremap '. s:bind_win. 'dd <C-w>c'
-nmap <silent>dv <SID>tabc
+exe 'nnoremap '. s:bind_win. 'q <C-w>c'
+nmap <silent>dy <SID>tabc
+nmap <silent>du <SID>tabc
 nmap <silent>dgt <SID>tabc
 noremap <SID>tabc :tabc<CR>
 
@@ -1100,6 +1148,16 @@ nnoremap <silent> [C-g]fv :tabe $VIM/.vimrc<CR>
 nnoremap <silent> [C-g]] :execute "tab tag ".expand('<cword>')<CR>|"カーソルドタグを新規タブページで開く
 nnoremap <silent> [C-g][ :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
 nnoremap <silent> [C-g]K :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
+
+
+"QuickFixコマンド
+nmap cn <SID>c_n
+nnoremap <SID>c_n    :cn<CR>
+nmap cp <SID>c_p
+nnoremap <SID>c_p    :cp<CR>
+nmap cv <SID>c_window
+nnoremap <SID>c_window    :cw<CR>
+
 "}}}
 
 "-----------------------------------------------------------------------------
@@ -1154,14 +1212,10 @@ call submode#enter_with('win-size', 'n', '', '<C-w><', '<C-w><')
 call submode#enter_with('win-size', 'n', '', '<C-w>+', '<C-w>+')
 call submode#enter_with('win-size', 'n', '', '<C-w>-', '<C-w>-')
 call submode#leave_with('win-size', 'n', '', '<Esc>')
-call submode#map('win-size', 'n', '', 'j', '<C-w>+')
-call submode#map('win-size', 'n', '', '<Down>', '<C-w>+')
-call submode#map('win-size', 'n', '', 'k', '<C-w>-')
-call submode#map('win-size', 'n', '', '<Up>', '<C-w>-')
-call submode#map('win-size', 'n', '', 'h', '<C-w><')
-call submode#map('win-size', 'n', '', '<Left>', '<C-w><')
-call submode#map('win-size', 'n', '', 'l', '<C-w>>')
-call submode#map('win-size', 'n', '', '<Right>', '<C-w>>')
+call submode#map('win-size', 'n', '', '+', '<C-w>+')
+call submode#map('win-size', 'n', '', '-', '<C-w>-')
+call submode#map('win-size', 'n', '', '<', '<C-w><')
+call submode#map('win-size', 'n', '', '>', '<C-w>>')
 call submode#map('win-size', 'n', 'x', '=', '<C-w>=')
 "}}}
 
@@ -1227,6 +1281,8 @@ function! s:__Gs_signs1buf(bufnr)
 endfunction
 "}}}
 
+nnoremap g*   g*N
+
 "visualstar.vim
 nmap <silent>* <Plug>(visualstar-*)N<SID>Put_SearchStartSign
 vmap <silent>* <Plug>(visualstar-*)N<SID>Put_SearchStartSign
@@ -1235,7 +1291,7 @@ noremap <SID>Put_SearchStartSign  :<C-u>call <SID>Put_SearchStartSign(0)<CR>
 
 
 "-----------------------------------------------------------------------------
-let s:bind_markj = '[@]'
+let s:bind_markj = '[C-k]'
 "カーソル移動コマンド(Normal,Omap)"{{{
 
 noremap _ +
@@ -1306,27 +1362,60 @@ exe 'noremap '. s:bind_markj. '@ ``'
 exe 'noremap '. s:bind_markj. '<C-k> `"'
 
 "次の折り畳みに移動
-call submode#enter_with('fd-jmp', 'n', '', 'zj', 'zj')
-call submode#enter_with('fd-jmp', 'n', '', 'zk', 'zk')
-call submode#leave_with('fd-jmp', 'n', '', '<Esc>')
-call submode#map('fd-jmp', 'n', '', 'j', 'zj')
-call submode#map('fd-jmp', 'n', '', 'k', 'zk')
-call submode#map('fd-jmp', 'n', '', 't', '[z')
-call submode#map('fd-jmp', 'n', '', 'b', ']z')
+"call submode#enter_with('fd-jmp', 'n', '', 'zj', 'zjzz')
+"call submode#enter_with('fd-jmp', 'n', '', 'zk', 'zkzz')
+"call submode#leave_with('fd-jmp', 'n', '', '<Esc>')
+"call submode#map('fd-jmp', 'n', '', 'j', 'zjzz')
+"call submode#map('fd-jmp', 'n', '', 'k', 'zkzz')
+"call submode#map('fd-jmp', 'n', '', 't', '[zzz')
+"call submode#map('fd-jmp', 'n', '', 'b', ']zzz')
+"call submode#map('fd-jmp', 'n', '', 'zj', 'zjzz')
+"call submode#map('fd-jmp', 'n', '', 'zk', 'zkzz')
+"Arpeggionnoremap <silent>fj   zjzz:ec getline('.')<CR>
+Arpeggionnoremap <silent>fj   zjzz
+Arpeggionnoremap <silent>fk   :<C-u>keepj call ZkJump_to_foldhead()<CR>
+"MEMO: arpeggioに<SID>は使えない
+function! ZkJump_to_foldhead() "{{{
+  let start_lv = foldlevel('.')
+  mark '
+  keepj norm! zk
+
+  if start_lv > 1 && foldlevel('.') < start_lv "自分の親を飛び越している可能性
+    keepj norm! zjzz
+  else
+    let fc_head = foldclosed('.')
+    if fc_head != -1 "ジャンプ先がclosed_foldingの場合
+      exe fc_head
+    else
+      exe s:__jumpto_last_innerfoldhead()
+    endif
+  endif
+
+  norm! zz
+  mark '
+endfunction
+"}}}
+function! s:__jumpto_last_innerfoldhead() "{{{
+  let foldtail = line('.')
+  keepj norm! [z
+  let fh = line('.')
+  while fh < foldtail
+    keepj norm! zj
+    let old_fh = fh
+    let fh = line('.')
+  endwhile
+  return old_fh
+endfunction
+"}}}
 "noremap [space]n zj
 "noremap [space]p zk
 
 noremap [space]t [z
 noremap [space]z ]z
 
-"下二桁指定ジャンプ from ujm (XXX: zf{motion}の指定に出来れば)
+"下二桁指定ジャンプ from ujm (FIXME: zf{motion}の指定に出来れば)
 command! -count=1 -nargs=0 GoToTheLine silent exe line('.')[:-len(v:count)-1] . v:count
-nnoremap <silent> gl :GoToTheLine<Cr>
-"function! GoToTheLine() "{{{
-"  exe 'normal! '. line('.')[:-len(v:count)-1] . v:count. 'gg'
-"endfunction
-""}}}
-"nnoremap <silent> gl    :call GoToTheLine()<CR>
+nnoremap <silent> gl :GoToTheLine<CR>
 "}}}
 
 "-----------------------------------------------------------------------------
@@ -1334,26 +1423,27 @@ nnoremap <silent> gl :GoToTheLine<Cr>
 nnoremap <silent><C-_> :call <SID>Smart_FoldCloser()<CR>
 function! s:Smart_FoldCloser() "{{{
   if foldlevel('.') == 0
-    normal! zM
+    norm! zM
     return
   endif
 
-  let foldclosedRslt = foldclosed('.')
-  if foldclosedRslt == -1
-    normal! zc
+  let foldc_lnum = foldclosed('.')
+  norm! zc
+  if foldc_lnum == -1
     return
   endif
 
-  normal! zc
-  if foldclosed('.') != foldclosedRslt
+  if foldclosed('.') != foldc_lnum
     return
   endif
-  normal zM
+  norm! zM
 endfunction
 "}}}
+"現在地にfoldlevelを合わせる
+nnoremap <silent>[space]<C-_>    :set foldlevel=<C-r>=foldlevel('.')-1<CR><CR>
 "nnoremap <silent>zf A <Esc>^:setl rnu<CR>zf
 nnoremap zf A <Esc>^zf
-nnoremap <expr>l  foldclosed(line('.')) != -1 ? 'zo' : 'l'
+nnoremap <expr>l  foldclosed('.') != -1 ? 'zo' : 'l'
 nnoremap [C-k]m zM
 nnoremap [C-k]r zR
 nnoremap [space]<C-h> zM
@@ -1382,16 +1472,15 @@ endfunction
 
 "-----------------------------------------------------------------------------
 "編集コマンド(Normal)
-let s:bind_reg = '<C-@>'
+let s:bind_reg = '[@]'
 
 nnoremap ,w :<C-u>w<CR>
 nnoremap ,qq :<C-u>qa<CR>
 nnoremap ,qu :<C-u>qa<CR>
 map Y y$
 noremap <F4> "+
-exe 'nnoremap '. s:bind_reg. ' "'
-exe 'nnoremap '. s:bind_reg. '<C-@> "+'
-exe 'nnoremap '. s:bind_reg. '8 "+'
+exe 'nnoremap '. s:bind_reg. '    "'
+exe 'nnoremap '. s:bind_reg. '+   "+'
 
 map [C-g]y "*y
 map [C-g]d "*d
@@ -1442,6 +1531,8 @@ nnoremap [space]u :earlier 1f<CR>
 "インデントを合わせて貼り付け
 nnoremap ]p p`[=`]
 nnoremap [p P`[=`]
+nnoremap =p p`[=`]
+nnoremap =P P`[=`]
 
 "-----------------------------------------------------------------------------
 "設定を切り替える
@@ -1531,38 +1622,42 @@ nnoremap <SID>o_gitconfig :e ~/.gitconfig<CR>
 "noremap ,T  :set filetype-=.autowrite<Bar>
   \ if exists('#autowrite')<Bar> augroup! autowrite<Bar> endif<CR>
 
-nnoremap  ,xv :ReloadVimrc<CR>
-nnoremap  [C-k]v :ReloadVimrc<CR>
+nnoremap  ,xv    source $MYVIMRC<CR>
+"nnoremap  [C-k]v     source $MYVIMRC<CR>
 nnoremap  [C-k]s :so %<CR>
 
 nnoremap <expr>[C-g]<Space>    ":\<C-u>h "
 
 ":helpを3倍の速度で引く
-nnoremap <C-h>  :<C-u>help<Space>
+nnoremap <C-h>  :<C-u>h<Space>
 
 "-----------------------------------------------------------------------------
 
 "テスト変数
-nnoremap [C-k]tu :unlet g:test01 <Bar>unlet g:test02 <Bar>unlet g:test03 <Bar>unlet g:test04<CR>
-nnoremap [C-k]tt :call <SID>display_test_vars()<CR>
-nnoremap [C-k]tk :call PeekEcho()<CR>
-function! s:display_test_vars() "{{{
-  let display = ''
-  if exists('g:test01')
-    let display .= 'g:test01='. string(g:test01)."\n"
-  endif
-  if exists('g:test02')
-    let display .= 'g:test02='. string(g:test02)."\n"
-  endif
-  if exists('g:test03')
-    let display .= 'g:test03='. string(g:test03)."\n"
-  endif
-  if exists('g:test04')
-    let display .= 'g:test04='. string(g:test04)
-  endif
-  echo display
+nnoremap <silent>[C-k]tu :call <SID>unlet_testvars()<CR>
+function! s:unlet_testvars() "{{{
+  for n in range(30)
+    let v = 'g:test'. printf('%02d', n)
+    if exists(v)
+      exe 'unlet '. v
+    endif
+  endfor
 endfunction
 "}}}
+nnoremap [C-k]tt :echo <SID>display_testvars()<CR>
+function! s:display_testvars() "{{{
+  let display = ''
+
+  for n in range(30)
+    let v = 'g:test'. printf('%02d', n)
+    if exists(v)
+      let display .= v. '='. string(eval(v)). "\n"
+    endif
+  endfor
+  return display
+endfunction
+"}}}
+nnoremap [C-k]tk :call PeekEcho()<CR>
 
 
 
@@ -1616,7 +1711,6 @@ command! -count -nargs=1 ContinuousNumber
 "=============================================================================
 "Mapping Insert & CommandLine
 "-----------------------------------------------------------------------------
-let s:bind_comp = 'l'
 let s:bind_snip = 's'
 
 "InsertMode, CommandLineでの移動コマンド"{{{
@@ -1633,7 +1727,7 @@ cnoremap <M-f> <S-Right>
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
 cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
+"cnoremap <C-e> <End>
 "}}}
 
 "InsertModeでのみの移動コマンド {{{
@@ -1689,8 +1783,8 @@ inoremap <C-r>8 <C-r>+
 cnoremap <C-r>8 <C-r>+
 inoremap <C-r><C-g> <C-r>+
 cnoremap <C-r><C-g> <C-r>+
-inoremap <expr><C-r><C-q> expand('%:t')
-cnoremap <expr><C-r><C-q> expand('%:t')
+inoremap <expr><C-r><C-t> expand('%:t')
+cnoremap <expr><C-r><C-t> expand('%:t')
 "バックスラッシュとかバーが打ちづらいから
 inoremap <C-b> \
 cnoremap <C-b> \
@@ -1699,6 +1793,9 @@ cnoremap <M-b> <Bar>
 inoremap <C-@> <Esc>
 cnoremap <C-@> <Esc>
 vnoremap <C-@> <Esc>
+inoremap <C-q> <Esc>
+cnoremap <C-q> <Esc>
+vnoremap <C-q> <Esc>
 
 "-----------------------------------------------------------------------------
 "InsertModeでの編集コマンド
@@ -1717,8 +1814,16 @@ imap <M-Space>    <Tab><Tab>
 "CommandLineでの編集コマンド
 "cnoremap <C-y> <C-r>"
 "編集中のファイルの場所をカレントディレクトリに設定する
-cnoremap <C-x> %:h
-cnoremap <expr><C-z> "h "
+"cnoremap <C-x> %:h
+"cnoremap <expr><C-z> "h "
+cnoremap <expr> <C-x> expand('%:p:h') . "/"
+cnoremap <expr> <C-z> expand('%:p:r')
+
+":helpを2倍の速さで引く
+cnoremap <expr><C-h>    getcmdtype()==':' ? getcmdpos()==1 ? 'h ' : "\<C-h>" : "\<C-h>"
+cnoremap <expr><C-e>    getcmdtype()==':' ? getcmdline()=='' ? 'ec ' : "\<C-e>" : "\<C-e>"
+cnoremap <expr><C-s>    getcmdtype()==':' ? getcmdpos()==1 ? 'set ' : "\<C-s>" : "\<C-s>"
+"※cnoremap <expr> <C-l>   getcmdtype()==':' ? getcmdpos()==1 ? 'let ' : ambicmd#expand("\<Right>") : ambicmd#expand("\<Right>") がambicmd.vimに定義されてる
 
 "TODO 現在のコマンドラインをyankする
 "cnoremap <C-y>
@@ -1728,11 +1833,9 @@ cnoremap <expr><C-z> "h "
 
 "=============================================================================
 "コマンドラインウィンドウ
-
-cnoremap <C-q> <C-f>
-nnoremap <C-q> q:
+cnoremap <C-g><C-f> <C-f>
 nnoremap c; q:
-xnoremap c; q:
+"xnoremap c; q:
 
 "コマンドラインウィンドウのキーマップを使いやすいように変更
 autocmd CmdwinEnter * call s:init_cmdwin()
@@ -1988,6 +2091,20 @@ endfunction "}}}
 "endfunction
 "" }}}
 
+" Capture (from tyru) 複製nofileを作成
+command!   -nargs=+ -complete=command  Capture  call s:cmd_capture(<q-args>)
+function! s:cmd_capture(q_args) "{{{
+    redir => output
+    silent execute a:q_args
+    redir END
+    let output = substitute(output, '^\n\+', '', '')
+
+    belowright new
+
+    silent file `=printf('[Capture: %s]', a:q_args)`
+    setlocal buftype=nofile bufhidden=unload noswapfile nobuflisted
+    call setline(1, split(output, '\n'))
+endfunction "}}}
 
 
 "YankRingっぽくyank/historiesを使う
@@ -2070,6 +2187,7 @@ endfunction
 
 
 "ref.vim"{{{
+let g:ref_cache_dir = '~/.vimsetting/.vim_ref_cache'
 au FileType ref-* nnoremap <silent><buffer>   q   :close<CR>
 let g:ref_phpmanual_path = 'D:/dic/vim-ref/php-chunked-xhtml'
 let g:ref_javadoc_path = 'D:/dic/vim-ref/java6api'
@@ -2078,7 +2196,8 @@ let g:ref_javadoc_cmd = 'lynx -dump -width=120 -nonumbers %s'
 "webdictサイトの設定
 let g:ref_source_webdict_sites = {}
 let g:ref_source_webdict_sites.je = {'url': 'http://dictionary.infoseek.ne.jp/jeword/%s',}
-let g:ref_source_webdict_sites.ej = {'url': 'http://dictionary.infoseek.ne.jp/ejword/%s',}
+"let g:ref_source_webdict_sites.ej = {'url': 'http://dictionary.infoseek.ne.jp/ejword/%s',}
+let g:ref_source_webdict_sites.alc = {'url': 'http://eow.alc.co.jp/%s', 'keyword_encoding': 'utf-8', 'cache': '0',}
 let g:ref_source_webdict_sites.kok = {'url': 'http://dictionary.infoseek.ne.jp/word/%s?dic=daijisen',}
 let g:ref_source_webdict_sites.wip = {'url': 'http://ja.wikipedia.org/wiki/%s',}
 let g:ref_source_webdict_sites.default = 'ej'
@@ -2087,8 +2206,11 @@ let g:ref_source_webdict_encoding = 'cp932'
 function! g:ref_source_webdict_sites.je.filter(output)
   return join(split(a:output, "\n")[15 :], "\n")
 endfunction
-function! g:ref_source_webdict_sites.ej.filter(output)
-  return join(split(a:output, "\n")[15 :], "\n")
+"function! g:ref_source_webdict_sites.ej.filter(output)
+  "return join(split(a:output, "\n")[15 :], "\n")
+"endfunction
+function! g:ref_source_webdict_sites.alc.filter(output)
+  return join(split(a:output, "\n")[37 :], "\n")
 endfunction
 function! g:ref_source_webdict_sites.kok.filter(output)
   return join(split(a:output, "\n")[15 :], "\n")
@@ -2096,18 +2218,20 @@ endfunction
 function! g:ref_source_webdict_sites.wip.filter(output)
   return join(split(a:output, "\n")[17 :], "\n")
 endfunction
-nnoremap ,zj :<C-u>Ref webdict je<Space>
-nnoremap ZJ :<C-u>Ref webdict je <C-r><C-w>
 nnoremap ,zh :<C-u>Ref webdict ej<Space>
 nnoremap ZH :<C-u>Ref webdict ej <C-r><C-w>
+nnoremap ,zj :<C-u>Ref webdict je<Space>
+nnoremap ZJ :<C-u>Ref webdict je <C-r><C-w>
 nnoremap ,zk :<C-u>Ref webdict kok<Space>
 nnoremap ZK :<C-u>Ref webdict kok <C-r><C-w>
+nnoremap ZA :<C-u>Ref webdict alc <C-r><C-w>
 nnoremap ,zw :<C-u>Ref webdict wip<Space>
 nnoremap ZW :<C-u>Ref webdict wip <C-r><C-w>
 nnoremap ,zv :<C-u>Ref javadoc<Space>
 AlterCommand zh  Ref webdict ej
 AlterCommand zj  Ref webdict je
 AlterCommand zk  Ref webdict kok
+AlterCommand za  Ref webdict alc
 AlterCommand zw  Ref webdict wip
 AlterCommand zv  Ref javadoc
 "}}}
@@ -2171,11 +2295,11 @@ let g:ctrlp_prompt_mappings['PrtDeleteEnt()']       = ['<F7>']
 "unite.vim
 "------------------
 "unite preference "{{{
+let g:unite_data_directory = '~/.vimsetting/.unite'
 "let g:unite_enable_start_insert=1  "入力モードで開始する
 let g:unite_split_rule = 'botright'  "窓の表示位置
 let g:unite_winheight = 20 "水平分割時の窓高さ
 "let g:unite_quick_match_table
-"let g:unite_data_directory
 
 let g:unite_source_grep_command = 'jvgrep'  "grepコマンド
 "let g:unite_source_grep_recursive_opt = '-R'
@@ -2307,7 +2431,7 @@ call unite#set_profile('action', 'context', {'start_insert' : 1})
 
 "unite neobundle
 AlterCommand nb   Unite neobundle
-AlterCommand nbi  Unite -auto-quit neobundle/install
+AlterCommand nbi  Unite neobundle/install
 AlterCommand nbu  Unite neobundle/update
 AlterCommand nbl  Unite neobundle/log
 AlterCommand nbus
@@ -2503,6 +2627,7 @@ let g:netrw_liststyle = 3 "常にtree view
 "vimshell.vim"{{{
 noremap <silent>,xs :let A = expand('%:p:h')<Bar> exe 'VimShellTab '. A<Bar>unlet A<CR>
 noremap <silent>,ss :let A = expand('%:p:h')<Bar> exe 'VimShell -split '. A<Bar>unlet A<CR>
+let g:vimshell_temporary_directory = '~/.vimsetting/.vimshell'
 let g:vimshell_split_command = '8split'
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <buffer> <C-j> <Plug>(vimshell_enter)
@@ -2560,12 +2685,12 @@ endfunction
 
 "vimfiler
 "vf preference "{{{
+let g:vimfiler_data_directory = '~/.vimsetting/.vimfiler'
 let g:vimfiler_as_default_explorer = 1
 let g:unite_kind_file_use_trashbox = 1
 let g:vimfiler_safe_mode_by_default = 0
 "let g:vimfiler_split_rule = 'belowright'
 "let g:vimfiler_detect_drives
-"let g:vimfiler_data_directory
 
 "拡張子関連付け
 "call vimfiler#set_execute_file('vim', 'vim')
@@ -2741,6 +2866,9 @@ nmap <silent> <F9> :VersDiff -c<cr>
 "}}}
 
 
+"arpeggio
+let g:arpeggio_timeoutlen = 80
+"call arpeggio#map('nicv', '', 0, 'fj', '<Esc>')
 
 
 "submode
@@ -2748,6 +2876,7 @@ let g:submode_timeoutlen = 5000
 
 
 "revolver.vim
+let g:revolver_dir = '~/.vimsetting/.vim-revolver/'
 let g:revolver_register_recording_cylinder = "vwxy"
 nmap mm <Plug>(revolver-mark-local-typeB)
 nmap mM <Plug>(revolver-mark-global)
@@ -2757,7 +2886,7 @@ exe 'nmap '. s:bind_markj. ', <Plug>(revolver-jump-last-local-mark)zv'
 nnoremap z,m m
 "nmap <C-@><C-_> <Plug>(revolver-jump-last-local-mark)zv
 "let g:revolver_register_enable_logging = 2
-nmap mq <Plug>(revolver-register-recording)
+nmap ,aq <Plug>(revolver-register-recording)
 nnoremap z,q q
 
 
@@ -2769,9 +2898,26 @@ exe 'noremap <silent>'. s:bind_win. 'u :LastBuf<CR>'
 "unite-recording
 nmap ZZ <Plug>(unite-recording-execute)
 nnoremap [@]@ @@
-nnoremap mq     :<C-u>UniteRecordingBegin<CR>
+nnoremap ,aq     :<C-u>UniteRecordingBegin<CR>
 nmap m@ <Plug>(unite-recording-execute)
 nnoremap ,ar :<C-u>Unite recording<CR>
+
+
+
+"-----------------------------------------------------------------------------
+"プラグイン filetype
+"vim-ft-vim_fold
+augroup foldmethod-expr
+  autocmd!
+  autocmd InsertEnter * if &l:foldmethod ==# 'expr'
+  \ | let b:foldinfo = [&l:foldmethod, &l:foldexpr]
+  \ | setlocal foldmethod=manual foldexpr=0
+  \ | endif
+  autocmd InsertLeave * if exists('b:foldinfo')
+  \ | let [&l:foldmethod, &l:foldexpr] = b:foldinfo
+  \ | endif
+augroup END
+
 
 "-----------------------------------------------------------------------------
 "プラグイン 入力
@@ -2792,8 +2938,8 @@ vmap [cm]b <Plug>NERDCommenterMinimal
 
 
 "altercmd (other)
-AlterCommand g[it]     Git
-AlterCommand grao  Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
+AlterCommand gi[t]     Git
+AlterCommand gir  Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
 AlterCommand c[tags]  !start ctags %
 AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h:h')<CR>
 AlterCommand sf     setf
@@ -2817,13 +2963,13 @@ noremap  m/ :<C-u>Migemo<CR>
 
 
 "neocomplcache.vim  Preference"{{{
-"let g:neocomplcache_temporary_dir = $VIM.'/settings/.neocon' "ネオコンの一時情報を書き出すディレクトリ
+let g:neocomplcache_temporary_dir = '~/.vimsetting/.neocon'
 "key:ft, value:辞書ファイルのpath >
 let g:neocomplcache_dictionary_filetype_lists = {}
 let g:neocomplcache_dictionary_filetype_lists.default = ''
-let g:neocomplcache_dictionary_filetype_lists.vim = '~/.neocon_user/neocon_dict/vim.dict'
-let g:neocomplcache_dictionary_filetype_lists.java = '~/.neocon_user/neocon_dict/java.dict'
-let g:neocomplcache_dictionary_filetype_lists.vimshell = $HOME.'/.vimshell_hist'
+let g:neocomplcache_dictionary_filetype_lists.vim = '~/.vimsetting/.user/.neocon_dict/vim.dict'
+let g:neocomplcache_dictionary_filetype_lists.java = '~/.vimsetting/.user/.neocon_dict/java.dict'
+"let g:neocomplcache_dictionary_filetype_lists.vimshell = $HOME.'/.vimshell_hist'
 let g:neocomplcache_dictionary_filetype_lists.scheme = $HOME.'/.gosh_completions'
 
 
@@ -2857,7 +3003,7 @@ inoremap <expr><C-x><C-o>  neocomplcache#manual_omni_complete()
 
 "ネオコン基本操作
 "候補の共通箇所まで補完する
-exe 'inoremap <expr><C-'. s:bind_comp. '>  neocomplcache#complete_common_string()'
+inoremap <expr><C-l>  neocomplcache#complete_common_string()
 "決定してポップアップを閉じる
 inoremap <expr><C-j>  pumvisible() ? neocomplcache#close_popup() : "\<C-j>"
 "キャンセルしてポップアップを閉じる
@@ -2874,10 +3020,11 @@ au FileType snippet  setl nobl
 au FileType snippet setl nofoldenable
 au BufLeave *.snip setl nobl
 au FileType snippet  noremap <buffer>q <C-w>q
-au FileType snippet  inoremap <buffer><C-q> ${}<Left>
-let g:neosnippet#snippets_directory = '~/.neocon_user/neocon_snippets' "スニペットプラグインディレクトリ
+au FileType snippet  inoremap <buffer><C-@> ${}<Left>
+let g:neosnippet#snippets_directory = '~/.vimsetting/.user/snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
-imap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<Plug>(neosnippet_expand_or_jump)"
+"imap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<Plug>(neosnippet_expand_or_jump)"
+imap <expr><C-s>  "\<Plug>(neosnippet_expand_or_jump)"
 smap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<Plug>(neosnippet_expand_or_jump)"
 "smap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<BS>\<BS>\<BS>a\<Plug>(neosnippet_jump)"
 "nmap <silent><C-s>  :call feedkeys("a\<Plug>(neocomplcache_snippets_jump)")<CR>
@@ -2903,13 +3050,31 @@ nnoremap <SID>a_Snip :NeoSnippetEdit -runtime -split -horizontal -direction=abov
 
 
 
+
 "Textsquash
+let g:textsquash_dir = '~/.vimsetting/.user/.textsquash/'
 let g:textsquash_word = {'_': '[&@0-9_a-zA-Z:\[\]'']'}
 au FileType squash  noremap <buffer>q <C-w>q
 nmap coq    <Plug>(textsquash-open-current-filetype-squashfile)
 nmap ,oq    <Plug>(textsquash-open-current-filetype-squashfile)
 nmap coQ    <Plug>(textsquash-open-default-squashfile)
 nmap ,oQ    <Plug>(textsquash-open-default-squashfile)
+
+
+"operator-user
+"operator-fillblank (from daisuzu)
+"function! OperatorFillBlank(motion_wise)
+    "let v = operator#user#visual_command_from_wise_name(a:motion_wise)
+    "execute 'normal! '. v . '`["x`]r '
+"endfunction
+"call operator#user#define('fillblank', 'OperatorFillBlank')
+"map <Leader>b <Plug>(operator-fillblank)
+
+"operator-replace
+nmap yr   <Plug>(operator-replace)
+nmap cr   <Plug>(operator-replace)
+nmap cy   <Plug>(operator-replace)
+vmap P   <Plug>(operator-replace)
 
 
 "surround.vim "{{{
@@ -2966,6 +3131,7 @@ omap <silent> ie <Plug>CamelCaseMotion_ie
 vmap <silent> ie <Plug>CamelCaseMotion_ie
 
 
+
 "h1mesuke/textobj-wiw
 let g:textobj_wiw_no_default_key_mappings = 1 "デフォルトで用意されてるマッピングを無効に
 "map w <Plug>(textobj-wiw-n)
@@ -2978,12 +3144,16 @@ xmap iw <Plug>(textobj-wiw-i)
 omap aw <Plug>(textobj-wiw-a)
 omap iw <Plug>(textobj-wiw-i)
 
+
+
 "textobj-between
 let g:textobj_between_no_default_key_mappings = 1
 xmap as <Plug>(textobj-between-a)
 xmap is <Plug>(textobj-between-i)
 omap as <Plug>(textobj-between-a)
 omap is <Plug>(textobj-between-i)
+
+
 
 call textobj#user#plugin('cword', {'-': {'*pattern*': '\k*\%#\k*', 'select': ['*',], }, })
 let textobj_star = {'select-a': 'a*', 'select-i': 'i*',
@@ -3047,7 +3217,8 @@ call textobj#user#plugin('piece', {'star': textobj_star, 'bar': textobj_bar, 'do
 "-----------------------------------------------------------------------------
 "プラグイン コマンドライン
 "ambicmd.vim(コマンドモードで一定のルールでコマンド補完
-exe 'cnoremap <expr> <C-'. s:bind_comp. '> ambicmd#expand("\<Right>")'
+cnoremap <expr> <C-l>   getcmdtype()==':' ? getcmdpos()==1 ? 'let ' : ambicmd#expand("\<Right>") : ambicmd#expand("\<Right>")
+
 
 "-----------------------------------------------------------------------------
 "プラグイン 情報表示
@@ -3059,8 +3230,8 @@ let g:buftabs_only_basename=1  "バッファタブにパスを省略してファ
 let g:echodoc_enable_at_startup = 1
 
 "win-shujuukankei.vim
-exe 'nmap '. s:bind_win. 't <Plug>(win-shujuukankei-Raise)'
-exe 'nmap '. s:bind_win. 'z <Plug>(win-shujuukankei-Lower)'
+exe 'nmap '. s:bind_win. '9 <Plug>(win-shujuukankei-Raise)'
+exe 'nmap '. s:bind_win. '8 <Plug>(win-shujuukankei-Lower)'
 au FileType vimfiler,unite,vimshell    let b:shujuu_overtaker = 1
 
 "FoldCCnavi
