@@ -45,6 +45,10 @@ call s:Add_path('/bnr/cmd/PortableGit-1.7.11-preview20120620/bin')
 call s:Add_path('C:/Program Files/Java/jdk1.7.0_09/bin')
 "}}}
 
+if !exists('$TERM')
+  let $TERM = 'msys'
+endif
+
 "$VIMFILES "{{{
 if has('vim_starting')
   if isdirectory(expand('$HOME/vimfiles', ':p'))
@@ -105,7 +109,7 @@ NeoBundle 'LeafCage/ref-javadoc', {'depends': 'thinca/vim-ref'}
 "exe "NeoBundle 'kana/vim-tabpagecd'" | "TabPage毎にcrrdirを持てるようにする
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'Shougo/neobundle.vim'
-NeoBundle 'kana/vim-arpeggio'
+"NeoBundle 'kana/vim-arpeggio'
 NeoBundle 'kana/vim-submode'
 "exe "NeoBundle 'thinca/vim-localrc'" | "特定dir以下に.lvimrcを置くとdir以下のfileだけで設定反映
 NeoBundle 'Rykka/lastbuf.vim'
@@ -204,7 +208,7 @@ filetype plugin indent on  "ファイル判定をonにする
 
 
 call altercmd#load() "altercmdをこのvimrc内で有効にする
-call arpeggio#load() "arpeggioをこのvimrc内で有効にする
+"call arpeggio#load() "arpeggioをこのvimrc内で有効にする
 
 
 "-----------------------------------------------------------------------------
@@ -430,7 +434,7 @@ se sm mat=1  "括弧の対応表示時間
 set completeopt=menu,menuone,preview
 
 "折り畳み
-se fdm=marker cms=%s fdc=5 fdt=FoldCCtext()
+se fdm=marker cms=%s fdc=3 fdt=FoldCCtext()
 
 
 "-----------------------------------------------------------------------------
@@ -452,31 +456,33 @@ function! Gs_StatusLine() "{{{
     let info .= '%8*%{cfi#format("%.43s()" ,"")}%0*'
   endif
 
-  let funclnum =  s:__gi_funclnum()
+  let f =  s:__ret_funclnum()
+  let funclnum = f == 0 ? '' : ' '.f.' '
 
   let info .= '%8*%{exists("b:vimfiler.current_dir")?b:vimfiler.current_dir :""}%0*'
   let win_shujuukankei = ['天', '主', '副', '平', '僕', '隷']
 
   return
-    \ '%3(%{repeat(",", winnr()).","}'. '%{'.string(win_shujuukankei).'[exists("b:shujuu_overtaker")?0:w:shujuu]}%*%)'.
-    \ '%3n-'. '%.40('. crrbuf_path. '%)'.
+    \ '%{repeat(",", winnr()).","}'.
+    \ '%4P'.
+    \ '%9*%3n-%0*'. '%.40('. crrbuf_path. '%)'.
     \ '%m%R%H%W%y %('. fenc8ff .'%) '.
-    \ info . funclnum. '%='.
-    \ '%14(%l-%{line("$")-line(".")}, %3v%)%<'
-    "\ .' %P'
-    "\ '['. '%{winnr()}'. '%7*%{'.string(win_shujuukankei).'[w:shujuu]}%*'. ']'.
-    "\ '%#%{ShujuuColor()}#'. '%{g:win_shujuukankei[w:shujuu]}%*'. '%13([%L] %l,%v%)%< %P'
-    "\ '%#ShujuuMaster#'. '%{g:win_shujuukankei[w:shujuu]}%*'. '%13([%L] %l,%v%)%< %P'
+    \ info . funclnum.
+    \ '%='.
+    \ '%4l(%4L),%3v(%3{virtcol("$")-1})'.
+    \ '%<'.
+    \ '%{'.string(win_shujuukankei).'[exists("b:shujuu_overtaker")?0:w:shujuu]}'
+
+    "\ '%18(%l-%{line("$")-line(".")},%3v/%3{virtcol("$")-1}%)'.
+    "\ '%4l,%-3v'.
 endfunction
 "}}}
 
 "関数定義始まりから見た行数を返す >
-function! s:__gi_funclnum() "{{{
-  let funcdef = search('^\s*\<fu\%[nction]\>', 'bcnW', search('^\s*\<endf\%[unction]\>', 'bcnW'))
-  if funcdef > 0
-    return ' '.(line('.') - funcdef).' '
-  else
-    return ''
+function! s:__ret_funclnum() "{{{
+  let funcbgn = search('^\s*\<fu\%[nction]\>', 'bcnW', search('^\s*\<endf\%[unction]\>', 'bcnW'))
+  if funcbgn > 0
+    return (line('.') - funcbgn)
   endif
 endfunction
 "}}}
@@ -514,7 +520,7 @@ endfunction
 se stal=2 "常に tabline を表示
 se tal=%!Gs_TabLine()
 let g:TDD_idx = 0
-noremap <silent>[C-k]td :let g:TDD_idx = g:TDD_idx>=3 ?0 :g:TDD_idx+1<CR><C-l>
+noremap <silent>[C-k]<C-t>d :let g:TDD_idx = g:TDD_idx>=3 ?0 :g:TDD_idx+1<CR><C-l>
 
 function! Gs_TabLine() "{{{
   let one2tabpEnd = range(1, tabpagenr('$'))
@@ -537,7 +543,7 @@ function! Gs_TabLine() "{{{
   endif
 
   "Keyswitcherの状態
-  let info .= g:keyswitcher_modes[g:Keyswitcher_mode_idx]. ' '
+  "let info .= g:keyswitcher_modes[g:Keyswitcher_mode_idx]. ' '
 
   "テスト駆動開発の4モードを表示
   let info .= ['%#TDD_Think#Tnk%*', '%#TDD_Red#Red%*', '%#TDD_Green#Grn%*', '%#TDD_Refactor#Rfc%*'][g:TDD_idx]. ' '
@@ -713,8 +719,8 @@ se cpoptions +=n  "'showbreak'を行番号の間に表示させる
 
 se guioptions=
 "se go +=c  "単純な選択にはポップアップダイアログでなくコンソールダイアログを使う
-se go +=r  "右スクロールバーを常に表示
-se go +=L  "垂直分割されたとき左スクロールバーを表示
+"se go +=l  "l/rスクロールバーを常に表示
+"se go +=R  "垂直分割されたときL/Rスクロールバーを表示
 "se go +=m  "menubar
 se go +=g  "無効の menubar 項目を灰色表示
 
@@ -817,7 +823,7 @@ aug END
 au QuickfixCmdPost * if !empty(getqflist()) | cwindow | endif
 
 aug vimrc_au
-  au FileType java  inoremap <expr><C-@>    <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
+  au FileType java  inoremap <expr><C-q>    <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
   au FileType java  inoremap <C-_>    <C-o>${<CR>
   au FileType java  nnoremap ,c    :!javac %<CR>
 aug END
@@ -847,7 +853,6 @@ let maplocalleader = '\\'
 noremap [space] <nop>
 nmap <Space> [space]
 nmap <C-k> [C-k]
-nmap <C-g> [C-g]
 nmap @ [@]
 omap @ [@]
 
@@ -877,18 +882,11 @@ noremap m <Nop>
 
 "-----------------------------------------------------------------------------
 "Substitute
-noremap ; :
-noremap + ;
-noremap - ^
+nnoremap ; :
+"nnoremap + :
 noremap S $
-noremap <C-s> $
-"nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
-nmap <Plug>(arpeggio-default:j) <SID>gj
-nmap <Plug>(arpeggio-default:k) <SID>gk
-vmap <Plug>(arpeggio-default:j) <SID>gj
-vmap <Plug>(arpeggio-default:k) <SID>gk
-nnoremap <SID>gj gj|vnoremap <SID>gj gj
-nnoremap <SID>gk gk|vnoremap <SID>gk gk
+noremap gs ^
+nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
 
 nmap <expr>gj   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-forward)"
 nmap <expr>gk   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-backward)"
@@ -922,7 +920,38 @@ inoremap <c-h> <c-g>u<c-h>
 inoremap <c-u> <c-g>u<c-u>
 "inoremap <c-w> <c-g>u<c-w>
 
+map <expr> :  <SID>sticky_func()
+map <expr> g:  'g'. <SID>sticky_func()
+map <expr> z:  'z'. <SID>sticky_func()
+map <expr> ,:  ','. <SID>sticky_func()
+map <expr> ":  '"'. <SID>sticky_func()
+omap <expr> i:  'i'. <SID>sticky_func()
+omap <expr> a:  'a'. <SID>sticky_func()
+vmap <expr> i:  'i'. <SID>sticky_func()
+vmap <expr> a:  'a'. <SID>sticky_func()
+function! s:sticky_func() "{{{
+  let l:sticky_table = {
+    \',' : '<', '.' : '>', '/' : '?',
+    \'1' : '!', '2' : '"', '3' : '#', '4' : '$', '5' : '%',
+    \'6' : '&', '7' : '''', '8' : '(', '9' : ')', '0' : '_', '-' : '=', '^' : '~',
+    \';' : '+', ':' : '*', '[' : '{', ']' : '}', '@' : '`', '\' : '|',
+    \}
+  let l:special_table = {
+    \"\<ESC>" : "\<ESC>", "\<Space>" : "\<Space>", "\<CR>" : ";\<CR>",
+    \}
 
+  let key = nr2char(getchar())
+  if key =~ '\l'
+    return toupper(key)
+  elseif has_key(l:sticky_table, key)
+    return l:sticky_table[key]
+  elseif has_key(l:special_table, key)
+    return l:special_table[key]
+  else
+    return mode()=='n'? "\<Esc>" : ''
+  endif
+endfunction
+"}}}
 
 
 
@@ -1099,11 +1128,13 @@ nnoremap <silent> <M-h> :bp<CR>
 nnoremap <silent> <M-l> :bn<CR>
 nnoremap <silent> [space]h :bp<CR>
 nnoremap <silent> [space]l :bn<CR>
+nnoremap <silent> <C-p> :bp<CR>
+nnoremap <silent> <C-n> :bn<CR>
 nnoremap gr gT
 nnoremap [space]n gt
 nnoremap [space]p gT
-nnoremap [C-g]<C-g> gt
-nnoremap [C-g]g gT
+nnoremap L gt
+nnoremap H gT
 nnoremap <silent> <C-S-Tab> :tabp<CR>
 nnoremap <silent> <C-Tab> :tabn<CR>
 
@@ -1142,12 +1173,10 @@ exe 'nnoremap '. s:bind_win. '6 6<C-w><C-w>'
 
 
 "タブページを手繰る
-nnoremap <silent> [C-g]o :tabonly<CR>|"現在タブページ以外を閉じる
-nnoremap <silent> [C-g]c :tabclose<CR>|"タブページ閉じる
-nnoremap <silent> [C-g]fv :tabe $VIM/.vimrc<CR>
-nnoremap <silent> [C-g]] :execute "tab tag ".expand('<cword>')<CR>|"カーソルドタグを新規タブページで開く
-nnoremap <silent> [C-g][ :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
-nnoremap <silent> [C-g]K :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
+nnoremap <silent> myo :tabonly<CR>|"現在タブページ以外を閉じる
+nnoremap <silent> myv :tabe $VIM/.vimrc<CR>
+nnoremap <silent> my] :execute "tab tag ".expand('<cword>')<CR>|"カーソルドタグを新規タブページで開く
+nnoremap <silent> myK :execute "tab help ".expand('<cword>')<CR>|"カーソルドワードを新規タブページで:helpする
 
 
 "QuickFixコマンド
@@ -1162,8 +1191,21 @@ nnoremap <SID>c_window    :cw<CR>
 
 "-----------------------------------------------------------------------------
 "表示・GUI操作"{{{
+nnoremap <C-g> :<C-u>echo <SID>echo_fileinfo()<CR>
+function! s:echo_fileinfo() "{{{
+  let i = ''
+  let i .= printf('"%s" (upd:%s) [%s] tw=%d (%d/%dv)%d',
+    \ bufname("%"),
+    \ strftime("%Y_%m%d %H:%M",getftime(bufname("%"))),
+    \ (exists('b:charCounterCount') ? b:charCounterCount. 'chrs' : ''),
+    \ &tw,
+    \ virtcol('.'), virtcol('$'), winwidth(0),
+    \ )[:&co-2]
+  let i .= "\n". FoldCCnavi()
+  return i
+endfunction
+"}}}
 
-nnoremap z<C-g> :echo bufname("%")'['&fenc']['&ff']'(strftime("%Y-%m-%d %X",getftime(bufname("%")))) "["b:charCounterCount"字]" "0x"CursoredCharHex()"\n"FoldCCnavi()<CR>
 function! CursoredCharHex()"{{{
   let c = matchstr(getline('.'), '.', col('.') - 1)
   let c = iconv(c, &enc, &fenc)
@@ -1294,13 +1336,37 @@ noremap <SID>Put_SearchStartSign  :<C-u>call <SID>Put_SearchStartSign(0)<CR>
 let s:bind_markj = '[C-k]'
 "カーソル移動コマンド(Normal,Omap)"{{{
 
-noremap _ +
+noremap _ ;
+nnoremap gt   Hj
+nnoremap gb   Lk
+nnoremap gm   M
+
+
+nnoremap <silent>t   :<C-u>call <SID>next_space(0)<CR>
+nnoremap <silent>T   :<C-u>call <SID>next_space(1)<CR>
+vnoremap <silent><Space>   :<C-u>call <SID>next_space(0)<CR>
+function! s:next_space(b_p) "{{{
+  if a:b_p
+    call search('\s\+', 'eb')
+  else
+    call search('\s\+', 'e')
+  endif
+endfunction
+"}}}
 
 noremap [space]w W
 noremap [space]b B
 noremap [space]e E
 noremap [space]ge gE
 omap <C-w> iW
+
+noremap <silent>M    :call <SID>goto_middle_col()<CR>
+function! s:goto_middle_col() "{{{
+  let l = strlen(getline('.'))
+  let l = l%2==1 ? l+1 : l
+  call cursor('.', l/2)
+endfunction
+"}}}
 
 "'%'コマンドを拡張する#Bible4-10
 runtime macros/matchit.vim
@@ -1351,7 +1417,7 @@ nn [space][ k:call search ("^". matchstr (getline (line (".")+ 1), '\(\s*\)') ."
 
 "変更リストブラウズ
 call submode#enter_with('changelist', 'n', '', 'g,', 'g,zv')
-call submode#enter_with('changelist', 'n', '', 'g;', 'g;zv')
+"call submode#enter_with('changelist', 'n', '', 'g;', 'g;zv')
 call submode#leave_with('changelist', 'n', '', '<Esc>')
 call submode#map('changelist', 'n', '', ',', 'g,zv')
 call submode#map('changelist', 'n', '', ';', 'g;zv')
@@ -1362,60 +1428,12 @@ exe 'noremap '. s:bind_markj. '@ ``'
 exe 'noremap '. s:bind_markj. '<C-k> `"'
 
 "次の折り畳みに移動
-"call submode#enter_with('fd-jmp', 'n', '', 'zj', 'zjzz')
-"call submode#enter_with('fd-jmp', 'n', '', 'zk', 'zkzz')
-"call submode#leave_with('fd-jmp', 'n', '', '<Esc>')
-"call submode#map('fd-jmp', 'n', '', 'j', 'zjzz')
-"call submode#map('fd-jmp', 'n', '', 'k', 'zkzz')
-"call submode#map('fd-jmp', 'n', '', 't', '[zzz')
-"call submode#map('fd-jmp', 'n', '', 'b', ']zzz')
-"call submode#map('fd-jmp', 'n', '', 'zj', 'zjzz')
-"call submode#map('fd-jmp', 'n', '', 'zk', 'zkzz')
-"Arpeggionnoremap <silent>fj   zjzz:ec getline('.')<CR>
-Arpeggionnoremap <silent>fj   zjzz
-Arpeggionnoremap <silent>fk   :<C-u>keepj call ZkJump_to_foldhead()<CR>
-"MEMO: arpeggioに<SID>は使えない
-function! ZkJump_to_foldhead() "{{{
-  let start_lv = foldlevel('.')
-  mark '
-  keepj norm! zk
-
-  if start_lv > 1 && foldlevel('.') < start_lv "自分の親を飛び越している可能性
-    keepj norm! zjzz
-  else
-    let fc_head = foldclosed('.')
-    if fc_head != -1 "ジャンプ先がclosed_foldingの場合
-      exe fc_head
-    else
-      exe s:__jumpto_last_innerfoldhead()
-    endif
-  endif
-
-  norm! zz
-  mark '
-endfunction
-"}}}
-function! s:__jumpto_last_innerfoldhead() "{{{
-  let foldtail = line('.')
-  keepj norm! [z
-  let fh = line('.')
-  while fh < foldtail
-    keepj norm! zj
-    let old_fh = fh
-    let fh = line('.')
-  endwhile
-  return old_fh
-endfunction
-"}}}
-"noremap [space]n zj
-"noremap [space]p zk
-
-noremap [space]t [z
-noremap [space]z ]z
+nnoremap zh [z
+nnoremap zl ]z
 
 "下二桁指定ジャンプ from ujm (FIXME: zf{motion}の指定に出来れば)
 command! -count=1 -nargs=0 GoToTheLine silent exe line('.')[:-len(v:count)-1] . v:count
-nnoremap <silent> gl :GoToTheLine<CR>
+"nnoremap <silent> gl :GoToTheLine<CR>
 "}}}
 
 "-----------------------------------------------------------------------------
@@ -1440,34 +1458,18 @@ function! s:Smart_FoldCloser() "{{{
 endfunction
 "}}}
 "現在地にfoldlevelを合わせる
-nnoremap <silent>[space]<C-_>    :set foldlevel=<C-r>=foldlevel('.')-1<CR><CR>
+nnoremap <silent>zu    :set foldlevel=<C-r>=foldlevel('.')-1<CR><CR>
+nnoremap <silent>zy    :set foldlevel=<C-r>=foldlevel('.')<CR><CR>
 "nnoremap <silent>zf A <Esc>^:setl rnu<CR>zf
 nnoremap zf A <Esc>^zf
 nnoremap <expr>l  foldclosed('.') != -1 ? 'zo' : 'l'
-nnoremap [C-k]m zM
-nnoremap [C-k]r zR
+"nnoremap [C-k]m zM
+"nnoremap [C-k]r zR
 nnoremap [space]<C-h> zM
 nnoremap [space]m zM
 nnoremap [space]r zR
-au BufEnter,FileType * :call FoldmarkerAppend()
-function! FoldmarkerAppend()
-  let cmsStart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
-  let cmsEnd = matchstr(&cms,'\V%s\zs\.\+')
-  let fmr = split(&fmr,',')
-  exe 'nnoremap  [C-k][[ A '.cmsStart.fmr[0].cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k]]] A '.cmsStart.fmr[1].cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k][] A'.cmsStart.'===== '.fmr[0].'1 '.fmr[1].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k][1 A '.cmsStart.fmr[0].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k][2 A '.cmsStart.fmr[0].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k][1 A '.fmr[0].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k][2 A '.fmr[0].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k]]1 A '.cmsStart.fmr[1].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k]]2 A '.cmsStart.fmr[1].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k]1[ A '.fmr[0].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k]2[ A '.fmr[0].'2'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k]1] A '.fmr[1].'1'.cmsEnd.'<ESC>^'
-  exe 'nnoremap  [C-k]2] A '.fmr[1].'2'.cmsEnd.'<ESC>^'
-endfunction
+nnoremap  z[     :<C-u>exe "norm! A ". matchstr(&cms,'\V\s\*\zs\.\+\ze%s'). split(&fmr, ',')[0]. (v:count ? v:count : ''). matchstr(&cms,'\V%s\zs\.\+'). "\<lt>Esc>^"<CR>
+nnoremap  z]     :<C-u>exe "norm! A ". matchstr(&cms,'\V\s\*\zs\.\+\ze%s'). split(&fmr, ',')[1]. (v:count ? v:count : ''). matchstr(&cms,'\V%s\zs\.\+'). "\<lt>Esc>^"<CR>
 
 
 "-----------------------------------------------------------------------------
@@ -1475,16 +1477,12 @@ endfunction
 let s:bind_reg = '[@]'
 
 nnoremap ,w :<C-u>w<CR>
-nnoremap ,qq :<C-u>qa<CR>
 nnoremap ,qu :<C-u>qa<CR>
 map Y y$
 noremap <F4> "+
 exe 'nnoremap '. s:bind_reg. '    "'
 exe 'nnoremap '. s:bind_reg. '+   "+'
 
-map [C-g]y "*y
-map [C-g]d "*d
-map [C-g]p "*p
 
 
 "コメントアウト
@@ -1519,9 +1517,7 @@ endfunction "}}}
 nnoremap [@]: @:
 nmap c. @:
 "ペーストしたテキストを再選択するBible3-15
-nnoremap <expr> gb '`[' . strpart(getregtype(), 0,1) . '`]'
-onoremap <silent> gb :normal gb<CR>
-onoremap <silent> [@]@ :normal gb<CR>
+onoremap <expr> [@]@ '`[' . strpart(getregtype(), 0,1) . '`]'
 onoremap <silent> gv :normal gv<CR>
 "前回保存した状態にまでアンドゥ
 nnoremap [space]u :earlier 1f<CR>
@@ -1588,7 +1584,7 @@ nnoremap <silent>[op]sf   :<C-u>se swf! swf?<CR>
 nnoremap <silent>[op]ps   :let g:scroll_other_win_reverse = !g:scroll_other_win_reverse<CR>:echo 'scroll reverse'.g:scroll_other_win_reverse<CR>
 "}}}
 
-nnoremap <silent> t :call <SID>multikey_effect()<CR>
+"nnoremap <silent> t :call <SID>multikey_effect()<CR>
 function! s:multikey_effect() "{{{
   if &rnu == 0
     setl rnu
@@ -1624,9 +1620,8 @@ nnoremap <SID>o_gitconfig :e ~/.gitconfig<CR>
 
 nnoremap  ,xv    source $MYVIMRC<CR>
 "nnoremap  [C-k]v     source $MYVIMRC<CR>
-nnoremap  [C-k]s :so %<CR>
+nnoremap  [C-k]<C-s> :so %<CR>
 
-nnoremap <expr>[C-g]<Space>    ":\<C-u>h "
 
 ":helpを3倍の速度で引く
 nnoremap <C-h>  :<C-u>h<Space>
@@ -1634,7 +1629,7 @@ nnoremap <C-h>  :<C-u>h<Space>
 "-----------------------------------------------------------------------------
 
 "テスト変数
-nnoremap <silent>[C-k]tu :call <SID>unlet_testvars()<CR>
+nnoremap <silent>[C-k]<C-t>u :call <SID>unlet_testvars()<CR>
 function! s:unlet_testvars() "{{{
   for n in range(30)
     let v = 'g:test'. printf('%02d', n)
@@ -1644,7 +1639,7 @@ function! s:unlet_testvars() "{{{
   endfor
 endfunction
 "}}}
-nnoremap [C-k]tt :echo <SID>display_testvars()<CR>
+nnoremap [C-k]<C-t><C-t> :echo <SID>display_testvars()<CR>
 function! s:display_testvars() "{{{
   let display = ''
 
@@ -1657,7 +1652,7 @@ function! s:display_testvars() "{{{
   return display
 endfunction
 "}}}
-nnoremap [C-k]tk :call PeekEcho()<CR>
+nnoremap [C-k]<C-t>k :call PeekEcho()<CR>
 
 
 
@@ -1667,8 +1662,12 @@ nnoremap [C-k]tk :call PeekEcho()<CR>
 
 "=============================================================================
 "Mapping Visual
+let s:bind_mode = '<C-q>'
+let s:bind_esc = '<C-g>'
 
 vnoremap v $h
+exe 'vnoremap '. s:bind_mode. ' <C-g>'
+exe 'vnoremap '. s:bind_esc. ' <Esc>'
 vnoremap zf :call <SID>Fixed_zf()<CR>
 function! s:Fixed_zf() range "{{{
   let cmsStart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
@@ -1767,7 +1766,7 @@ endfunction"}}}
 "}}}
 
 "-----------------------------------------------------------------------------
-"InsertMode, CommandLineでの編集コマンド
+"InsertMode, CommandLineでの編集コマンド "{{{
 inoremap <C-d>  <Del>
 cnoremap <C-d> <Del>
 inoremap <C-w>    <C-o>db
@@ -1781,32 +1780,30 @@ inoremap <C-r>@ <C-r>+
 cnoremap <C-r>@ <C-r>+
 inoremap <C-r>8 <C-r>+
 cnoremap <C-r>8 <C-r>+
-inoremap <C-r><C-g> <C-r>+
-cnoremap <C-r><C-g> <C-r>+
 inoremap <expr><C-r><C-t> expand('%:t')
 cnoremap <expr><C-r><C-t> expand('%:t')
 "バックスラッシュとかバーが打ちづらいから
-inoremap <C-b> \
-cnoremap <C-b> \
-inoremap <M-b> <Bar>
-cnoremap <M-b> <Bar>
-inoremap <C-@> <Esc>
-cnoremap <C-@> <Esc>
-vnoremap <C-@> <Esc>
-inoremap <C-q> <Esc>
-cnoremap <C-q> <Esc>
-vnoremap <C-q> <Esc>
+imap <C-CR> \
+cmap <C-CR> \
+inoremap <C-BS> <Bar>
+cnoremap <C-BS> <Bar>
+imap <C-@> <C-c>
+cmap <C-@> <C-c>
+vmap <C-@> <C-c>
+exe 'inoremap '. s:bind_esc. ' <Esc>'
+exe 'cmap '. s:bind_esc. ' <C-c>'
+"}}}
 
 "-----------------------------------------------------------------------------
 "InsertModeでの編集コマンド
 inoremap <C-x><C-a> <C-a>
   "< 直前の挿入を再度挿入
-inoremap <C-z> <C-d>
+inoremap <C-b> <C-d>
 inoremap <C-c> <Esc>
-"入力した文字を大文字・小文字化(from thinca)
-inoremap <C-g><C-u> <ESC>gUvbgi
-inoremap <C-g><C-l> <ESC>guvbgi
-imap <C-Space>    <Tab><Tab>
+"後方単語を大文字・小文字化(from thinca)
+"gU v(文字指向にする/これによってカーソル上の文字も範囲にする :h o_v) b gi
+inoremap <C-x>U <ESC>gUvbgi
+inoremap <C-x>u <ESC>guvbgi
 imap <C-Tab>    <Tab><Tab>
 imap <M-Space>    <Tab><Tab>
 
@@ -1821,7 +1818,7 @@ cnoremap <expr> <C-z> expand('%:p:r')
 
 ":helpを2倍の速さで引く
 cnoremap <expr><C-h>    getcmdtype()==':' ? getcmdpos()==1 ? 'h ' : "\<C-h>" : "\<C-h>"
-cnoremap <expr><C-e>    getcmdtype()==':' ? getcmdline()=='' ? 'ec ' : "\<C-e>" : "\<C-e>"
+cnoremap <expr><C-e>    getcmdtype()==':' ? getcmdline()=~'^\s*$\\|^h $' ? "<C-u>ec " : "\<C-e>" : "\<C-e>"
 cnoremap <expr><C-s>    getcmdtype()==':' ? getcmdpos()==1 ? 'set ' : "\<C-s>" : "\<C-s>"
 "※cnoremap <expr> <C-l>   getcmdtype()==':' ? getcmdpos()==1 ? 'let ' : ambicmd#expand("\<Right>") : ambicmd#expand("\<Right>") がambicmd.vimに定義されてる
 
@@ -1833,7 +1830,7 @@ cnoremap <expr><C-s>    getcmdtype()==':' ? getcmdpos()==1 ? 'set ' : "\<C-s>" :
 
 "=============================================================================
 "コマンドラインウィンドウ
-cnoremap <C-g><C-f> <C-f>
+exe 'cnoremap '. s:bind_mode. ' <C-f>'
 nnoremap c; q:
 "xnoremap c; q:
 
@@ -2109,8 +2106,8 @@ endfunction "}}}
 
 "YankRingっぽくyank/historiesを使う
 nnoremap <silent> [space]@ :<C-u>call Keyswitcher#switch('r', 'n')<CR>
-call Keyswitcher#map('n', ['r', 's'], '<C-n>', ['<Plug>(yank-replace-n)', ':cn<CR>'])
-call Keyswitcher#map('n', ['r', 's'], '<C-p>', ['<Plug>(yank-replace-p)', ':cp<CR>'])
+"call Keyswitcher#map('n', ['r', 's'], '<C-n>', ['<Plug>(yank-replace-n)', ':cn<CR>'])
+"call Keyswitcher#map('n', ['r', 's'], '<C-p>', ['<Plug>(yank-replace-p)', ':cp<CR>'])
 noremap <silent><Plug>(yank-replace-n) :call <SID>Yank_replace(1)<CR>
 noremap <silent><Plug>(yank-replace-p) :call <SID>Yank_replace(-1)<CR>
 let s:yank_histories_replace_idx = 0
@@ -2295,7 +2292,7 @@ let g:ctrlp_prompt_mappings['PrtDeleteEnt()']       = ['<F7>']
 "unite.vim
 "------------------
 "unite preference "{{{
-let g:unite_data_directory = '~/.vimsetting/.unite'
+let g:unite_data_directory = fnamemodify('~/.vimsetting/.unite', ':p')
 "let g:unite_enable_start_insert=1  "入力モードで開始する
 let g:unite_split_rule = 'botright'  "窓の表示位置
 let g:unite_winheight = 20 "水平分割時の窓高さ
@@ -2391,9 +2388,13 @@ au FileType unite imap <silent><buffer><expr> x
 "}}}
   "ウィンドウを分割して開く
   au FileType unite nnoremap <silent><buffer><expr><C-k>   unite#do_action('split')
-  "昇降切換
-  au FileType unite nnoremap <buffer><expr><C-s>      unite#mappings#set_current_filters(
+  "sorter
+  au FileType unite nnoremap <buffer><expr>sr      unite#mappings#set_current_filters(
     \ empty(unite#mappings#get_current_filters()) ? ['sorter_reverse'] : [])
+  au FileType unite nnoremap <buffer><expr>sw      unite#mappings#set_current_filters(
+    \ empty(unite#mappings#get_current_filters()) ? ['sorter_word'] : [])
+  au FileType unite nnoremap <buffer><expr>sl      unite#mappings#set_current_filters(
+    \ empty(unite#mappings#get_current_filters()) ? ['sorter_length'] : [])
   "no_quit切換
   au FileType unite nnoremap <buffer><C-@>   :let b:unite.context.no_quit = !b:unite.context.no_quit<Bar>echo b:unite.context.no_quit<CR>
 aug END
@@ -2444,7 +2445,7 @@ AlterCommand nbum
 nnoremap ,ag :<C-u>Unite -buffer-name=register register<CR>
 nnoremap ,ay :<C-u>Unite history/yank<CR>
 xnoremap ,ay d:<C-u>Unite history/yank<CR>
-inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite history/yank\<CR>"
+inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite -start-insert history/yank\<CR>"
 
 
 "file/buf関係
@@ -2627,7 +2628,7 @@ let g:netrw_liststyle = 3 "常にtree view
 "vimshell.vim"{{{
 noremap <silent>,xs :let A = expand('%:p:h')<Bar> exe 'VimShellTab '. A<Bar>unlet A<CR>
 noremap <silent>,ss :let A = expand('%:p:h')<Bar> exe 'VimShell -split '. A<Bar>unlet A<CR>
-let g:vimshell_temporary_directory = '~/.vimsetting/.vimshell'
+let g:vimshell_temporary_directory = expand('~/.vimsetting/.vimshell')
 let g:vimshell_split_command = '8split'
 au FileType vimshell  setl nobl
 au FileType vimshell nmap <buffer> <C-j> <Plug>(vimshell_enter)
@@ -2685,7 +2686,7 @@ endfunction
 
 "vimfiler
 "vf preference "{{{
-let g:vimfiler_data_directory = '~/.vimsetting/.vimfiler'
+let g:vimfiler_data_directory = expand('~/.vimsetting/.vimfiler')
 let g:vimfiler_as_default_explorer = 1
 let g:unite_kind_file_use_trashbox = 1
 let g:vimfiler_safe_mode_by_default = 0
@@ -2846,6 +2847,8 @@ command! -nargs=0 NeoBundleUpdateMain
 "openbrowser.vim（カーソル下のURL,URIをブラウザで開く、または単語をブラウザで検索する）
 nmap ,xo <Plug>(openbrowser-smart-search)
 vmap ,xo <Plug>(openbrowser-smart-search)
+nmap <C-CR> <Plug>(openbrowser-smart-search)
+vmap <C-CR> <Plug>(openbrowser-smart-search)
 
 
 "savevers.vimで世代別バックアップを取る"{{{
@@ -2867,7 +2870,7 @@ nmap <silent> <F9> :VersDiff -c<cr>
 
 
 "arpeggio
-let g:arpeggio_timeoutlen = 80
+"let g:arpeggio_timeoutlen = 80
 "call arpeggio#map('nicv', '', 0, 'fj', '<Esc>')
 
 
@@ -3020,7 +3023,7 @@ au FileType snippet  setl nobl
 au FileType snippet setl nofoldenable
 au BufLeave *.snip setl nobl
 au FileType snippet  noremap <buffer>q <C-w>q
-au FileType snippet  inoremap <buffer><C-@> ${}<Left>
+au FileType snippet  inoremap <buffer><C-q> ${}<Left>
 let g:neosnippet#snippets_directory = '~/.vimsetting/.user/snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
 "imap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<Plug>(neosnippet_expand_or_jump)"
@@ -3081,14 +3084,7 @@ vmap P   <Plug>(operator-replace)
 let g:surround_no_mappings = 1
 nmap      ds   <Plug>Dsurround
 nmap      cs   <Plug>Csurround
-nmap      gs   <Plug>Ysurround
-nmap      gss  <Plug>Yssurround
-nmap      gsS   <Plug>Ysurround$
-nmap      g<C-s>  <Plug>Ygsurround
-nmap      g<C-s>s <Plug>Ygssurround
-nmap      g<C-s>S  <Plug>Ygsurround$
 xmap      s    <Plug>Vsurround
-xmap      g<C-s>   <Plug>Vgsurround
 nmap      ys   <Plug>Ysurround
 nmap      yS   <Plug>Ygsurround
 nmap      yss  <Plug>Yssurround
@@ -3100,8 +3096,10 @@ nmap      ySS  <Plug>Ygssurround
 "-----------------------------------------------------------------------------
 "プラグイン 移動
 "posilist.vim
-map <M-o> <Plug>(poslist-prev-pos)
-map <M-i> <Plug>(poslist-next-pos)
+nmap <M-o> <Plug>(poslist-prev-pos)
+nmap <M-i> <Plug>(poslist-next-pos)
+nmap gh <Plug>(poslist-prev-pos)
+nmap gl <Plug>(poslist-next-pos)
 "call submode#enter_with('posl-b', 'nv', 'r', '[space]<C-o>', '<Plug>(poslist-prev-buf)')
 "call submode#enter_with('posl-b', 'nv', 'r', '[space]<C-i>', '<Plug>(poslist-next-buf)')
 "call submode#leave_with('posl-b', 'nv', '', '<Esc>')
@@ -3234,8 +3232,24 @@ exe 'nmap '. s:bind_win. '9 <Plug>(win-shujuukankei-Raise)'
 exe 'nmap '. s:bind_win. '8 <Plug>(win-shujuukankei-Lower)'
 au FileType vimfiler,unite,vimshell    let b:shujuu_overtaker = 1
 
-"FoldCCnavi
-let g:foldCCnavi_shorten = 30
+"FoldCC
+let g:foldCCtext_tail = 'v:foldend-v:foldstart+1'
+let g:foldCCnavi_maxchars = 30
+
+"veek
+AlterCommand v[eek]   Veek
+AlterCommand vv   Veek!
+"またはambicmdでveeで展開する
+command! -nargs=*  VVeek    call veek#veek('!', <q-args>, <args>)
+
+"hier
+" ハイライトの設定
+execute "highlight ucurl_my gui=undercurl guisp=Red"
+let g:hier_highlight_group_qf = "ucurl_my"
+" ハイライト箇所を更新
+"nnoremap <Space>hiu :HierUpdate<CR>
+" ハイライトを削除
+"nnoremap <Space>hic :HierClear<CR>
 
 "-----------------------------------------------------------------------------
 "プラグイン GUI操作
