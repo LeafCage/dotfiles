@@ -141,9 +141,11 @@ NeoBundle 'kana/vim-textobj-user'
   NeoBundle 'kana/vim-textobj-indent'
   NeoBundle 'thinca/vim-textobj-plugins' "中身はtextobj-between
   NeoBundle 'anyakichi/vim-textobj-xbrackets'
+  NeoBundle 'sgur/vim-textobj-parameter'
 NeoBundle 'anyakichi/vim-surround'
 NeoBundle 'scrooloose/nerdcommenter'
 NeoBundle 'deris/columnjump'
+NeoBundle 'kana/vim-smartword'
 NeoBundle 'LeafCage/unite-recording'
 "NeoBundle 'tomtom/tcomment_vim'
 NeoBundle 'bkad/CamelCaseMotion'
@@ -273,7 +275,8 @@ se vi+=n~/.viminfo  "viminfo file name (作成する場所)
 "-----------------------------------------------------------------------------
 "Indent, 自動整形"{{{
 
-se et ts=2 sts=2 sw=2 ai
+"se et ts=2 sts=2 sw=2 ai
+se noet ts=8 sts=2 sw=2 ai
   "'ts'   見かけ
   "'sts'  <Tab>の挿入や<BS>の使用等の編集操作
   "'sw'   'ci'や'ai'や>>で挿入されるindent
@@ -380,7 +383,7 @@ endfunction
 se ve =block,onemore
 
 "カーソル左右の動き
-se ww=
+se whichwrap=
 se ww+=b  "<BS>
 se ww+=s  "<Space>
 se ww+=h
@@ -792,7 +795,7 @@ endif
 
 
 "=============================================================================
-"ファイルタイプ設定
+"ファイルタイプ設定 "{{{1
 aug vimrc_au
   au!
 aug END
@@ -847,7 +850,7 @@ endfunction
 
 
 "=============================================================================
-"Mapping Basis
+"Mapping Basis "{{{1
 let mapleader = '\'
 let maplocalleader = '\\'
 noremap [space] <nop>
@@ -879,19 +882,19 @@ noremap z@ @
 
 "勝手なマークを付けさせない
 noremap m <Nop>
+"<C-c>をインサート抜けるにするとnormで<C-c>を押してしまう事故を防ぐ
+nnoremap <C-c><C-c> <C-c>
 
 "-----------------------------------------------------------------------------
 "Substitute
 nnoremap ; :
 "nnoremap + :
-noremap S $
-noremap gs ^
 nnoremap j gj|nnoremap k gk|vnoremap j gj|vnoremap k gk
 
 nmap <expr>gj   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-forward)"
-nmap <expr>gk   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-backward)"
+nmap <expr>gk   &wrap && winwidth(0) < col('$') ? "\<SID>k" : "\<Plug>(columnjump-backward)"
 vmap <expr>gj   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-forward)"
-vmap <expr>gk   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-backward)"
+vmap <expr>gk   &wrap && winwidth(0) < col('$') ? "\<SID>k" : "\<Plug>(columnjump-backward)"
 nnoremap <SID>j j|vnoremap <SID>j j
 nnoremap <SID>k k|vnoremap <SID>k k
 "nnoremap gj j|nnoremap gk k|vnoremap gj j|vnoremap gk k
@@ -920,15 +923,20 @@ inoremap <c-h> <c-g>u<c-h>
 inoremap <c-u> <c-g>u<c-u>
 "inoremap <c-w> <c-g>u<c-w>
 
-map <expr> :  <SID>sticky_func()
-map <expr> g:  'g'. <SID>sticky_func()
-map <expr> z:  'z'. <SID>sticky_func()
-map <expr> ,:  ','. <SID>sticky_func()
-map <expr> ":  '"'. <SID>sticky_func()
-omap <expr> i:  'i'. <SID>sticky_func()
-omap <expr> a:  'a'. <SID>sticky_func()
-vmap <expr> i:  'i'. <SID>sticky_func()
-vmap <expr> a:  'a'. <SID>sticky_func()
+"nmap <expr> ,;  <SID>sticky_func()
+"omap <expr> ;  <SID>sticky_func()
+"xmap <expr> ;  <SID>sticky_func()
+nnoremap .. .
+nnoremap z.. z.
+map <expr> .  <SID>sticky_func()
+map <expr> g.  'g'. <SID>sticky_func()
+map <expr> z.  'z'. <SID>sticky_func()
+map <expr> ,.  ','. <SID>sticky_func()
+map <expr> ".  '"'. <SID>sticky_func()
+omap <expr> i.  'i'. <SID>sticky_func()
+omap <expr> a.  'a'. <SID>sticky_func()
+xmap <expr> i.  'i'. <SID>sticky_func()
+xmap <expr> a.  'a'. <SID>sticky_func()
 function! s:sticky_func() "{{{
   let l:sticky_table = {
     \',' : '<', '.' : '>', '/' : '?',
@@ -1128,13 +1136,11 @@ nnoremap <silent> <M-h> :bp<CR>
 nnoremap <silent> <M-l> :bn<CR>
 nnoremap <silent> [space]h :bp<CR>
 nnoremap <silent> [space]l :bn<CR>
-nnoremap <silent> <C-p> :bp<CR>
-nnoremap <silent> <C-n> :bn<CR>
 nnoremap gr gT
 nnoremap [space]n gt
 nnoremap [space]p gT
-nnoremap L gt
-nnoremap H gT
+nnoremap <C-n> gt
+nnoremap <C-p> gT
 nnoremap <silent> <C-S-Tab> :tabp<CR>
 nnoremap <silent> <C-Tab> :tabn<CR>
 
@@ -1331,14 +1337,25 @@ vmap <silent>* <Plug>(visualstar-*)N<SID>Put_SearchStartSign
 noremap <SID>Put_SearchStartSign  :<C-u>call <SID>Put_SearchStartSign(0)<CR>
 "map # <Plug>(visualstar-#)N:<C-u>sign unplace 333<CR>
 
+"見えている範囲だけを検索対象にする :h search-range
+nmap c/ <SID>range_search
+nnoremap <expr><SID>range_search    '/\%>'. line('w0'). 'l\%<'. line('w$'). 'l'
+
+nnoremap [space]/ :<C-u>%s///<LEFT><LEFT>
+vnoremap [space]/ :<C-u>s///<LEFT><LEFT>
 
 "-----------------------------------------------------------------------------
 let s:bind_markj = '[C-k]'
 "カーソル移動コマンド(Normal,Omap)"{{{
+noremap S $
+noremap U ^
+noremap X ^
+noremap Z 0
+nnoremap zU U
 
 noremap _ ;
-nnoremap gt   Hj
-nnoremap gb   Lk
+nnoremap gh   Hj
+nnoremap gl   Lk
 nnoremap gm   M
 
 
@@ -1428,8 +1445,36 @@ exe 'noremap '. s:bind_markj. '@ ``'
 exe 'noremap '. s:bind_markj. '<C-k> `"'
 
 "次の折り畳みに移動
-nnoremap zh [z
-nnoremap zl ]z
+nnoremap <silent>zj :<C-u>call <SID>smart_foldjump('j')<CR>
+nnoremap <silent>zk :<C-u>call <SID>smart_foldjump('k')<CR>
+function! s:smart_foldjump(direction) "{{{
+  if a:direction == 'j'
+    let [cross, trace, compare] = ['zj', ']z', '<']
+  else
+    let [cross, trace, compare] = ['zk', '[z', '>']
+  endif
+
+  let i = v:count1
+  while i
+    let save_lnum = line('.')
+    exe 'keepj norm! '. trace
+    let trace_lnum = line('.')
+    exe save_lnum
+
+    exe 'keepj norm! '. cross
+    let cross_lnum = line('.')
+    if eval('cross_lnum '. compare. ' trace_lnum') || trace_lnum == save_lnum
+      let i -= 1
+      continue
+    endif
+
+    exe trace_lnum
+    let i -= 1
+  endwhile
+  mark `
+  norm! zz
+endfunction
+"}}}
 
 "下二桁指定ジャンプ from ujm (FIXME: zf{motion}の指定に出来れば)
 command! -count=1 -nargs=0 GoToTheLine silent exe line('.')[:-len(v:count)-1] . v:count
@@ -1787,9 +1832,12 @@ imap <C-CR> \
 cmap <C-CR> \
 inoremap <C-BS> <Bar>
 cnoremap <C-BS> <Bar>
-imap <C-@> <C-c>
+imap <C-@> <Esc>
 cmap <C-@> <C-c>
 vmap <C-@> <C-c>
+imap <C-_> <Esc>
+cmap <C-_> <C-c>
+vmap <C-_> <C-c>
 exe 'inoremap '. s:bind_esc. ' <Esc>'
 exe 'cmap '. s:bind_esc. ' <C-c>'
 "}}}
@@ -1804,7 +1852,7 @@ inoremap <C-c> <Esc>
 "gU v(文字指向にする/これによってカーソル上の文字も範囲にする :h o_v) b gi
 inoremap <C-x>U <ESC>gUvbgi
 inoremap <C-x>u <ESC>guvbgi
-imap <C-Tab>    <Tab><Tab>
+inoremap <C-Tab>    <C-v><C-i>
 imap <M-Space>    <Tab><Tab>
 
 "-----------------------------------------------------------------------------
@@ -2156,7 +2204,7 @@ endfunction
 
 
 "=============================================================================
-" 各種プラグイン設定
+" 各種プラグイン設定 "{{{1
 
 "-----------------------------------------------------------------------------
 "プラグイン 拡張インターフェイス
@@ -2215,16 +2263,11 @@ endfunction
 function! g:ref_source_webdict_sites.wip.filter(output)
   return join(split(a:output, "\n")[17 :], "\n")
 endfunction
-nnoremap ,zh :<C-u>Ref webdict ej<Space>
-nnoremap ZH :<C-u>Ref webdict ej <C-r><C-w>
-nnoremap ,zj :<C-u>Ref webdict je<Space>
-nnoremap ZJ :<C-u>Ref webdict je <C-r><C-w>
-nnoremap ,zk :<C-u>Ref webdict kok<Space>
-nnoremap ZK :<C-u>Ref webdict kok <C-r><C-w>
-nnoremap ZA :<C-u>Ref webdict alc <C-r><C-w>
-nnoremap ,zw :<C-u>Ref webdict wip<Space>
-nnoremap ZW :<C-u>Ref webdict wip <C-r><C-w>
-nnoremap ,zv :<C-u>Ref javadoc<Space>
+nnoremap gxh :<C-u>Ref webdict ej <C-r><C-w>
+nnoremap gxj :<C-u>Ref webdict je <C-r><C-w>
+nnoremap gxk :<C-u>Ref webdict kok <C-r><C-w>
+nnoremap gxa :<C-u>Ref webdict alc <C-r><C-w>
+nnoremap gxw :<C-u>Ref webdict wip <C-r><C-w>
 AlterCommand zh  Ref webdict ej
 AlterCommand zj  Ref webdict je
 AlterCommand zk  Ref webdict kok
@@ -2899,7 +2942,7 @@ exe 'noremap <silent>'. s:bind_win. 'u :LastBuf<CR>'
 
 
 "unite-recording
-nmap ZZ <Plug>(unite-recording-execute)
+"nmap ZZ <Plug>(unite-recording-execute)
 nnoremap [@]@ @@
 nnoremap ,aq     :<C-u>UniteRecordingBegin<CR>
 nmap m@ <Plug>(unite-recording-execute)
@@ -3098,8 +3141,8 @@ nmap      ySS  <Plug>Ygssurround
 "posilist.vim
 nmap <M-o> <Plug>(poslist-prev-pos)
 nmap <M-i> <Plug>(poslist-next-pos)
-nmap gh <Plug>(poslist-prev-pos)
-nmap gl <Plug>(poslist-next-pos)
+nmap zh <Plug>(poslist-prev-pos)
+nmap zl <Plug>(poslist-next-pos)
 "call submode#enter_with('posl-b', 'nv', 'r', '[space]<C-o>', '<Plug>(poslist-prev-buf)')
 "call submode#enter_with('posl-b', 'nv', 'r', '[space]<C-i>', '<Plug>(poslist-next-buf)')
 "call submode#leave_with('posl-b', 'nv', '', '<Esc>')
@@ -3118,15 +3161,23 @@ nmap gl <Plug>(poslist-next-pos)
 
 "camelcasemotion.vimのコマンドに置き換える
 "前方・後方移動をキャメルケース単位にする
-map <silent> w <Plug>CamelCaseMotion_w
-map <silent> b <Plug>CamelCaseMotion_b
-map <silent> e <Plug>CamelCaseMotion_e
+map <silent> gw <Plug>CamelCaseMotion_w
+map <silent> gb <Plug>CamelCaseMotion_b
+map <silent> gr <Plug>CamelCaseMotion_e
 "omap <silent> e <Plug>CamelCaseMotion_ie
 "テキストオブジェクトに対応させる
 omap <silent> ib <Plug>CamelCaseMotion_ib
 vmap <silent> ib <Plug>CamelCaseMotion_ib
 omap <silent> ie <Plug>CamelCaseMotion_ie
 vmap <silent> ie <Plug>CamelCaseMotion_ie
+
+
+
+"smartword
+map w <Plug>(smartword-w)
+map b <Plug>(smartword-b)
+map e <Plug>(smartword-e)
+map ge <Plug>(smartword-ge)
 
 
 
@@ -3146,11 +3197,18 @@ omap iw <Plug>(textobj-wiw-i)
 
 "textobj-between
 let g:textobj_between_no_default_key_mappings = 1
-xmap as <Plug>(textobj-between-a)
-xmap is <Plug>(textobj-between-i)
-omap as <Plug>(textobj-between-a)
-omap is <Plug>(textobj-between-i)
+xmap ag <Plug>(textobj-between-a)
+xmap ig <Plug>(textobj-between-i)
+omap ag <Plug>(textobj-between-a)
+omap ig <Plug>(textobj-between-i)
 
+
+"textobj-parameter
+let g:textobj_parameter_no_default_key_mappings = 1
+xmap a8 <Plug>(textobj-parameter-a)
+xmap i8 <Plug>(textobj-parameter-i)
+omap a8 <Plug>(textobj-parameter-a)
+omap i8 <Plug>(textobj-parameter-i)
 
 
 call textobj#user#plugin('cword', {'-': {'*pattern*': '\k*\%#\k*', 'select': ['*',], }, })
@@ -3158,7 +3216,7 @@ let textobj_star = {'select-a': 'a*', 'select-i': 'i*',
   \ '*select-a-function*': 's:Textobj_star_a', '*select-i-function*': 's:Textobj_star_i', '*sfile*': expand('<sfile>')}
 let textobj_bar = {'select-a': 'a<Bar>', 'select-i': 'i<Bar>',
   \ '*select-a-function*': 's:Textobj_bar_a', '*select-i-function*': 's:Textobj_bar_i', '*sfile*': expand('<sfile>')}
-let textobj_dot = {'select-a': 'a.', 'select-i': 'i.',
+let textobj_dot = {'select-a': 'a..', 'select-i': 'i..',
   \ '*select-a-function*': 's:Textobj_dot_a', '*select-i-function*': 's:Textobj_dot_i', '*sfile*': expand('<sfile>')}
 function! s:Textobj_star_a() "{{{
   return s:__textobj_piece('*', 'a')
@@ -3188,20 +3246,21 @@ function! s:__textobj_piece(char, i6a) "{{{
   let save_view = winsaveview()
   let crrline = line('.')
   if a:i6a == 'i'
-    let b = search('\M'. a:char.'\[^'.a:char .']', 'bce', crrline)
+    "charの後のcharじゃないものを探す
+    let _match_b = search('\M'. a:char.'\[^'.a:char .']', 'bce', crrline)
   else
-    let b = search('\M'. a:char, 'bce', crrline)
+    let _match_b = search('\M'. a:char, 'bce', crrline)
   endif
   let bgn = getpos('.')
 
   if a:i6a == 'i'
-    let e = search('\M\[^'. a:char .']\ze'. a:char, '', crrline)
+    let _match_e = search('\M\[^'. a:char .']\ze'. a:char, '', crrline)
   else
-    let e = search('\M'. a:char, '', crrline)
+    let _match_e = search('\M'. a:char, '', crrline)
   endif
   let end = getpos('.')
 
-  if b==0 || e==0 || len(a:char)>1
+  if _match_b==0 || _match_e==0 || len(a:char)>1
     return
   endif
   call winrestview(save_view)
@@ -3215,7 +3274,7 @@ call textobj#user#plugin('piece', {'star': textobj_star, 'bar': textobj_bar, 'do
 "-----------------------------------------------------------------------------
 "プラグイン コマンドライン
 "ambicmd.vim(コマンドモードで一定のルールでコマンド補完
-cnoremap <expr> <C-l>   getcmdtype()==':' ? getcmdpos()==1 ? 'let ' : ambicmd#expand("\<Right>") : ambicmd#expand("\<Right>")
+cnoremap <expr> <C-l>   getcmdtype()==':' && getcmdpos()==1 ? 'let ' : ambicmd#expand("\<Right>")
 
 
 "-----------------------------------------------------------------------------
@@ -3234,6 +3293,7 @@ au FileType vimfiler,unite,vimshell    let b:shujuu_overtaker = 1
 
 "FoldCC
 let g:foldCCtext_tail = 'v:foldend-v:foldstart+1'
+let g:foldCCtext_enable_autofdc_adjuster = 1
 let g:foldCCnavi_maxchars = 30
 
 "veek
@@ -3268,7 +3328,7 @@ map ,xH <Plug>(quickhl-reset)
 
 
 "=============================================================================
-"未整理空間
+"未整理空間 "{{{1
 
 
 
