@@ -146,6 +146,7 @@ NeoBundle 'anyakichi/vim-surround'
 NeoBundle 'scrooloose/nerdcommenter'
 NeoBundle 'deris/columnjump'
 NeoBundle 'kana/vim-smartword'
+NeoBundle 'rhysd/clever-f.vim'
 NeoBundle 'LeafCage/unite-recording'
 "NeoBundle 'tomtom/tcomment_vim'
 NeoBundle 'bkad/CamelCaseMotion'
@@ -883,6 +884,7 @@ noremap z@ @
 "勝手なマークを付けさせない
 noremap m <Nop>
 "<C-c>をインサート抜けるにするとnormで<C-c>を押してしまう事故を防ぐ
+nnoremap <C-c> <Nop>
 nnoremap <C-c><C-c> <C-c>
 
 "-----------------------------------------------------------------------------
@@ -988,7 +990,7 @@ nnoremap [space]<C-j> :i<CR><CR>.<CR>
 
 "空白を挿入する
 nnoremap [space]a a<Space><Esc>
-nnoremap <C-Space> a<Space><Esc>
+"nnoremap <C-Space> a<Space><Esc>
 nnoremap [space]i i<Space><Esc>
 nnoremap [space]s i<Space><Esc>la<Space><Esc>h
 
@@ -1003,7 +1005,6 @@ nnoremap [space]K <C-w>}
 
 exe 'nnoremap '. s:bind_win. 's <C-w>s'
 exe 'nnoremap '. s:bind_win. 'v <C-w>v'
-exe 'nnoremap '. s:bind_win. 'o <C-w>o'
 exe 'nnoremap '. s:bind_win. 'o <C-w>o'
 "現在Bufを新しいタブページで開く
 exe 'nnoremap <silent> '. s:bind_win. 't :tab split<CR>'
@@ -1227,7 +1228,7 @@ function! s:__byte2hex(bytes)
 endfunction
 "}}}
 
-nnoremap me :mes<CR>
+"nnoremap me :mes<CR>
 "nnoremap ma :marks<CR>
 nnoremap ma :<C-u>Unite mark<CR>
 
@@ -1341,8 +1342,8 @@ noremap <SID>Put_SearchStartSign  :<C-u>call <SID>Put_SearchStartSign(0)<CR>
 nmap c/ <SID>range_search
 nnoremap <expr><SID>range_search    '/\%>'. line('w0'). 'l\%<'. line('w$'). 'l'
 
-nnoremap [space]/ :<C-u>%s///<LEFT><LEFT>
-vnoremap [space]/ :<C-u>s///<LEFT><LEFT>
+nnoremap [space]/ :<C-u>%s/
+vnoremap [space]/ :<C-u>s/
 
 "-----------------------------------------------------------------------------
 let s:bind_markj = '[C-k]'
@@ -1354,9 +1355,6 @@ noremap Z 0
 nnoremap zU U
 
 noremap _ ;
-nnoremap gh   Hj
-nnoremap gl   Lk
-nnoremap gm   M
 
 
 nnoremap <silent>t   :<C-u>call <SID>next_space(0)<CR>
@@ -1377,7 +1375,7 @@ noremap [space]e E
 noremap [space]ge gE
 omap <C-w> iW
 
-noremap <silent>M    :call <SID>goto_middle_col()<CR>
+noremap <silent>gm    :call <SID>goto_middle_col()<CR>
 function! s:goto_middle_col() "{{{
   let l = strlen(getline('.'))
   let l = l%2==1 ? l+1 : l
@@ -1463,7 +1461,7 @@ function! s:smart_foldjump(direction) "{{{
 
     exe 'keepj norm! '. cross
     let cross_lnum = line('.')
-    if eval('cross_lnum '. compare. ' trace_lnum') || trace_lnum == save_lnum
+    if cross_lnum != save_lnum && eval('cross_lnum '. compare. ' trace_lnum') || trace_lnum == save_lnum
       let i -= 1
       continue
     endif
@@ -1483,8 +1481,8 @@ command! -count=1 -nargs=0 GoToTheLine silent exe line('.')[:-len(v:count)-1] . 
 
 "-----------------------------------------------------------------------------
 "折り畳み操作
-nnoremap <silent><C-_> :call <SID>Smart_FoldCloser()<CR>
-function! s:Smart_FoldCloser() "{{{
+nnoremap <silent><C-_> :call <SID>smart_foldCloser()<CR>
+function! s:smart_foldCloser() "{{{
   if foldlevel('.') == 0
     norm! zM
     return
@@ -1510,9 +1508,6 @@ nnoremap zf A <Esc>^zf
 nnoremap <expr>l  foldclosed('.') != -1 ? 'zo' : 'l'
 "nnoremap [C-k]m zM
 "nnoremap [C-k]r zR
-nnoremap [space]<C-h> zM
-nnoremap [space]m zM
-nnoremap [space]r zR
 nnoremap  z[     :<C-u>exe "norm! A ". matchstr(&cms,'\V\s\*\zs\.\+\ze%s'). split(&fmr, ',')[0]. (v:count ? v:count : ''). matchstr(&cms,'\V%s\zs\.\+'). "\<lt>Esc>^"<CR>
 nnoremap  z]     :<C-u>exe "norm! A ". matchstr(&cms,'\V\s\*\zs\.\+\ze%s'). split(&fmr, ',')[1]. (v:count ? v:count : ''). matchstr(&cms,'\V%s\zs\.\+'). "\<lt>Esc>^"<CR>
 
@@ -1708,7 +1703,7 @@ nnoremap [C-k]<C-t>k :call PeekEcho()<CR>
 "=============================================================================
 "Mapping Visual
 let s:bind_mode = '<C-q>'
-let s:bind_esc = '<C-g>'
+let s:bind_esc = '<C-Space>'
 
 vnoremap v $h
 exe 'vnoremap '. s:bind_mode. ' <C-g>'
@@ -2263,6 +2258,7 @@ endfunction
 function! g:ref_source_webdict_sites.wip.filter(output)
   return join(split(a:output, "\n")[17 :], "\n")
 endfunction
+nnoremap gx <Nop>
 nnoremap gxh :<C-u>Ref webdict ej <C-r><C-w>
 nnoremap gxj :<C-u>Ref webdict je <C-r><C-w>
 nnoremap gxk :<C-u>Ref webdict kok <C-r><C-w>
@@ -2336,6 +2332,7 @@ let g:ctrlp_prompt_mappings['PrtDeleteEnt()']       = ['<F7>']
 "------------------
 "unite preference "{{{
 let g:unite_data_directory = fnamemodify('~/.vimsetting/.unite', ':p')
+let g:neocomplcache_skip_auto_completion_time = '1' "この秒数以上かかる自動補完はスキップされる
 "let g:unite_enable_start_insert=1  "入力モードで開始する
 let g:unite_split_rule = 'botright'  "窓の表示位置
 let g:unite_winheight = 20 "水平分割時の窓高さ
@@ -3131,6 +3128,7 @@ xmap      s    <Plug>Vsurround
 nmap      ys   <Plug>Ysurround
 nmap      yS   <Plug>Ygsurround
 nmap      yss  <Plug>Yssurround
+nmap      ysys  <Plug>Yssurround
 nmap      ySs  <Plug>Ygssurround
 nmap      ySS  <Plug>Ygssurround
 "}}}
@@ -3161,9 +3159,9 @@ nmap zl <Plug>(poslist-next-pos)
 
 "camelcasemotion.vimのコマンドに置き換える
 "前方・後方移動をキャメルケース単位にする
-map <silent> gw <Plug>CamelCaseMotion_w
-map <silent> gb <Plug>CamelCaseMotion_b
-map <silent> gr <Plug>CamelCaseMotion_e
+map <silent> mw <Plug>CamelCaseMotion_w
+map <silent> mb <Plug>CamelCaseMotion_b
+map <silent> me <Plug>CamelCaseMotion_e
 "omap <silent> e <Plug>CamelCaseMotion_ie
 "テキストオブジェクトに対応させる
 omap <silent> ib <Plug>CamelCaseMotion_ib
