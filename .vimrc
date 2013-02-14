@@ -233,10 +233,7 @@ endif
 se nobk nowb
   "NOTE: 'nobk'で'wb'だと書き込みに失敗したときのみbackupfileが残される
 se bex=.bcu
-se bdir=/tmp/auBcu/,.
-  if !isdirectory(&bdir)
-    call mkdir(&bdir, "p")
-  endif
+se bdir=/tmp/auBcu/,$TEMP,$TMP,.
 "}}}
 
 "swapfile "{{{
@@ -293,8 +290,7 @@ aug END
 "-----------------------------------------------------------------------------
 "Indent, 自動整形"{{{
 
-"se et ts=2 sts=2 sw=2 ai
-se noet ts=8 sts=2 sw=2 ai
+se et ts=8 sts=2 sw=2 ai
   "'ts'   見かけ
   "'sts'  <Tab>の挿入や<BS>の使用等の編集操作
   "'sw'   'ci'や'ai'や>>で挿入されるindent
