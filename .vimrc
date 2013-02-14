@@ -3455,7 +3455,6 @@ autocmd BufCreate *.alter call s:alterbuf_load()
 let g:Vital = vital#of('vital').load(
 \  ['System.Filepath'],
 \  ['Data.List'],
-\  ['Lclib.String'],
 \  ['Data.String'])
 
 
