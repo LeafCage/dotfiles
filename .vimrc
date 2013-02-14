@@ -176,6 +176,7 @@ NeoBundle 'https://github.com/ujihisa/neco-look.git' "要look.exe
 NeoBundle 'h1mesuke/unite-outline'
 NeoBundle 'thinca/vim-prettyprint'
 NeoBundle 'thinca/vim-scouter'
+NeoBundle 'LeafCage/foldCC'
 "NeoBundle 'Shougo/echodoc'
 "NeoBundleLazy 'choplin/unite-vim_hacks', {'depends', 'thinca/vim-openbuf'}
 NeoBundleLazy 'rbtnn/sign.vim'
