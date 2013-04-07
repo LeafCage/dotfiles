@@ -23,7 +23,6 @@ se fileformats=dos,unix,mac
 "}}}
 
 "環境変数を作る"{{{
-
 "$HOME がないとき、$VIM/TMPHOME を $HOME にする "{{{
 if !exists("$HOME")
   if isdirectory('/hom')
@@ -41,28 +40,38 @@ function! s:Add_path(path) "{{{
   endif
 endfunction
 "}}}
-let $PATH .= ';'
-call s:Add_path('/bnr/cmd/MinGW/bin')
-call s:Add_path('/bnr/cmd/path')
-call s:Add_path('/bnr/cmd/PortableGit-1.7.11-preview20120620/bin')
-call s:Add_path('C:/Program Files/Java/jdk1.7.0_09/bin')
+if has('vim_starting')
+  let $PATH .= ';'
+  call s:Add_path('/bnr/cmd/MinGW/bin')
+  call s:Add_path('/bnr/cmd/path')
+  call s:Add_path('/bnr/cmd/PortableGit-1.7.11-preview20120620/bin')
+  call s:Add_path('C:/Program Files/Java/jdk1.7.0_09/bin')
+endif
+"}}}
+
+"vim関係のpath "{{{
+let $BASEDIR = exists('$BASEDIR') ? $BASEDIR : expand($HOME . '/box', ':p')
+let $MYVIMRC_SUBSTANCE = $BASEDIR. '/dotfiles/vim/.vimrc'
+let $VIMSYSTEM = $HOME. '/.vimsystem'
+let $VIMUSER = $BASEDIR. '/vimuser'
+if has('vim_starting')
+  if isdirectory(expand('$BASEDIR/vimfiles', ':p'))
+    let $VIMFILES = $BASEDIR. '/vimfiles'
+    set rtp+=$VIMFILES,$VIMFILES/after
+  elseif isdirectory(expand('$HOME/vimfiles', ':p'))
+    let $VIMFILES = $HOME. '/vimfiles'
+  else
+    let $VIMFILES = $VIM. '/vimfiles'
+  endif
+  set rtp+=$VIMFILES/neobundle/neobundle.vim
+  call neobundle#rc(expand('$VIMFILES/neobundle'))
+endif
 "}}}
 
 if !exists('$TERM')
   let $TERM = 'msys'
 endif
 
-"$VIMFILES "{{{
-if has('vim_starting')
-  if isdirectory(expand('$HOME/vimfiles', ':p'))
-    let $VIMFILES = $HOME. '/vimfiles'
-  else
-    let $VIMFILES = $VIM. '/vimfiles'
-  endif
-  set runtimepath+=$VIMFILES/neobundle/neobundle.vim
-  call neobundle#rc(expand('$VIMFILES/neobundle'))
-endif
-"}}}
 "}}}
 
 "-----------------------------------------------------------------------------
@@ -115,7 +124,7 @@ NeoBundle 'Shougo/neobundle.vim'
 "NeoBundle 'kana/vim-arpeggio'
 NeoBundle 'kana/vim-submode'
 "exe "NeoBundle 'thinca/vim-localrc'" | "特定dir以下に.lvimrcを置くとdir以下のfileだけで設定反映
-NeoBundle 'Rykka/lastbuf.vim'
+"NeoBundle 'Rykka/lastbuf.vim'
 NeoBundle 'LeafCage/revolver.vim'
 NeoBundle 'osyo-manga/vim-reanimate'
 NeoBundleLazy 'koron/minimap-vim'
@@ -131,6 +140,7 @@ NeoBundleLazy 'motemen/hatena-vim'
 "--------------------------------------
 "テスト
 NeoBundleLazy 'h1mesuke/vim-benchmark'
+NeoBundleLazy 'mattn/benchvimrc-vim'
 NeoBundle 'kannokanno/vimtest'
 
 "--------------------------------------
@@ -209,7 +219,7 @@ NeoBundle 'Javascript-OmniCompletion-with-YUI-and-j'
 
 "--------------------------------------
 "pathogenの代わり
-NeoBundleLocal ~/vimfiles/bundle/
+NeoBundleLocal $VIMFILES/bundle/
 filetype plugin indent on  "ファイル判定をonにする
 "}}}
 
@@ -238,12 +248,17 @@ se bdir=/tmp/auBcu/,$TEMP,$TMP,.
 "}}}
 
 "swapfile "{{{
-
 se swf
-se dir=~/vimswap/,.
-  if !isdirectory(&dir)
-    call mkdir(&dir, "p")
+if !isdirectory($VIMSYSTEM. '/vimswap')
+  call mkdir($VIMSYSTEM. '/vimswap')
+endif
+se dir=$VIMSYSTEM/vimswap,.
+for s:dir in split(&dir, ',')[:-2]
+  if !isdirectory(s:dir)
+    call mkdir(s:dir, "p")
   endif
+endfor
+unlet s:dir
 "}}}
 
 "undofile"{{{
@@ -266,7 +281,7 @@ se vi+=n~/.viminfo  "viminfo file name (作成する場所)
 "}}}
 
 "views (カーソル位置などを復元 from thinca)
-set viewdir=~/vimfiles/view vop=folds,cursor,slash,unix
+set viewdir=$VIMSYSTEM/viewdir vop=folds,cursor,slash,unix
 aug vimrc
   au BufLeave * if expand('%') !=# '' && &buftype ==# ''
     \ | mkview
@@ -347,7 +362,7 @@ set confirm
 
 "-----------------------------------------------------------------------------
 "Window
-se lines=40 co=130
+"se lines=40 co=130 "時間かかりすぎ
 "se scrolloff=2
 se hh=0 pvh=0 ea
 se wmw=0
@@ -509,7 +524,6 @@ endfunction
 let g:hi_insert = 'hi StatusLine guifg=black guibg=darkyellow gui=bold ctermfg=blue ctermbg=yellow cterm=bold'
 
 if has('syntax')
-  syntax on
   augroup InsertHook
     au!
     au InsertEnter * call s:Cng_stlColor('Enter')
@@ -537,8 +551,6 @@ endfunction
 "TabLine
 se stal=2 "常に tabline を表示
 se tal=%!Gs_TabLine()
-let g:TDD_idx = 0
-noremap <silent>[C-k]<C-t>d :let g:TDD_idx = g:TDD_idx>=3 ?0 :g:TDD_idx+1<CR><C-l>
 
 function! Gs_TabLine() "{{{
   let one2tabpEnd = range(1, tabpagenr('$'))
@@ -559,12 +571,6 @@ function! Gs_TabLine() "{{{
     let g:foldCC_err = v:exception
   endtry
   endif
-
-  "Keyswitcherの状態
-  "let info .= g:keyswitcher_modes[g:Keyswitcher_mode_idx]. ' '
-
-  "テスト駆動開発の4モードを表示
-  let info .= ['%#TDD_Think#Tnk%*', '%#TDD_Red#Red%*', '%#TDD_Green#Grn%*', '%#TDD_Refactor#Rfc%*'][g:TDD_idx]. ' '
 
   "gitのブランチ名表示
   "let branch_name = s:vcs_branch_name(getcwd())
@@ -624,23 +630,16 @@ endfunction "}}}
 
 "=============================================================================
 "その他のhighlight
-"全角スペースを表示 TODO:aug vimrc_colorschemeに加える "{{{
+"全角スペースを表示 TODO:aug vimrc_colorschemeに加える
 if has('syntax')
-  syntax on
-
   aug InvisibleIndicator
     au!
-    au VimEnter,BufEnter * call ActivateInvisibleIndicator()
+    " 全角スペースを明示的に表示する。
+    autocmd ColorScheme * hi ZenkakuSpace cterm=underline ctermfg=darkgrey gui=underline guifg=darkgrey
+    autocmd Syntax * syn match ZenkakuSpace containedin=ALL /　/
   aug END
 endif
 
-
-function! ActivateInvisibleIndicator()
-  hi ZenkakuSpace cterm=underline ctermfg=darkgrey gui=underline guifg=darkgrey
-  " 全角スペースを明示的に表示する。
-  silent! 2match ZenkakuSpace /　/
-endfunction
-"}}}
 
 "窓にカーソルの痕跡を残す
 aug vimrc_colorscheme
@@ -769,17 +768,15 @@ au GUIEnter * set vb t_vb=
 if has('win32')
   set printfont=Migu_1M:h7 "注意: windowsでは encoding=cp932 でないとhardcopyできない
 
-  "set gfn=MeiryoKe_Gothic:h8:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
-  set gfn=Migu_1M:h11:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
   if hostname() == 'SIICP11ALJ'
     set gfn=Migu_1M:h13:cSHIFTJIS,\ MS_Gothic:h14:cSHIFTJIS
-  endif
-  if hostname() == 'ATSUTO'
+  elseif hostname() == 'ATSUTO'
     "set gfn=Migu_1M:h15:cSHIFTJIS,\ MS_Gothic:h14:cSHIFTJIS
     "set gfn=Migu_1M:h17:cSHIFTJIS,\ MS_Gothic:h14:cSHIFTJIS
     set gfn=Migu_1M:h11:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
-  endif
-  if hostname() =~ '\u\+-PC'
+  elseif hostname() =~ '\u\+-PC'
+    set gfn=Migu_1M:h11:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
+  else
     set gfn=Migu_1M:h11:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
   endif
   "set gfn=Migu_1M:h9:cSHIFTJIS,\ MS_Gothic:h10:cSHIFTJIS
@@ -818,21 +815,15 @@ aug END
 au BufRead,BufNewFile *.markdown,*.md    setl ft=markdown nofoldenable
 autocmd FileType js setlocal ft=javascript
 
-augroup vimrc_au
-  au FileType gitcommit  setl nofoldenable nomodeline tw=60 fenc=utf-8
-augroup END
+au vimrc_au FileType gitcommit  setl nofoldenable nomodeline tw=60 fenc=utf-8
 
 
-aug vimrc_au
-  au FileType help nnoremap <buffer>q <C-w>c
-aug END
+au vimrc_au FileType help nnoremap <buffer>q <C-w>c
 
-aug vimrc_au
-  au FileType vim
-    \ inoremap <expr><buffer>\
-    \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
-  au FileType vim   setl ff=unix
-aug END
+au vimrc_au FileType vim
+  \ inoremap <expr><buffer>\
+  \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
+au vimrc_au FileType vim   setl ff=unix
 
 
 aug vimrc_au
@@ -987,7 +978,7 @@ endfunction
 "Mapping Normal
 "-----------------------------------------------------------------------------
 "Normal modeで挿入
-nnoremap <silent><C-j> :<C-u>call <SID>Insert_CR()<CR>
+nnoremap <silent><C-m> :<C-u>call <SID>Insert_CR()<CR>
 function! s:Insert_CR() "{{{
   let foldclosedend = foldclosedend('.')
 
@@ -999,8 +990,8 @@ function! s:Insert_CR() "{{{
   normal j
 endfunction "}}}
 
-nnoremap [C-k]<C-j> :i<CR><CR>.<CR>
-nnoremap [space]<C-j> :i<CR><CR>.<CR>
+nnoremap [C-k]<C-m> :i<CR><CR>.<CR>
+nnoremap [space]<C-m> :i<CR><CR>.<CR>
 
 
 "空白を挿入する
@@ -1213,7 +1204,7 @@ nnoremap <SID>c_window    :cw<CR>
 
 "-----------------------------------------------------------------------------
 "表示・GUI操作"{{{
-nnoremap <C-g> :<C-u>echo <SID>echo_fileinfo()<CR>
+nnoremap <C-g><C-z> :<C-u>echo <SID>echo_fileinfo()<CR>
 function! s:echo_fileinfo() "{{{
   let i = ''
   let i .= printf('"%s" (upd:%s) [%s] tw=%d (%d/%dv)%d',
@@ -1367,6 +1358,11 @@ noremap S $
 noremap U ^
 noremap X ^
 noremap Z 0
+noremap <C-g><C-e> $
+noremap <C-g><C-l> $
+noremap <C-g><C-g> ^
+noremap <C-g><C-a> 0
+noremap <C-g><C-h> 0
 nnoremap zU U
 
 noremap _ ;
@@ -1657,7 +1653,7 @@ endfunction
 "nnoremap ,ov :e $MYVIMRC<CR>
 nmap cov <SID>o_vimrc
 nmap ,ov <SID>o_vimrc
-nnoremap <SID>o_vimrc :e ~/dotfiles/.vimrc<CR>
+nnoremap <SID>o_vimrc :e $MYVIMRC_SUBSTANCE<CR>
 
 nmap cog <SID>o_gitconfig
 nmap ,og <SID>o_gitconfig
@@ -1720,7 +1716,7 @@ nnoremap [C-k]<C-t>k :call PeekEcho()<CR>
 "=============================================================================
 "Mapping Visual
 let s:bind_mode = '<C-q>'
-let s:bind_esc = '<C-Space>'
+let s:bind_esc = '<C-j>'
 
 vnoremap v $h
 exe 'vnoremap '. s:bind_mode. ' <C-g>'
@@ -1782,8 +1778,19 @@ cnoremap <M-f> <S-Right>
 
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
+inoremap <C-g><C-g> <C-o>^
+inoremap <C-g><C-a> <Home>
+inoremap <C-g><C-h> <Home>
+inoremap <C-g><C-e> <End>
+inoremap <C-g><C-l> <End>
+
 cnoremap <C-a> <Home>
 "cnoremap <C-e> <End>
+cnoremap <C-g><C-g> <Home>
+cnoremap <C-g><C-a> <Home>
+cnoremap <C-g><C-h> <Home>
+cnoremap <C-g><C-e> <End>
+cnoremap <C-g><C-l> <End>
 "}}}
 
 "InsertModeでのみの移動コマンド {{{
@@ -2244,7 +2251,7 @@ endfunction
 
 
 "vim-ref.vim"{{{
-let g:ref_cache_dir = '~/.vimsetting/.vim_ref_cache'
+let g:ref_cache_dir = $VIMSYSTEM. '/.vim_ref_cache'
 au FileType ref-* nnoremap <silent><buffer>   q   :close<CR>
 let g:ref_phpmanual_path = 'D:/dic/vim-ref/php-chunked-xhtml'
 let g:ref_javadoc_path = 'D:/dic/vim-ref/java6api'
@@ -2348,7 +2355,7 @@ let g:ctrlp_prompt_mappings['PrtDeleteEnt()']       = ['<F7>']
 "unite.vim
 "------------------
 "unite preference "{{{
-let g:unite_data_directory = fnamemodify('~/.vimsetting/.unite', ':p')
+let g:unite_data_directory = $VIMSYSTEM. '/.unite'
 let g:neocomplcache_skip_auto_completion_time = '1' "この秒数以上かかる自動補完はスキップされる
 "let g:unite_enable_start_insert=1  "入力モードで開始する
 let g:unite_split_rule = 'botright'  "窓の表示位置
@@ -2398,7 +2405,7 @@ au FileType unite nmap <buffer> J         <Plug>(unite_skip_cursor_down)
 au FileType unite nmap <buffer> K         <Plug>(unite_skip_cursor_up)
 au FileType unite nmap <buffer> ?         <Plug>(unite_quick_help)
 au FileType unite nmap <buffer> <CR>      <Plug>(unite_do_default_action)
-  au FileType unite nmap <buffer> <C-j> <Plug>(unite_do_default_action)
+  "au FileType unite nmap <buffer> <C-j> <Plug>(unite_do_default_action)
 au FileType unite nnoremap <silent><buffer><expr> dd
   \ unite#smart_map('d', unite#do_action('delete'))
 au FileType unite nnoremap <silent><buffer><expr> b
@@ -2425,7 +2432,7 @@ au FileType unite imap <buffer> <Up>     <Plug>(unite_select_previous_line)
 au FileType unite imap <buffer> <C-f>     <Plug>(unite_select_next_page)
 au FileType unite imap <buffer> <C-b>     <Plug>(unite_select_previous_page)
 au FileType unite imap <buffer> <CR>      <Plug>(unite_do_default_action)
-  au FileType unite imap <buffer> <C-j> <Plug>(unite_do_default_action)
+  "au FileType unite imap <buffer> <C-j> <Plug>(unite_do_default_action)
 au FileType unite imap <buffer> <C-h>     <Plug>(unite_delete_backward_char)
 au FileType unite imap <buffer> <BS>      <Plug>(unite_delete_backward_char)
 au FileType unite imap <buffer> <C-u>     <Plug>(unite_delete_backward_line)
@@ -2685,11 +2692,12 @@ let g:netrw_liststyle = 3 "常にtree view
 "vimshell.vim"{{{
 noremap <silent>,xs :let A = expand('%:p:h')<Bar> exe 'VimShellTab '. A<Bar>unlet A<CR>
 noremap <silent>,ss :let A = expand('%:p:h')<Bar> exe 'VimShell -split '. A<Bar>unlet A<CR>
-let g:vimshell_temporary_directory = expand('~/.vimsetting/.vimshell')
+let g:vimshell_temporary_directory = $VIMSYSTEM. '/.vimshell'
+let g:vimshell_vimshrc_path = $VIMUSER. '/.vimshrc'
 let g:vimshell_split_command = '8split'
 au FileType vimshell  setl nobl
-au FileType vimshell nmap <buffer> <C-j> <Plug>(vimshell_enter)
-au FileType vimshell imap <buffer> <C-j> <Plug>(vimshell_enter)
+"au FileType vimshell nmap <buffer> <C-j> <Plug>(vimshell_enter)
+"au FileType vimshell imap <buffer> <C-j> <Plug>(vimshell_enter)
 au FileType vimshell nnoremap <silent> <buffer> q <C-w>c
 "au FileType vimshell nmap <buffer> q <Plug>(vimshell_exit)
   "< NOTE: exitが正常化されるまでの暫定
@@ -2743,7 +2751,7 @@ endfunction
 
 "vimfiler
 "vf preference "{{{
-let g:vimfiler_data_directory = expand('~/.vimsetting/.vimfiler')
+let g:vimfiler_data_directory = $VIMSYSTEM. '/.vimfiler'
 let g:vimfiler_as_default_explorer = 1
 let g:unite_kind_file_use_trashbox = 1
 let g:vimfiler_safe_mode_by_default = 0
@@ -2806,7 +2814,7 @@ au FileType vimfiler nmap <buffer> r <Plug>(vimfiler_rename_file)
 au FileType vimfiler nmap <buffer> K <Plug>(vimfiler_make_directory)
 au FileType vimfiler nmap <buffer> E <Plug>(vimfiler_new_file)
 au FileType vimfiler nmap <buffer> <CR> <Plug>(vimfiler_execute)
-  au FileType vimfiler nmap <buffer> <C-j> <Plug>(vimfiler_execute)
+  "au FileType vimfiler nmap <buffer> <C-j> <Plug>(vimfiler_execute)
 au FileType vimfiler nmap <buffer> l <Plug>(vimfiler_smart_l)
 au FileType vimfiler nmap <buffer> x <Plug>(vimfiler_execute_system_associated)
 au FileType vimfiler nmap <buffer> <2-LeftMouse> <Plug>(vimfiler_execute_system_associated)
@@ -2881,6 +2889,11 @@ let g:changelog_username ="LC <>"
 "vimwiki.vimで使うwikiのリスト
 "let g:vimwiki_list = [{'path':'~/dc/stgmemwk/','index':'stgmemwk' },{'path':'~/dc/siicwk/','index':'siicwk' },{'path':'~/dc/yukokwk/','index':'yukokwk' },{'path':'~/dc/kywrd/','index':'kywrd' },]
 
+
+"syster.vim
+let g:Syster_dir = $BASEDIR. '/syster'
+
+
 "-----------------------------------------------------------------------------
 "プラグイン ライブラリ
 
@@ -2902,7 +2915,7 @@ command! -nargs=0 NeoBundleUpdateMain
 
 
 "reanimate.vim
-let g:reanimate_save_dir = fnamemodify('~/.vimsetting/reanimate/save_dir', ':p')
+let g:reanimate_save_dir = $VIMSYSTEM. '/reanimate/save_dir'
 let g:reanimate_sessionoptions = 'curdir,folds,blank,buffers,tabpages,help,localoptions,unix'
 AlterCommand rs ReanimateSave
 nnoremap ,de	:Unite reanimate -default-action=reanimate_switch<CR>
@@ -2950,7 +2963,7 @@ let g:submode_timeoutlen = 5000
 
 
 "revolver.vim
-let g:revolver_dir = '~/.vimsetting/.vim-revolver/'
+let g:revolver_dir = $VIMSYSTEM. '/.vim-revolver/'
 let g:revolver_register_recording_cylinder = "vwxy"
 nmap mm <Plug>(revolver-mark-local-typeB)
 nmap mM <Plug>(revolver-mark-global)
@@ -3037,12 +3050,12 @@ noremap  m/ :<C-u>Migemo<CR>
 
 
 "neocomplcache.vim  Preference"{{{
-let g:neocomplcache_temporary_dir = '~/.vimsetting/.neocon'
+let g:neocomplcache_temporary_dir = $VIMSYSTEM. '/.neocon'
 "key:ft, value:辞書ファイルのpath >
 let g:neocomplcache_dictionary_filetype_lists = {}
 let g:neocomplcache_dictionary_filetype_lists.default = ''
-let g:neocomplcache_dictionary_filetype_lists.vim = '~/.vimsetting/.user/.neocon_dict/vim.dict'
-let g:neocomplcache_dictionary_filetype_lists.java = '~/.vimsetting/.user/.neocon_dict/java.dict'
+let g:neocomplcache_dictionary_filetype_lists.vim = $VIMUSER. '/.neocon_dict/vim.dict'
+let g:neocomplcache_dictionary_filetype_lists.java = $VIMUSER. '/.neocon_dict/java.dict'
 "let g:neocomplcache_dictionary_filetype_lists.vimshell = $HOME.'/.vimshell_hist'
 let g:neocomplcache_dictionary_filetype_lists.scheme = $HOME.'/.gosh_completions'
 
@@ -3079,7 +3092,7 @@ inoremap <expr><C-x><C-o>  neocomplcache#manual_omni_complete()
 "候補の共通箇所まで補完する
 inoremap <expr><C-l>  neocomplcache#complete_common_string()
 "決定してポップアップを閉じる
-inoremap <expr><C-j>  pumvisible() ? neocomplcache#close_popup() : "\<C-j>"
+"inoremap <expr><C-j>  pumvisible() ? neocomplcache#close_popup() : "\<C-j>"
 "キャンセルしてポップアップを閉じる
 inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<End>"
 "inoremap <expr><C-q>  neocomplcache#cancel_popup()
@@ -3095,7 +3108,7 @@ au FileType snippet setl nofoldenable
 au BufLeave *.snip setl nobl
 au FileType snippet  noremap <buffer>q <C-w>q
 au FileType snippet  inoremap <buffer><C-q> ${}<Left>
-let g:neosnippet#snippets_directory = '~/.vimsetting/.user/snippets' "スニペットプラグインディレクトリ
+let g:neosnippet#snippets_directory = $VIMUSER. '/snippets' "スニペットプラグインディレクトリ
 "カーソル前の文字列がスニペットのトリガであるなら、スニペットを展開する
 "imap <expr><C-s>  Textsquash#Expandable() ? Textsquash#Expand() : "\<Plug>(neosnippet_expand_or_jump)"
 imap <expr><C-s>  "\<Plug>(neosnippet_expand_or_jump)"
@@ -3126,7 +3139,7 @@ nnoremap <SID>a_Snip :NeoSnippetEdit -runtime -split -horizontal -direction=abov
 
 
 "Textsquash
-let g:textsquash_dir = '~/.vimsetting/.user/.textsquash/'
+let g:textsquash_dir = $VIMUSER. '/.textsquash/'
 let g:textsquash_word = {'_': '[&@0-9_a-zA-Z:\[\]'']'}
 au FileType squash  noremap <buffer>q <C-w>q
 nmap coq    <Plug>(textsquash-open-current-filetype-squashfile)
@@ -3193,6 +3206,12 @@ nmap zl <Plug>(poslist-next-pos)
 map <silent> mw <Plug>CamelCaseMotion_w
 map <silent> mb <Plug>CamelCaseMotion_b
 map <silent> me <Plug>CamelCaseMotion_e
+nmap <silent> mx <Plug>CamelCaseMotion_w
+nmap <silent> mr <Plug>CamelCaseMotion_b
+nmap <silent> mc <Plug>CamelCaseMotion_e
+omap <silent> x <Plug>CamelCaseMotion_w
+omap <silent> r <Plug>CamelCaseMotion_b
+omap <silent> c <Plug>CamelCaseMotion_e
 "omap <silent> e <Plug>CamelCaseMotion_ie
 "テキストオブジェクトに対応させる
 omap <silent> ib <Plug>CamelCaseMotion_ib
@@ -3467,8 +3486,8 @@ let g:vimtest_config = {}
 "let g:vimtest_config.outputter = 'stdout'
 let g:vimtest_config.outputter = 'string'
 "let g:vimtest_config.outputter = 'quickfix'
-"let g:vimtest_config.autotest_watch_patterns = ['~/vimfiles/bundle/new-syster/plugin/*.vim', '~/vimfiles/bundle/new-syster/autoload/Syster/*.vim', '~/vimfiles/bundle/new-syster/test/*.vim']
-let g:vimtest_config.autotest_testpath = '~/vimfiles/bundle/new-syster/test'
+"let g:vimtest_config.autotest_watch_patterns = ['$VIMFILES/bundle/new-syster/plugin/*.vim', '$VIMFILES/bundle/new-syster/autoload/Syster/*.vim', '$VIMFILES/bundle/new-syster/test/*.vim']
+let g:vimtest_config.autotest_testpath = $VIMFILES. '/bundle/new-syster/test'
 "let g:vimtest_config.remote = 1
 
 command! -nargs=0  VimTestFire    exe 'VimTest '. vimtest#config#get().autotest_testpath
@@ -3548,5 +3567,6 @@ set verbosefile=/tmp/vim.log
 "uniteをメモ帳・todoリストとして使う。要素の追加・削除がその場で行える
 "uniteチートシート.同上。
 "長い辞書変数を適当に改行した後uniteで閲覧できるようにする
+"hisbird ファイル閲覧履歴
 
 
