@@ -29,9 +29,6 @@ let g:vimfiler_time_format = '%d-%m-%Y %H:%M:%S'
 let g:vimfiler_data_directory = $HOME.'/.vim/tmp/vimfiler'
 
 
-" Auto escape / and ? in search command (@Shougo)
-cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
-cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 
 
 
@@ -1031,10 +1028,6 @@ endif
 "}}}
 "--------------------------------------
 if s:bundle_tap('vim-altercmd') "{{{
-  function! Eat_whitespace(pat)
-    let c = nr2char(getchar(0))
-    return c=~a:pat ? '' : c
-  endfunction
   call altercmd#load()
   "neobundle
   AlterCommand nb   Unite neobundle
@@ -1335,8 +1328,8 @@ command! -nargs=*   VimElements    UPP lib#vimelements#collect(<f-args>)
 command! -bar TimerStart let start_time = reltime()
 command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
 "plugin撮影用にウィンドウのサイズを一時的に変更する
-command! WinShorten     set lines=30 columns=100
-command! WinRest        set lines=40 columns=140
+command! GuiWinShorten     set lines=30 columns=100
+command! GuiWinRest        set lines=40 columns=140
 "パターンとファイル名を逆にしたgrep
 function! s:perg(args)
   execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2])
@@ -1375,6 +1368,11 @@ AlterCommand ren[ame] Rename
 
 "=========================================================
 "Functions
+function! Eat_whitespace(pat) "{{{
+  let c = nr2char(getchar(0))
+  return c=~a:pat ? '' : c
+endfunction
+"}}}
 " Call a script local function.
 " Usage:
 " - S('local_func')
@@ -2009,17 +2007,14 @@ command! -count -nargs=1 ContinuousNumber
 "======================================
 "Insert & CommandLine mode
 "Moving
-inoremap <C-k> <Left>
-inoremap <C-f> <Right>
+noremap! <C-k> <Left>
+noremap! <C-f> <Right>
 inoremap <C-g>  <Esc><Plug>(smartword-w)i
 inoremap <C-b>  <Esc><Plug>(smartword-b)i
-cnoremap <C-k> <Left>
-cnoremap <C-f> <Right>
 cnoremap <C-g> <S-Right>
 cnoremap <C-b> <S-Left>
-inoremap <C-a> <Home>
+noremap! <C-a> <Home>
 inoremap <C-e> <End>
-cnoremap <C-a> <Home>
 "cnoremap <C-e> <End>
 "--------------------------------------
 "挿入バインド(Insert CommandLine)
@@ -2034,6 +2029,9 @@ imap <M-Space>    <Tab><Tab>
 cnoremap <expr> <C-x> expand('%:p:h') . "/"
 cnoremap <expr> <C-z> expand('%:p:r')
 "cnoremap <expr><C-s>    getcmdtype()==':' ? getcmdpos()==1 ? 'set ' : "\<C-s>" : "\<C-s>"
+cnoreabb <expr>ss getcmdtype()==':' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 'ss'
+cnoremap <expr> / getcmdtype()=='/' ? '\/' : '/'
+cnoremap <expr> ? getcmdtype()=='?' ? '\?' : '?'
 "--------------------------------------
 "編集バインド(Insert CommandLine)
 noremap! <C-d>  <Del>
@@ -2431,7 +2429,6 @@ unlet s:bind
 
 
 NeoBundleLazy 'kana/vim-niceblock'
-NeoBundleLazy 'tpope/vim-abolish' "何かすごいらしい
 
 "# TagHighlight 
 NeoBundleLazy 't9md/vim-unite-ack' "grepみたいなの
