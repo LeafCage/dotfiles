@@ -29,7 +29,9 @@ let g:vimfiler_time_format = '%d-%m-%Y %H:%M:%S'
 let g:vimfiler_data_directory = $HOME.'/.vim/tmp/vimfiler'
 
 
-
+" Auto escape / and ? in search command (@Shougo)
+cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
+cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 
 
 
@@ -83,6 +85,7 @@ NeoBundleLazy 'tomtom/tlib_vim'
 NeoBundleLazy 'thinca/vim-openbuf'
 NeoBundleLazy 'mattn/wwwrenderer-vim' "webpage(only text)を返す
 NeoBundleLazy 'mattn/webapi-vim'
+NeoBundleLazy 'osyo-manga/vim-gift'
 "--------------------------------------
 "Synthesis
 NeoBundleLazy 'Shougo/unite.vim'
@@ -93,7 +96,7 @@ NeoBundleLazy 'Shougo/vimfiler'
 "Network&Documents
 NeoBundleLazy 'tyru/open-browser.vim', {'autoload': {'mappings': [['sxn', '<Plug>(openbrowser-']], 'commands': [{'complete': 'customlist,openbrowser#_cmd_complete', 'name': 'OpenBrowserSearch'}, {'complete': 'customlist,openbrowser#_cmd_complete', 'name': 'OpenBrowserSmartSearch'}, 'OpenBrowser']}}
 NeoBundleLazy 'thinca/vim-ref'
-NeoBundleLazy 'basyura/J6uil.vim', {'autoload': {'unite_sources': ['J6uil_members', 'J6uil_rooms'], 'mappings': [['n', '<Plug>(J6uil_']], 'commands': ['J6uilReconnect', 'J6uilDisconnect', {'complete': 'custom,J6uil#complete#room', 'name': 'J6uil'}]}}
+NeoBundleLazy 'basyura/J6uil.vim', {'depends': 'mattn/webapi-vim'}
 NeoBundleLazy 'LeafCage/ref-javadoc', {'depends': 'thinca/vim-ref'}
 "NeoBundle 'vim-jp/vimdoc-ja'
 "--------------------------------------
@@ -117,16 +120,17 @@ NeoBundleLazy 'Javascript-OmniCompletion-with-YUI-and-j'
 "NeoBundle 'kana/vim-smartchr'
 NeoBundleLazy 'Shougo/neocomplcache'
 NeoBundleLazy 'Shougo/neosnippet'
-NeoBundleLazy 'scrooloose/nerdcommenter', {'autoload': {'mappings': [['in', '<Plug>NERDCommenter']]}}
+NeoBundleLazy 'scrooloose/nerdcommenter', {'autoload': {'mappings': [['inx', '<Plug>NERDCommenter']]}}
 NeoBundleLazy 'LeafCage/nebula.vim', {'autoload': {'commands': ['NebulaPutLazy', 'NebulaPutFromClipboard', 'NebulaYankOptions', 'NebulaPutConfig']}}
 NeoBundleLazy 'kana/vim-operator-user'
 NeoBundleLazy 'kana/vim-operator-replace' "レジスタにあるものとoperator指定したものを置き換え
 NeoBundleLazy 'kana/vim-textobj-user'
-  NeoBundleLazy 'h1mesuke/textobj-wiw', {'autoload': {'mappings': ['<Plug>(textobj-wiw']}} "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
-  NeoBundleLazy 'kana/vim-textobj-indent', {'autoload': {'mappings': ['<Plug>(textobj-indent']}}
-  NeoBundleLazy 'thinca/vim-textobj-plugins', {'autoload': {'mappings': ['<Plug>(textobj-between']}}
-  NeoBundleLazy 'anyakichi/vim-textobj-xbrackets', {'autoload': {'mappings': ['<Plug>(textobj-xbrackets']}}
-  NeoBundleLazy 'sgur/vim-textobj-parameter', {'autoload': {'mappings': ['<Plug>(textobj-parameter']}}
+NeoBundleLazy 'h1mesuke/textobj-wiw', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-wiw']}} "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
+NeoBundleLazy 'kana/vim-textobj-indent', {'depends': 'kana/vim-textobj-user','autoload': {'mappings': ['<Plug>(textobj-indent']}}
+NeoBundleLazy 'thinca/vim-textobj-plugins', {'depends': 'kana/vim-textobj-user','autoload': {'mappings': ['<Plug>(textobj-between']}}
+NeoBundleLazy 'anyakichi/vim-textobj-xbrackets', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-xbrackets']}}
+NeoBundleLazy 'sgur/vim-textobj-parameter', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-parameter']}}
+NeoBundleLazy 'osyo-manga/vim-textobj-multiblock', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-multiblock']}}
 NeoBundleLazy 'anyakichi/vim-surround'
 NeoBundleLazy 'LeafCage/unite-recording'
 "--------------------------------------
@@ -149,11 +153,14 @@ NeoBundleLazy 'https://github.com/tpope/vim-speeddating.git'
 "NeoBundle 'https://github.com/fuenor/qfixhowm.git'
 NeoBundleLazy 'thinca/vim-showtime', {'autoload': {'commands': [{'complete': 'file', 'name': 'ShowtimeStart'}]}}
 "--------------------------------------
-"Buffer&Win&Tabpage
+"Buffer&Win&Tabpage&Jump
 "NeoBundle 'kana/vim-tabpagecd' "TabPage毎にcrrdirを持てるようにする
 "NeoBundle 'Rykka/lastbuf.vim'
 "NeoBundleLazy 'osyo-manga/vim-reanimate', {'autoload': {'commands': ['ReanimateSave', 'ReanimateLoad', 'ReanimateSaveInput', 'ReanimateLoadInput', 'ReanimateLoadLatest', 'ReanimateSaveCursorHold', 'ReanimateSwitch', 'ReanimateEditVimrcLocal', 'ReanimateUnload']}}
-NeoBundleLazy 'kana/vim-altr' "現在バッファから開くファイルを類推して開く
+NeoBundleLazy 'kana/vim-altr', {'autoload': {'mappings': [['scxino', '<Plug>(altr-']]}} "現在バッファから開くファイルを類推して開く
+NeoBundleLazy 'kana/vim-gf-user', {'autoload': {'mappings': [['nv', '<Plug>(gf-user-']]}}
+NeoBundleLazy 'sgur/vim-gf-autoload'
+NeoBundle 'osyo-manga/vim-automatic', {'depends': 'osyo-manga/vim-gift', 'vim_version': '7.3.895'}
 "--------------------------------------
 "Bind&Command
 "NeoBundleLazy 'kana/vim-arpeggio'
@@ -164,15 +171,15 @@ NeoBundle 'tyru/vim-altercmd' "コマンドのエイリアスを作る tyru版�
 "Info
 NeoBundle 'LeafCage/foldCC'
 NeoBundle 'tyru/current-func-info.vim'
+NeoBundleLazy 'sgur/vim-gitgutter', {'autoload': {'mappings': [['n', '<Plug>GitGutter']], 'commands': ['GitGutterAll', 'GitGutterToggle', 'GitGutterPrevHunk', 'GitGutterDisable', 'GitGutterLineHighlightsEnable', 'GitGutterNextHunk', 'GitGutterEnable', 'GitGutter', 'GitGutterLineHighlightsToggle', 'GitGutterLineHighlightsDisable']}}
 "NeoBundle 'LeafCage/win-shujuukankei.vim'
 NeoBundleLazy 'osyo-manga/vim-anzu', {'autoload': {'mappings': '<Plug>(anzu-'}} "検索Hit件数を表示する
 NeoBundleLazy 'tacroe/unite-mark', {'autoload': {'unite_sources': ['mark']}}
 NeoBundleLazy 'tsukkee/unite-tag', {'autoload': {'unite_sources' : ['tag']}}
 NeoBundleLazy 'tsukkee/unite-help', {'autoload': {'unite_sources' : ['help']}}
 NeoBundleLazy 'https://github.com/ujihisa/neco-look.git' "要look.exe
-NeoBundleLazy 'h1mesuke/unite-outline', {'autoload': {'unite_sources' : 'outline'}}
+"NeoBundleLazy 'h1mesuke/unite-outline', {'autoload': {'unite_sources' : 'outline'}}
 NeoBundleLazy 'thinca/vim-prettyprint', {'autoload' : {'commands': 'PP' }}
-NeoBundleLazy 'rbtnn/sign.vim'
 NeoBundleLazy 'taglist.vim' "ctagsを利用して :Tlistで変数関数定義一覧バッファ作成
 NeoBundleLazy 'TagHighlight' "ctagsの情報を利用してハイライト
 "NeoBundle 'errormarker.vim'
@@ -180,8 +187,12 @@ NeoBundleLazy 'jceb/vim-hier' "quickfixエラー箇所をハイライト
 "NeoBundle 'ujihisa/unite-font' "動かない
 NeoBundleLazy 'ujihisa/unite-colorscheme', {'autoload': {'unite_sources': ['colorscheme']}}
 NeoBundleLazy 'pasela/unite-webcolorname', {'autoload': {'unite_sources' : 'webcolorname'}}
+NeoBundleLazy 'LeafCage/unite-gvimrgb', {'autoload': {'unite_sources': ['gvimrgb']}}
+NeoBundleLazy 'osyo-manga/unite-highlight', {'autoload': {'unite_sources': ['highlight']}}
+NeoBundleLazy 'cocopon/colorswatch.vim', {'autoload': {'commands': ['ColorSwatchGenerate']}}
 "--------------------------------------
 "GUI
+NeoBundle 'itchyny/lightline.vim'
 NeoBundleLazy 't9md/vim-quickhl' "複数の検索ハイライト
 NeoBundleLazy 'MultipleSearch' "複数回の検索を可能にして、それぞれの検索結果を違うハイライトで表示する
 "NeoBundle 'altercation/vim-colors-solarized' "なんか良いらしいcolorscheme
@@ -253,6 +264,8 @@ if s:bundle_tap('unite.vim') " {{{
     source $MYVIMRC_SUBSTANCEDIR/unite_setting.vim
   endfunction
 
+  autocmd vimrc FileType unite  wincmd =
+  autocmd vimrc BufLeave [\[\*]unite[\]\*]  wincmd =
   "やたら長い変数をechoするとき見やすく表示
   command! -complete=var -nargs=+ UPP  exe 'Unite output:PP\ '. escape(<q-args>, ': ')
   "文字関係
@@ -540,20 +553,21 @@ endif
 "}}}
 "--------------------------------------
 if s:bundle_tap('J6uil.vim') "{{{
-  call s:bundle_config({})
+  call s:bundle_config({'autoload': {'unite_sources': ['J6uil_members', 'J6uil_rooms'], 'mappings': [['n', '<Plug>(J6uil_']], 'commands': ['J6uilReconnect', 'J6uilDisconnect', {'complete': 'custom,J6uil#complete#room', 'name': 'J6uil'}]}})
   function! s:tapped_bundle.hooks.on_source(bundle)
-    "au FileType lingr-messages nnoremap <buffer> \ :LingrExit<CR>
+    autocmd vimrc FileType J6uil  :call s:J6uil_settings(expand('<abuf>'))
+    autocmd vimrc FileType J6uil_say  :nunmap <buffer><C-j>| nmap <silent><buffer>q   :<C-u>bd!<CR>
+    let g:J6uil_config_dir = $VIMSYSTEM. '/.J6uil'
   endfunction
-  "noremap ,xl :<C-u>tabnew<Bar>LingrLaunch<Bar>3wincmd w<CR>
-endif
-"}}}
-"--------------------------------------
-if s:bundle_tap('lingr-vim') "{{{
-  call s:bundle_config({})
-  function! s:tapped_bundle.hooks.on_source(bundle)
-    au FileType lingr-messages nnoremap <buffer> \ :LingrExit<CR>
+  function! s:J6uil_settings(bufnr)
+    nmap <silent><buffer>q   :<C-u>bd!<CR>
+    nmap <silent><buffer>dc   <Plug>(J6uil_disconnect)
+    nmap <silent><buffer>r   <Plug>(J6uil_reconnect)
+    let s:bufnr = str2nr(a:bufnr)
+    noremap ,xl :<C-u>exe 'e' s:bufnr<CR>
+    autocmd vimrc VimLeavePre *   :if bufexists(s:bufnr)| exe 'bd '. s:bufnr| endif
   endfunction
-  noremap ,xl :<C-u>tabnew<Bar>LingrLaunch<Bar>3wincmd w<CR>
+  noremap ,xl :<C-u>J6uil<CR>
 endif
 "}}}
 
@@ -812,21 +826,21 @@ if s:bundle_tap('vim-textovj-plugins') "between {{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-textovj-plugins') "{{{
-  let g:textobj_between_no_default_key_mappings = 1
-  xmap ag <Plug>(textobj-between-a)
-  xmap ig <Plug>(textobj-between-i)
-  omap ag <Plug>(textobj-between-a)
-  omap ig <Plug>(textobj-between-i)
-endif
-"}}}
-"--------------------------------------
 if s:bundle_tap('vim-textovj-parameter') "{{{
   let g:textobj_parameter_no_default_key_mappings = 1
   xmap a8 <Plug>(textobj-parameter-a)
   xmap i8 <Plug>(textobj-parameter-i)
   omap a8 <Plug>(textobj-parameter-a)
   omap i8 <Plug>(textobj-parameter-i)
+endif
+"}}}
+"--------------------------------------
+if s:bundle_tap('vim-textobj-multiblock') "{{{
+  let g:textobj_multiblock_no_default_key_mappings = 1
+  omap ab <Plug>(textobj-multiblock-a)
+  omap ib <Plug>(textobj-multiblock-i)
+  vmap ab <Plug>(textobj-multiblock-a)
+  vmap ib <Plug>(textobj-multiblock-i)
 endif
 "}}}
 "--------------------------------------
@@ -872,15 +886,15 @@ if s:bundle_tap('CamelCaseMotion') "{{{
   map <silent> me <Plug>CamelCaseMotion_e
   nmap <silent> mx <Plug>CamelCaseMotion_w
   nmap <silent> mr <Plug>CamelCaseMotion_b
-  nmap <silent> mc <Plug>CamelCaseMotion_e
+  "nmap <silent> mc <Plug>CamelCaseMotion_e
   omap <silent> x <Plug>CamelCaseMotion_w
   omap <silent> r <Plug>CamelCaseMotion_b
   omap <silent> c <Plug>CamelCaseMotion_e
   nmap <silent> cd c<Plug>CamelCaseMotion_ie
   "omap <silent> e <Plug>CamelCaseMotion_ie
   "テキストオブジェクトに対応させる
-  omap <silent> ib <Plug>CamelCaseMotion_ib
-  vmap <silent> ib <Plug>CamelCaseMotion_ib
+  "omap <silent> ib <Plug>CamelCaseMotion_ib
+  "vmap <silent> ib <Plug>CamelCaseMotion_ib
   omap <silent> ie <Plug>CamelCaseMotion_ie
   vmap <silent> ie <Plug>CamelCaseMotion_ie
 endif
@@ -910,7 +924,7 @@ endif
 if s:bundle_tap('vim-visualstar') "{{{
   noremap <SID>put_searchstart_sign  :<C-u>call <SID>put_searchstart_sign(0)<CR>
   "nmap <silent>* <Plug>(visualstar-*)N<SID>put_searchstart_sign
-  vmap <silent>* <Plug>(visualstar-*)N<SID>put_searchstart_sign
+  vmap <silent>* <Plug>(visualstar-*)N<Plug>(anzu-update-search-status)<SID>put_searchstart_sign
   "map # <Plug>(visualstar-#)N:<C-u>sign unplace 333<CR>
 endif
 "}}}
@@ -925,6 +939,29 @@ let g:Syster_dir = $BASEDIR. '/syster'
 "lastbuf
 let g:lastbuf_level= 2
 exe 'noremap <silent>'. s:bind.win. 'u :LastBuf<CR>'
+"--------------------------------------
+if s:bundle_tap('vim-gf-user') "{{{
+  function! s:tapped_bundle.hooks.on_post_source(bundle)
+    NeoBundleSource vim-gf-autoload
+  endfunction
+  let g:gf_user_no_default_key_mappings = 1
+  nmap gf   <Plug>(gf-user-gf)
+  vmap gf   <Plug>(gf-user-gf)
+  nmap gF   <Plug>(gf-user-gF)
+  vmap gF   <Plug>(gf-user-gF)
+  nmap <C-w>f   <Plug>(gf-user-<C-w>f)
+  vmap <C-w>f   <Plug>(gf-user-<C-w>f)
+  nmap <C-w>F   <Plug>(gf-user-<C-w>F)
+  vmap <C-w>F   <Plug>(gf-user-<C-w>F)
+  nmap <C-w>gf   <Plug>(gf-user-<C-w>gf)
+  vmap <C-w>gf   <Plug>(gf-user-<C-w>gf)
+endif
+"}}}
+"--------------------------------------
+if s:bundle_tap('vim-automatic') "{{{
+  let g:automatic_config = [{'match': {'bufname': '[\[\*]unite[\]\*]', 'any_unite_sources': ['quickfix']}, 'set': {'height': '30%'}}]
+endif
+"}}}
 
 "======================================
 "Bind&Command
@@ -994,24 +1031,19 @@ endif
 "}}}
 "--------------------------------------
 if s:bundle_tap('vim-altercmd') "{{{
-  call s:bundle_config({})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+  function! Eat_whitespace(pat)
+    let c = nr2char(getchar(0))
+    return c=~a:pat ? '' : c
   endfunction
-
   call altercmd#load()
   "neobundle
   AlterCommand nb   Unite neobundle
   AlterCommand nbi  Unite neobundle/install
-  AlterCommand nbu  Unite neobundle/update
-  AlterCommand nblg  Unite neobundle/log
-  AlterCommand nbus
-    \ Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neosnippet
-  AlterCommand nbum
-    \ Unite neobundle/install:vim-quickrun:vital.vim:open-browser.vim:vim-submode:vim-surround:CamelCaseMotion
-  AlterCommand nblz Unite neobundle/lazy
-
+  AlterCommand nbu  Unite neobundle/update<C-r>=Eat_whitespace('\s')<CR>
+  AlterCommand nbl[g]   Unite neobundle/log
+  AlterCommand nbus   Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neosnippet
+  AlterCommand nbum   Unite neobundle/install:vim-quickrun:vital.vim:open-browser.vim:vim-submode:vim-surround:vimtest:vim-fugitive:vim-anzu:lightline.vim
   AlterCommand nbls NeoBundleList
-  AlterCommand nbs[ource] NeoBundleSource
   AlterCommand nbc NeoBundleClean
   command! -nargs=0 NeoBundleUpdateShougo
     \ NeoBundleUpdate
@@ -1054,6 +1086,7 @@ endif
 "======================================
 "Info
 if s:bundle_tap('foldCC') "{{{
+  set fdt =FoldCCtext()
   let g:foldCCtext_tail = 'v:foldend-v:foldstart+1'
   let g:foldCCtext_enable_autofdc_adjuster = 1
   let g:foldCCnavi_maxchars = 30
@@ -1080,6 +1113,93 @@ endif
 
 "======================================
 "GUI
+if s:bundle_tap('lightline.vim') "{{{
+  command! -bar LightlineUpdate    call lightline#init()| call lightline#colorscheme()| call lightline#update()
+  let g:lightline = {'subseparator': {'left': '', 'right': ''}, 'tabline_subseparator': {'left': '|', 'right': ''}}
+  let g:lightline.colorscheme = 'lclightline'
+  let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'visual': {}, 'tabline': {}}
+  let s:p.inactive.middle = [['black', 'Gray80', 16, 0]]
+  let s:p.inactive.left = [s:p.inactive.middle[0], ['black', 'azure', 16, 0], ['black', 'MistyRose', 16, 0], ['white', 'SlateGray', 231, 0], ['black', 'azure', 16, 0]]
+  let s:p.inactive.right = [['black', 'NavajoWhite1', 16, 0], ['black', 'MistyRose', 16, 0], ['white', 'SlateGray', 231, 0], ['black', 'azure', 16, 0]]
+  let s:p.normal.middle = s:p.inactive.middle
+  let s:p.normal.left = map(deepcopy(s:p.inactive.left), 'extend(v:val, ["bold"])')
+  let s:p.normal.right = map(deepcopy(s:p.inactive.right), 'extend(v:val, ["bold"])')
+  let s:p.insert.middle = [['black', 'DarkKhaki', 16, 0, 'bold']]
+  let s:p.insert.left = [s:p.insert.middle[0], ['black', 'LightSkyBlue1', 16, 0, 'bold'], ['black', 'RosyBrown1', 16, 0, 'bold'], ['white', 'SlateGray', 231, 0, 'bold'], ['black', 'azure', 16, 0, 'bold']]
+  let s:p.insert.right = [s:p.insert.middle[0], ['black', 'RosyBrown1', 16, 0, 'bold'], ['white', 'SlateGray', 231, 0, 'bold'], ['black', 'LightSkyBlue1', 16, 0, 'bold']]
+  "let s:p.visual.middle = [['black', 'thistle3', 0, 0, 'bold']]
+  let s:p.visual.middle = [['white', 'darkslateblue', 231, 0, 'bold']]
+  let s:p.visual.middle = [['white', 'mediumpurple4', 231, 0, 'bold']]
+  let s:p.visual.middle = [['black', 'thistle2', 16, 0, 'bold']]
+  let s:p.visual.left = deepcopy(s:p.insert.left)
+  let s:p.visual.left[0] = s:p.visual.middle[0]
+  let s:p.visual.right = deepcopy(s:p.insert.right)
+  let s:p.visual.right[0] = s:p.visual.middle[0]
+  let s:p.tabline.middle = [['black', 'gray', 16, 0]]
+  let s:p.tabline.left = [['black', 'gray60', 16, 0]]
+  let s:p.tabline.tabsel = [['white', '#002451', 231, 17, 'underline']]
+  let s:p.tabline.right = [['black', 'Gray80', 16, 0], ['white', '#002451', 231, 17], ['black', 'DarkGray', 16, 0]]
+  let g:lightline#colorscheme#lclightline#palette = s:p
+
+  let g:lightline.active = {}
+  let g:lightline.inactive = {}
+  let g:lightline.active.left = [['winbufnum'], ['dir'], ['filename'], ['filetype', 'readonly', 'modified']]
+  let g:lightline.active.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding'], ['cfi', 'currentfuncrow']]
+  let g:lightline.inactive.left = [['winbufnum'], ['dir'], ['filename'], ['filetype', 'readonly', 'modified']]
+  let g:lightline.inactive.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding']]
+  let g:lightline.tabline = {'right': [['rows'], ['cd'], ['fugitive', 'tabstop']]}
+  let g:lightline.tab = {'active': ['prefix', 'filename']}
+  let g:lightline.tab.inactive = g:lightline.tab.active
+
+  let g:lightline.component = {'dir': '%.35(%{expand("%:h")}%)', 'winbufnum': '%n%{repeat(",", winnr())}', 'rows': '%L', 'cd': '%.35(%{fnamemodify(getcwd(), ":~")}%)','tabstop': '%{&et?"et":""}%{&ts}:%{&sw}:%{&sts},%{&tw}', 'lineinfo': '%3l:%-3v'}
+  let g:lightline.component_function = {'fugitive': 'StlFugitive', 'cfi': 'StlCurrentFuncInfo', 'currentfuncrow': 'StlCurrentFuncRow', 'anzu': 'anzu#search_status'}
+  function! StlFugitive() "{{{
+    try
+      if &ft !~? 'vimfiler\|gundo' && exists('*fugitive#head')
+        return fugitive#head()
+      endif
+    endtry
+    return ''
+  endfunction
+  "}}}
+  function! StlCurrentFuncInfo() "{{{
+    try
+      return cfi#format('%.43s()', '')
+    endtry
+    return ''
+  endfunction
+  "}}}
+  function! StlCurrentFuncRow() "{{{
+    let funcbgn = search('^\s*\<fu\%[nction]\>', 'bcnW', search('^\s*\<endf\%[unction]\>', 'bcnW'))
+    if funcbgn > 0
+      let row = line('.') - funcbgn
+      return row ? row : ''
+    endif
+    return ''
+  endfunction
+  "}}}
+  let g:lightline.tab_component_function = {'prefix': 'TalPrefix', 'filename': 'TalFilename'}
+  function! TalPrefix(n) "{{{
+    return lightline#tab#tabnum(a:n). TalTabwins(a:n)
+  endfunction
+  "}}}
+  function! TalTabwins(n) "{{{
+    return repeat(',', len(tabpagebuflist(a:n)))
+  endfunction
+  "}}}
+  function! TalFilename(n) "{{{
+    return TalBufnum(a:n). '-'. substitute(lightline#tab#filename(a:n), '.\{14}\zs.\{-}\(\.\w\+\)\?$', '~\1', '')
+  endfunction
+  "}}}
+  function! TalBufnum(n) "{{{
+    let buflist = tabpagebuflist(a:n)
+    let winnr = tabpagewinnr(a:n)
+    return buflist[winnr - 1]
+  endfunction
+  "}}}
+endif
+"}}}
+"--------------------------------------
 if s:bundle_tap('vim-quickhl') "{{{
   call s:bundle_config({'autoload': {'mappings': ['<Plug>(quickhl-'], 'commands':
     \ ['QuickhlList', 'QuickhlReset', 'QuickhlDump', 'QuickhlColors', 'QuickhlReloadColors', 'QuickhlAdd', 'QuickhlLock', 'QuickhlMatch']}})
@@ -1109,6 +1229,238 @@ filetype plugin indent on  "ファイル判定をonにする
 unlet s:tapped_bundle
 delf s:bundle_tap | delf s:bundle_config | delf s:bundle_untap
 let g:loaded_getscriptPlugin = 1 | let g:loaded_netrwPlugin = 1 | let g:loaded_vimballPlugin = 1
+
+if filereadable(fnamemodify('~/.privacy/.vimrc_privacy.vim', ':p'))
+  source ~/.privacy/.vimrc_privacy.vim  "lingr.vimのパスワードとか
+endif
+
+
+
+"=========================================================
+"Autocmd
+autocmd vimrc VimResized * exe "normal! \<c-w>="
+autocmd vimrc QuickfixCmdPost * if !empty(getqflist()) | cwindow | endif
+"改行時にコメントしない(上手く動いていない(上書きされてる))
+"autocmd vimrc FileType * setlocal fo-=ro
+"--------------------------------------
+"au_filetype
+autocmd vimrc BufRead,BufNewFile *.markdown,*.md    setl ft=markdown nofoldenable
+autocmd vimrc FileType js   setlocal ft=javascript
+"--------------------------------------
+"au_option
+autocmd vimrc FileType gitcommit  setl nofoldenable nomodeline tw=60 fenc=utf-8
+autocmd vimrc FileType vim   setl ff=unix
+"--------------------------------------
+"au_keymappings
+autocmd vimrc FileType help   nnoremap <buffer><expr>q winnr('$')==1 ? ":\<C-u>bd\<CR>" : "\<C-w>c"
+autocmd vimrc FileType vim    inoremap <expr><buffer>\
+  \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
+autocmd vimrc FileType qf  noremap <buffer>q    :cclose<CR>
+autocmd vimrc FileType qf  noremap <buffer><CR>    :.cc<CR>
+autocmd vimrc FileType java  inoremap <expr><C-q>    <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
+function! s:IsEndSemicolon() "{{{
+  let c = getline(".")[col("$")-2]
+  if c != ';'
+    return 1
+  else
+    return 0
+  endif
+endfunction
+"}}}
+autocmd vimrc FileType java  inoremap <C-_>    <C-o>${<CR>
+autocmd vimrc FileType java  nnoremap ,c    :!javac %<CR>
+"--------------------------------------
+aug vimrc_colorscheme
+  au!
+  autocmd ColorScheme *  call <SID>define_CursorIM_on_highlight() | call <SID>define_other_highlight()
+  autocmd Syntax,BufNewFile,BufRead,StdinReadPost *  syntax match ZenkakuSpace containedin=ALL /　/
+aug END
+function! s:define_CursorIM_on_highlight() "{{{
+  if has('multi_byte_ime') || has('xim')
+    hi CursorIM guibg=#ffb700 guifg=NONE
+  endif
+endfunction
+"}}}
+function! s:define_other_highlight()  "{{{
+  hi Pmenu          guifg=white  guibg=#6A5CB4  gui=NONE
+  "hi CursorTrack    guibg=darkslategray4
+  hi ZenkakuSpace   cterm=underline ctermfg=darkgrey gui=underline guifg=darkgrey
+endfunction
+"}}}
+"窓にカーソルの痕跡を残す
+"autocmd vimrc_colorscheme WinLeave * match CursorTrack /\%#/
+"autocmd vimrc_colorscheme WinEnter * match none
+"--------------------------------------
+" Window位置の保存と復帰 "{{{
+if has('gui_running')
+  if has('unix')
+    let s:infofile = '~/.vim/.vimpos'
+  else
+    let s:infofile = '$VIM/.vimpos'
+  endif
+
+  augroup WinPosSizeSaver
+    au!
+  augroup END
+  exe 'au WinPosSizeSaver VimLeave * call s:WinPosSizeSave("'.s:infofile.'")'
+
+  if filereadable(expand(s:infofile))
+    execute 'source '.s:infofile
+  endif
+  unlet s:infofile
+endif
+
+function! s:WinPosSizeSave(filename)"{{{
+  let saved_reg = @a
+  redir @a
+  winpos
+  redir END
+  let px = substitute(@a, '.*X \(\d\+\).*', '\1', '') + 0
+  let py = substitute(@a, '.*Y \(\d\+\).*', '\1', '') + 0
+  exe 'redir! >'.a:filename
+  if px > 0 && py > 0
+    echo 'winpos '.px.' '.py
+  endif
+  echo 'set lines='.&lines.' columns='.&columns
+  redir END
+  let @a = saved_reg
+endfunction
+"}}}
+"}}}
+
+"=========================================================
+"Commands
+command! -nargs=*   VimElements    UPP lib#vimelements#collect(<f-args>)
+"Vim script計測
+command! -bar TimerStart let start_time = reltime()
+command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
+"plugin撮影用にウィンドウのサイズを一時的に変更する
+command! WinShorten     set lines=30 columns=100
+command! WinRest        set lines=40 columns=140
+"パターンとファイル名を逆にしたgrep
+function! s:perg(args)
+  execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2])
+endfunction
+command! -complete=file -nargs=+ Perg  call s:perg([<f-args>])
+AlterCommand perg Perg
+"現在ファイルのあるディレクトリでvimgrep
+function! s:CurrentGrep(args)
+  execute 'vimgrep' '/'.a:args[0].'/ '.expand(a:args[1]).'/**/*'
+  cwindow
+endfunction
+command! -nargs=+   CurrentGrep  call s:CurrentGrep([<f-args>])
+AlterCommand crrg[rep] CurrentGrep %:h<Left><Left><Left><Left>
+"失敗したaugを無効にする
+command! -nargs=1 -complete=augroup  KillAug  autocmd! <args>
+command! -nargs=1 -complete=augroup  AugKiller  autocmd! <args>
+"Rename
+function! s:rename(name, bang) "{{{
+  let crrpath = expand("%:p")
+  let v:errmsg = ""
+  silent! exe "saveas" . a:bang . " " . a:name
+  if v:errmsg =~# '^$\|^E329'
+    if expand("%:p") !=# crrpath && filewritable(expand("%:p"))
+      silent exe "bwipe! " . crrpath
+      if delete(crrpath)
+        echoerr "Could not delete " . crrpath
+      endif
+    endif
+  else
+    echoerr v:errmsg
+  endif
+endfunction
+"}}}
+command! -nargs=* -complete=file -bang Rename :call <SID>rename("<args>", "<bang>")
+AlterCommand ren[ame] Rename
+
+"=========================================================
+"Functions
+" Call a script local function.
+" Usage:
+" - S('local_func')
+"   -> call s:local_func() in current file.
+" - S('plugin/hoge.vim:local_func', 'string', 10)
+"   -> call s:local_func('string', 10) in *plugin/hoge.vim.
+" - S('plugin/hoge:local_func("string", 10)')
+"   -> call s:local_func("string", 10) in *plugin/hoge(.vim)?.
+function! S(f, ...) "{{{
+  let [file, func] =a:f =~# ':' ?  split(a:f, ':') : [expand('%:p'), a:f]
+  let fname = matchstr(func, '^\w*')
+ 
+  " Get sourced scripts.
+  redir =>slist
+  scriptnames
+  redir END
+ 
+  let filepat = '\V' . substitute(file, '\\', '/', 'g') . '\v%(\.vim)?$'
+  for s in split(slist, "\n")
+    let p = matchlist(s, '^\s*\(\d\+\):\s*\(.*\)$')
+    if empty(p)
+      continue
+    endif
+    let [nr, sfile] = p[1 : 2]
+    let sfile = fnamemodify(sfile, ':p:gs?\\?/?')
+    if sfile =~# filepat &&
+      \    exists(printf("*\<SNR>%d_%s", nr, fname))
+      let cfunc = printf("\<SNR>%d_%s", nr, func)
+      break
+    endif
+  endfor
+ 
+  if !exists('nr')
+    echoerr Not sourced: ' . file
+    return
+  elseif !exists('cfunc')
+    let file = fnamemodify(file, ':p')
+    echoerr printf(
+      \    'File found, but function is not defined: %s: %s()', file, fname)
+    return
+  endif
+ 
+  return 0 <= match(func, '^\w*\s*(.*)\s*$')
+    \      ? eval(cfunc) : call(cfunc, a:000)
+endfunction
+"}}}
+"YankRingっぽくyank/historiesを使う
+noremap <silent><Plug>(yank-replace-n) :call <SID>yank_replace(1)<CR>
+noremap <silent><Plug>(yank-replace-p) :call <SID>yank_replace(-1)<CR>
+let s:yank_histories_replace_idx = 0
+function! s:yank_replace(fluct) "{{{
+  let yank_histories = s:_get_yank_histories()
+  if exists('s:yank_histories_cache') && s:yank_histories_cache != yank_histories
+    let s:yank_histories_replace_idx = 0
+  endif
+  let s:yank_histories_cache = copy(yank_histories)
+ 
+  let yank_histories_len = len(yank_histories)
+  let s:yank_histories_replace_idx += a:fluct
+  let s:yank_histories_replace_idx = s:yank_histories_replace_idx>=yank_histories_len? 0
+    \ : s:yank_histories_replace_idx<0 ? yank_histories_len-1
+    \ : s:yank_histories_replace_idx
+  echo s:yank_histories_replace_idx
+ 
+  let replace_content = get(yank_histories, s:yank_histories_replace_idx, '')
+ 
+  let [bgn, end] = [line("'["), line("']")]
+  if bgn != line('.') || bgn == 0 || end == 0
+    return
+  endif
+  let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
+  call setreg('"', replace_content,)
+  silent exe 'normal! u'
+  silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
+  call setreg('"', save_reg, save_regtype)
+endfunction
+"}}}
+function! s:_get_yank_histories() "{{{
+  let l = []
+  let c = unite#sources#history_yank#define().gather_candidates('','')
+  for pkd in c
+    call add(l, pkd.word)
+  endfor
+  return l
+endfunction
+"}}}
 
 
 
@@ -1148,13 +1500,18 @@ cnoremap <expr><C-h>    getcmdtype()==':' ? getcmdpos()==1 ? 'h ' : "\<C-h>" : "
 cnoremap <expr><C-e>    getcmdtype()==':' ? getcmdline()=~'^\s*$\\|^h $' ? "<C-u>ec " : "\<C-e>" : "\<C-e>"
 "--------------------------------------
 "クリップボード
-noremap ,y "*y
+"noremap ,y "*y
+noremap <silent>,y :<C-u>let @* = @"<CR>
+"noremap ,Y "*y$
 noremap ,p "*p
 noremap <F3> "+
 noremap! <F3>   <C-r>+
 noremap <C-z> "+
-noremap! <C-z>   <C-r>+
+inoremap <C-r><C-y>   <C-r>+
+cnoremap <C-r><C-y>   <C-r>=substitute(@+, '\n$', '', 'g')<CR>
 nnoremap <C-c> "+y
+vnoremap <C-c> "+y
+vnoremap <C-y> "+y
 snoremap <C-c> <C-c>a
 vnoremap <expr><C-v> mode()=="\<C-v>" ? "\<Esc>\"+p" : "\<C-v>"
 "レジスタ
@@ -1198,10 +1555,10 @@ endfunction
 
 "======================================
 "Normal mode
+map Y y$
 nnoremap ; :
 vnoremap ; :
 nnoremap [space]/ :<C-u>%s/
-vnoremap [space]/ :<C-u>s/
 nnoremap j gj|nnoremap k gk
 vnoremap <expr>j mode()==#'V' ? 'j' : 'gj'|vnoremap <expr>k mode()==#'V' ? 'k' : 'gk'
 nnoremap <expr>l  foldclosed('.') != -1 ? 'zo' : 'l'
@@ -1209,13 +1566,14 @@ noremap zq q
 noremap z@ @
 map + *
 nnoremap : ;
-nnoremap ,w :<C-u>up<CR>
+nnoremap <silent>,w :<C-u>up<CR>
 nnoremap ,qu :<C-u>qa<CR>
-map Y y$
 nnoremap ,7   :<C-u>se fenc=euc-jp<CR>
 nnoremap ,8   :<C-u>se fenc=utf-8<CR>
 nnoremap ,9   :<C-u>se fenc=cp932<CR>
 nnoremap <silent>,0   :<C-u>let &ff = &ff=='dos' ? 'unix' : &ff=='unix' ? 'mac' : 'dos'<CR>
+"Normal mode 編集
+nnoremap guu  gU
 "Normal modeで挿入
 nnoremap <silent><C-j> :<C-u>call <SID>insert_CR()<CR>
 function! s:insert_CR()
@@ -1374,7 +1732,7 @@ nnoremap <silent> [space]l :bn<CR>
 "Win Switching
 nnoremap [space]n gt
 nnoremap [space]p gT
-noremap <S-C-i> gt
+"noremap <S-C-i> gt
 nnoremap <silent> <S-C-Tab> :tabp<CR>
 nnoremap <silent> <C-Tab> :tabn<CR>
 nnoremap <silent>[space]j :call <SID>Roop_switchWin("j")<CR>
@@ -1436,6 +1794,7 @@ function! s:get_fileinfo() "{{{
 endfunction
 "}}}
 nnoremap mz :mes<CR>
+nnoremap mc :scrip<CR>
 "nnoremap ma :marks<CR>
 "nnoremap ma :<C-u>Unite mark<CR>
 "検索ハイライト
@@ -1664,9 +2023,11 @@ cnoremap <C-a> <Home>
 "cnoremap <C-e> <End>
 "--------------------------------------
 "挿入バインド(Insert CommandLine)
-noremap! <C-r><C-e> <C-r>"
+inoremap <C-r><C-e> <C-r>"
+cnoremap <C-r><C-e>   <C-r>=substitute(substitute(@", '\n$', '', ''), '\n', '<Bar> ', 'g')<CR>
 noremap! <C-r><C-f> <C-r>=expand('%:t')<CR>
-inoremap <S-C-t> <C-d>
+inoremap <S-C-Tab> <C-d>
+inoremap <C-r><C-t> <C-d>
 inoremap <C-x><C-a> <C-a>
 inoremap <expr><C-Tab>  &et ? "\<C-v>\<C-i>" : repeat(' ', &sts ? &sts : &ts)
 imap <M-Space>    <Tab><Tab>
@@ -1708,175 +2069,26 @@ function! s:init_cmdwin()
   startinsert!
 endfunction
 
-"=========================================================
-"Commands
-"パターンとファイル名を逆にしたgrep
-function! s:perg(args)
-  execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2])
-endfunction
-command! -complete=file -nargs=+ Perg  call s:perg([<f-args>])
-AlterCommand perg Perg
-"現在ファイルのあるディレクトリでvimgrep
-function! s:CurrentGrep(args)
-  execute 'vimgrep' '/'.a:args[0].'/ '.expand(a:args[1]).'/**/*'
-  cwindow
-endfunction
-command! -nargs=+   CurrentGrep  call s:CurrentGrep([<f-args>])
-AlterCommand crrg[rep] CurrentGrep %:h<Left><Left><Left><Left>
-"失敗したaugを無効にする
-command! -nargs=1 -complete=augroup  KillAug  autocmd! <args>
-command! -nargs=1 -complete=augroup  AugKiller  autocmd! <args>
-"Rename
-function! s:rename(name, bang) "{{{
-  let crrpath = expand("%:p")
-  let v:errmsg = ""
-  silent! exe "saveas" . a:bang . " " . a:name
-  if v:errmsg =~# '^$\|^E329'
-    if expand("%:p") !=# crrpath && filewritable(expand("%:p"))
-      silent exe "bwipe! " . crrpath
-      if delete(crrpath)
-        echoerr "Could not delete " . crrpath
-      endif
-    endif
-  else
-    echoerr v:errmsg
-  endif
-endfunction
-"}}}
-command! -nargs=* -complete=file -bang Rename :call <SID>rename("<args>", "<bang>")
-AlterCommand ren[ame] Rename
-"Vim script計測
-command! -bar TimerStart let start_time = reltime()
-command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
-
-"=========================================================
-"Functions
-" Call a script local function.
-" Usage:
-" - S('local_func')
-"   -> call s:local_func() in current file.
-" - S('plugin/hoge.vim:local_func', 'string', 10)
-"   -> call s:local_func('string', 10) in *plugin/hoge.vim.
-" - S('plugin/hoge:local_func("string", 10)')
-"   -> call s:local_func("string", 10) in *plugin/hoge(.vim)?.
-function! S(f, ...) "{{{
-  let [file, func] =a:f =~# ':' ?  split(a:f, ':') : [expand('%:p'), a:f]
-  let fname = matchstr(func, '^\w*')
- 
-  " Get sourced scripts.
-  redir =>slist
-  scriptnames
-  redir END
- 
-  let filepat = '\V' . substitute(file, '\\', '/', 'g') . '\v%(\.vim)?$'
-  for s in split(slist, "\n")
-    let p = matchlist(s, '^\s*\(\d\+\):\s*\(.*\)$')
-    if empty(p)
-      continue
-    endif
-    let [nr, sfile] = p[1 : 2]
-    let sfile = fnamemodify(sfile, ':p:gs?\\?/?')
-    if sfile =~# filepat &&
-      \    exists(printf("*\<SNR>%d_%s", nr, fname))
-      let cfunc = printf("\<SNR>%d_%s", nr, func)
-      break
-    endif
-  endfor
- 
-  if !exists('nr')
-    echoerr Not sourced: ' . file
-    return
-  elseif !exists('cfunc')
-    let file = fnamemodify(file, ':p')
-    echoerr printf(
-      \    'File found, but function is not defined: %s: %s()', file, fname)
-    return
-  endif
- 
-  return 0 <= match(func, '^\w*\s*(.*)\s*$')
-    \      ? eval(cfunc) : call(cfunc, a:000)
-endfunction
-"}}}
-"YankRingっぽくyank/historiesを使う
-noremap <silent><Plug>(yank-replace-n) :call <SID>yank_replace(1)<CR>
-noremap <silent><Plug>(yank-replace-p) :call <SID>yank_replace(-1)<CR>
-let s:yank_histories_replace_idx = 0
-function! s:yank_replace(fluct) "{{{
-  let yank_histories = s:_get_yank_histories()
-  if exists('s:yank_histories_cache') && s:yank_histories_cache != yank_histories
-    let s:yank_histories_replace_idx = 0
-  endif
-  let s:yank_histories_cache = copy(yank_histories)
- 
-  let yank_histories_len = len(yank_histories)
-  let s:yank_histories_replace_idx += a:fluct
-  let s:yank_histories_replace_idx = s:yank_histories_replace_idx>=yank_histories_len? 0
-    \ : s:yank_histories_replace_idx<0 ? yank_histories_len-1
-    \ : s:yank_histories_replace_idx
-  echo s:yank_histories_replace_idx
- 
-  let replace_content = get(yank_histories, s:yank_histories_replace_idx, '')
- 
-  let [bgn, end] = [line("'["), line("']")]
-  if bgn != line('.') || bgn == 0 || end == 0
-    return
-  endif
-  let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
-  call setreg('"', replace_content,)
-  silent exe 'normal! u'
-  silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
-  call setreg('"', save_reg, save_regtype)
-endfunction
-"}}}
-function! s:_get_yank_histories() "{{{
-  let l = []
-  let c = unite#sources#history_yank#define().gather_candidates('','')
-  for pkd in c
-    call add(l, pkd.word)
-  endfor
-  return l
-endfunction
-"}}}
-
-"=========================================================
-"Autocmd
-autocmd vimrc VimResized * exe "normal! \<c-w>="
-autocmd vimrc QuickfixCmdPost * if !empty(getqflist()) | cwindow | endif
-"--------------------------------------
-"au_filetype
-autocmd vimrc BufRead,BufNewFile *.markdown,*.md    setl ft=markdown nofoldenable
-autocmd vimrc FileType js   setlocal ft=javascript
-"--------------------------------------
-"au_option
-autocmd vimrc FileType gitcommit  setl nofoldenable nomodeline tw=60 fenc=utf-8
-autocmd vimrc FileType vim   setl ff=unix
-"--------------------------------------
-"au_keymappings
-autocmd vimrc FileType help   nnoremap <buffer><expr>q winnr('$')==1 ? ":\<C-u>bd\<CR>" : "\<C-w>c"
-autocmd vimrc FileType vim    inoremap <expr><buffer>\
-  \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
-autocmd vimrc FileType qf  noremap <buffer>q    :cclose<CR>
-autocmd vimrc FileType qf  noremap <buffer><CR>    :.cc<CR>
-autocmd vimrc FileType java  inoremap <expr><C-q>    <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
-function! s:IsEndSemicolon() "{{{
-  let c = getline(".")[col("$")-2]
-  if c != ';'
-    return 1
-  else
-    return 0
-  endif
-endfunction
-"}}}
-autocmd vimrc FileType java  inoremap <C-_>    <C-o>${<CR>
-autocmd vimrc FileType java  nnoremap ,c    :!javac %<CR>
-
 
 
 "=============================================================================
 let &mouse = has('mouse') ? 'a': ''
+se browsedir=buffer " :bro[wse]ダイアログで開かれる初期dir
+se autoread confirm
+se winaltkeys =no
+se timeout timeoutlen=5000 ttimeoutlen=100
+se nrformats=hex "<C-a><C-x>に影響
+se showmatch matchtime=1
+se clipboard=
+se history=50  " :コマンド履歴保存数
+se modeline
+se wrap
+se fdm=marker cms=%s foldcolumn=3
+se showtabline=2
+se completeopt=menu,menuone,preview "補完
+
 "======================================
-"Backup "{{{
-"--------------------------------------
+"Backup
 "backupfile
 ":h backup-table
 se nobk nowb
@@ -1926,27 +2138,19 @@ aug vimrc
     \ | endif
   au VimLeave * call map(split(glob(&viewdir . '/*'), "\n"),  'delete(v:val)')
 aug END
-"}}}
+
 
 "======================================
 "編集設定
-"-----------------------------------------------------------------------------
-"Indent, 自動整形"{{{
-
-se et ts=8 sts=2 sw=2 ai
+"--------------------------------------
+"Indent, 自動整形
+se expandtab ts=8 sw=2 sts=2 autoindent
   "'ts'   見かけ
   "'sts'  <Tab>の挿入や<BS>の使用等の編集操作
   "'sw'   'ci'や'ai'や>>で挿入されるindent
-
-
-"行継続の際、挿入されるindent量 :h ft-vim-indent
-let g:vim_indent_cont = &sw
-
-se cin cino& cino+=:0
-  "< 'cino' については実際使うときになって考え直す必要性 :h cinoptions-values
+let g:vim_indent_cont = &sw "行継続の際、挿入されるindent量 :h ft-vim-indent
+se cindent cinoptions& cinoptions+=:0 "'cinoptions' については実際使うときになって考え直す必要性 :h cinoptions-values
 se smartindent
-
-
 "auto-format
 se formatoptions=
 "se fo +=t  "'textwidth' を使ってテキストを自動折返しする
@@ -1955,90 +2159,25 @@ se fo +=n  "番号付きリスト等を認識して折り返す
 se fo +=M  "マルチバイト文字連結時空白を挿入しない
 se fo +=m  "マルチバイト文字でも整形を有効にする
 
-"改行時にコメントしない(上手く動いていない(上書きされてる))
-"aug vimrc
-"  au FileType * setlocal fo-=ro
-"aug END
-"}}}
-
-"-----------------------------------------------------------------------------
-"検索"{{{
-
-se ws hls is
+"--------------------------------------
+"検索
+se wrapscan hlsearch incsearch
 se tags=./tags,tags,../tags  "tagsファイルの読み込み先
+set grepprg=jvgrep ""-n;:行番表示-H;:ファイル名表示
+"set grepprg=internal  " vimgrep をデフォルトのgrepとする場合internal
+"set grepprg=D:/bnr/cmd/cygwingrep/bin/cyggrep.exe\ -nH ""-n;:行番表示-H;:ファイル名表示
+"set grepprg=cyggrep.exe\ -nH
 
-"grepコマンドで使うプログラムを何にするか
-  "set grepprg=internal  " vimgrep をデフォルトのgrepとする場合internal
-  "set grepprg=D:/bnr/cmd/cygwingrep/bin/cyggrep.exe\ -nH ""-n;:行番表示-H;:ファイル名表示
-  set grepprg=jvgrep ""-n;:行番表示-H;:ファイル名表示
-  "set grepprg=cyggrep.exe\ -nH
-"}}}
-
-"-----------------------------------------------------------------------------
-"書き込み・終了"{{{
-
-":w等でどこにファイルを保存するか
-set browsedir=buffer
-
-" 他で書き換えられたら自動で読み直す
-set autoread
-
-" バッファへの変更を保存しないで終了するとき、確認する
-set confirm
-"}}}
-
-"-----------------------------------------------------------------------------
+"--------------------------------------
 "Window
 "se lines=40 co=130 "時間かかりすぎ
 "se scrolloff=2
-se hh=0 pvh=0 ea
-se wmw=0
-se ch=2 "コマンドラインの高さ
+se helpheight=0 previewheight=0 equalalways cmdheight=2
+se winminwidth=0
 
-
-" Window位置の保存と復帰 "{{{
-if has('gui_running')
-  if has('unix')
-    let s:infofile = '~/.vim/.vimpos'
-  else
-    let s:infofile = '$VIM/.vimpos'
-  endif
-
-  augroup WinPosSizeSaver
-    au!
-  augroup END
-  exe 'au WinPosSizeSaver VimLeave * call s:WinPosSizeSave("'.s:infofile.'")'
-
-  if filereadable(expand(s:infofile))
-    execute 'source '.s:infofile
-  endif
-  unlet s:infofile
-endif
-
-function! s:WinPosSizeSave(filename)"{{{
-  let saved_reg = @a
-  redir @a
-  winpos
-  redir END
-  let px = substitute(@a, '.*X \(\d\+\).*', '\1', '') + 0
-  let py = substitute(@a, '.*Y \(\d\+\).*', '\1', '') + 0
-  exe 'redir! >'.a:filename
-  if px > 0 && py > 0
-    echo 'winpos '.px.' '.py
-  endif
-  echo 'set lines='.&lines.' columns='.&columns
-  redir END
-  let @a = saved_reg
-endfunction
-"}}}
-"}}}
-
-"-----------------------------------------------------------------------------
-"カーソルの挙動"{{{
-
-"実際に文字がないところにカーソルを置けるようにする
-se ve =block,onemore
-
+"--------------------------------------
+"カーソルの挙動
+se virtualedit =block,onemore "実際に文字がないところにカーソルを置けるようにする
 "カーソル左右の動き
 se whichwrap=
 se ww+=b  "<BS>
@@ -2049,10 +2188,8 @@ se ww+=<  "<Left>  (nv)
 se ww+=>  "<Right> (nv)
 se ww+=[  "<Left>  (i Replace)
 se ww+=]  "<Right> (i Replace)
+se backspace=indent,eol,start "<BS>等をindentやeolを越えて有効にする
 
-"<BS>等をindentやeolを越えて有効にする
-se bs=indent,eol,start
-"}}}
 
 " ファイルを開いたら前回のカーソル位置へ移動 TODO:mkviewに置き換える
 "aug vimrc_editting
@@ -2063,269 +2200,12 @@ se bs=indent,eol,start
 "aug END
 
 "-----------------------------------------------------------------------------
-"その他挙動
 
-"AltKeyでmenuにアクセスするか
-se wak =no
-
-"keybind timeout
-se to tm=5000 ttm=100
-
-"<C-a><C-x>に影響
-se nf=hex
-
-se history=50  "コマンド履歴保存数
-se clipboard=
-se modeline
-se wrap  " 行を折り返す
-se sm mat=1  "括弧の対応表示時間
-
-
-
-
-
-
-
-
-"=============================================================================
-"特殊UI
-
-"補完を有効にする
-set completeopt=menu,menuone,preview
-
-"折り畳み
-se fdm=marker cms=%s fdc=3 fdt=FoldCCtext()
-
-
-"-----------------------------------------------------------------------------
-"Statusline
-se stl =%!Gs_StatusLine()
-"au WinEnter * setl stl=%!Gs_StatusLine()
-let g:shujuu_top = 1
-let g:shujuu_bottom = 5
-
-function! Gs_StatusLine() "{{{
-  let crrbuf_head = '%{empty(bufname("%")) ? "" : expand(''%:p:h'')."/"}'
-  let crrbuf_tail = '%9*%t %0*'  "< tail の highlight を変えている :h hl-User1
-  let crrbuf_path = crrbuf_head .crrbuf_tail
-
-  let fenc8ff = '[%{&fenc}/%{&ff[:0]}]'
-
-  let info = ''
-  if exists('*cfi#format')
-    let info .= '%8*%{cfi#format("%.43s()" ,"")}%0*'
-  endif
-
-  let f =  s:__ret_funclnum()
-  let funclnum = f == 0 ? '' : ' '.f.' '
-
-  let info .= '%8*%{exists("b:vimfiler.current_dir")?b:vimfiler.current_dir :""}%0*'
-  let win_shujuukankei = ['天', '主', '副', '平', '僕', '隷']
-
-  return
-    \ '%{repeat(",", winnr()).","}'
-    \ .'%4P'
-    \ .'%9*%3n-%0*'. '%.40('. crrbuf_path. '%)'
-    \ .'%m%R%H%W%y %('. fenc8ff .'%) '
-    \ .info . funclnum
-    \ .'%='
-    \ .'%4l(%4L),%3v(%3{virtcol("$")-1})'
-    \ .'%<'
-    "\ .'%{'.string(win_shujuukankei).'[exists("b:shujuu_overtaker")||!exists("w:shujuu")?0:w:shujuu]}'
-
-    "\ '%18(%l-%{line("$")-line(".")},%3v/%3{virtcol("$")-1}%)'.
-    "\ '%4l,%-3v'.
-endfunction
-"}}}
-
-"関数定義始まりから見た行数を返す >
-function! s:__ret_funclnum() "{{{
-  let funcbgn = search('^\s*\<fu\%[nction]\>', 'bcnW', search('^\s*\<endf\%[unction]\>', 'bcnW'))
-  if funcbgn > 0
-    return (line('.') - funcbgn)
-  endif
-endfunction
-"}}}
-
-"挿入モード時、ステータスラインのカラー変更
-let g:hi_insert = 'hi StatusLine guifg=black guibg=darkyellow gui=bold ctermfg=blue ctermbg=yellow cterm=bold'
-
-if has('syntax')
-  augroup InsertHook
-    au!
-    au InsertEnter * call s:Cng_stlColor('Enter')
-    au InsertLeave * call s:Cng_stlColor('Leave')
-  augroup END
-endif
-
-"i_CTRL-cでstatusLineの色が変更されない問題を修正
-"inoremap <silent><C-c> <C-c>:call <SID>Cng_stlcolor('Leave')<CR>
-
-let s:slhlcmd = ''
-function! s:Cng_stlColor(mode) "{{{
-  if a:mode == 'Enter'
-    silent! let s:slhlcmd = 'highlight ' . s:__Gs_hi('StatusLine')
-    silent exec g:hi_insert
-  else
-    highlight clear StatusLine
-    silent exec s:slhlcmd
-  endif
-endfunction
-"}}}
-
-
-"-----------------------------------------------------------------------------
-"TabLine
-se stal=2 "常に tabline を表示
-se tal=%!Gs_TabLine()
-
-function! Gs_TabLine() "{{{
-  let one2tabpEnd = range(1, tabpagenr('$'))
-  let titles = map(one2tabpEnd, 's:__Gs_Tabpage_label(v:val)')
-
-  let sep = ' '  "タブ間の区切り
-  let tabpages = join(titles, sep) . sep . '%#TabLineFill#%T'
-
-  let info = ''  " 好きな情報を入れる {{{
-
-  "FoldCCnavi
-  if exists('*FoldCCnavi')
-  try
-    let foldinfo = join(foldCC#ret_navilist(), '%#TabLineFill#> %#TabLineInfo#')
-    let info .= '%#TabLineInfo#'. foldinfo. '%0* '
-  catch
-    echo 'FoldCC: 何らかのエラー 詳細: g:foldCC_err'
-    let g:foldCC_err = v:exception
-  endtry
-  endif
-
-  "gitのブランチ名表示
-  "let branch_name = s:vcs_branch_name(getcwd())
-  "let info .= (branch_name != '' ? branch_name : '?')
-
-  "カレントバッファの総行数
-  "let info .= '%L'
-
-  let info .= 'tw%{&tw}'
-
-
-  "カレントディレクトリ
-  let info .= '[%.35('.fnamemodify(getcwd(), ":~") . '%)]'
- "}}}
-
-  return tabpages . '%=' . info.''  " タブリストを左に、情報を右に表示
-endfunction
-"}}}
-
-function! s:__Gs_Tabpage_label(tabpagenr) "{{{
-  "rol;各タブページのカレントバッファ名+αを表示
-  let title = gettabvar(a:tabpagenr, 'title')  "タブローカル変数 t:title を取得
-  "<< t:titleを設定していたっけ俺？(されているなら抜けるらしいが)
-  if title !=# ''
-    return title
-  endif
-
-  " カレントタブページかどうかでハイライトを切り替える
-  let hiTabLable = a:tabpagenr is tabpagenr() ? '%#TabLineSel#' : '%#TabLine#'
-  "let hiWinnum = a:tabpagenr is tabpagenr() ? '%#TabLineSelWinnum#' : '%#TabLineWinnum#'
-
-  " タブページ内の各ウィンドウにあるバッファのリスト
-  let bufnrs = tabpagebuflist(a:tabpagenr)
-
-  let winnum = len(bufnrs)
-  "let mod = len(filter(copy(bufnrs), 'getbufvar(v:val, "&modified")')) ? '+' : ''
-
-  let edBufnr = bufnrs[tabpagewinnr(a:tabpagenr) - 1]
-  "let edBufnr = bufnrs[-1]
-  let fname = fnamemodify(bufname(edBufnr), ':t')
-  let fname = fname is '' ? 'NoTitle' : fname
-
-  "let tabpagenr = a:tabpagenr > 10 ? 10 : a:tabpagenr-1
-  "let tabpageNR = ['壱', '弐', '参', '肆', '伍', '陸', '漆', '捌', '玖', '拾', '?'][tabpagenr]
-
-  return '%'. a:tabpagenr. 'T'. hiTabLable.
-    \ a:tabpagenr.
-    \ repeat(',', winnum). ' '. edBufnr. '-'. fname.
-    \ '%T%#TabLineFill#'
-    "\ edBufnr.'-'. fname. '%T%#TabLineFill#'
-    "\ hiTabLable. '['. a:tabpagenr. '] '.
-endfunction "}}}
-
-
-
-
-
-"=============================================================================
-"その他のhighlight
-"全角スペースを表示 TODO:aug vimrc_colorschemeに加える
-if has('syntax')
-  aug InvisibleIndicator
-    au!
-    " 全角スペースを明示的に表示する。
-    autocmd ColorScheme * hi ZenkakuSpace cterm=underline ctermfg=darkgrey gui=underline guifg=darkgrey
-    autocmd Syntax * syn match ZenkakuSpace containedin=ALL /　/
-    "autocmd Syntax * matchadd('ZenkakuSpace', '　') "matchadd()使った方がいいとか
-  aug END
-endif
-
-
-"窓にカーソルの痕跡を残す
-aug vimrc_colorscheme
-  au!
-  "au WinLeave * match CursorTrack /\%#/
-  "au WinEnter * match none
-aug END
-
-"-----------------------------------------------------------------------------
-aug vimrc_colorscheme
-  au ColorScheme *
-    \ call <SID>CursorIM() |
-    \ call <SID>StatusLineNC_fixer() |
-    \ call <SID>Add_stl8tal_hl() |
-    \ call <SID>Other_hl()
-aug END
-
-"" 日本語入力ON時のカーソルの色を設定
-function! s:CursorIM() "{{{
-  if has('multi_byte_ime') || has('xim')
-    highlight CursorIM guibg=#ffb700 guifg=NONE
-  endif
-endfunction
-"}}}
-
-"StatusLine, TabLine で使うhighlight
-function! s:StatusLineNC_fixer() "{{{
-  "c] StatusLine のhlを取得してguibg guifgを取得
-  hi StatusLineNC term=reverse cterm=reverse gui=NONE guibg=Gray80 guifg=Black
-endfunction
-"}}}
-function! s:Add_stl8tal_hl() "{{{
-  hi User9 gui=bold guifg=darkblue guibg=lightcyan
-  hi User8 gui=bold guifg=darkcyan guibg=lightblue
-  hi User7 gui=bold guifg=moccasin guibg=hotpink
-  hi TabLineInfo term=reverse ctermfg=Black ctermbg=LightBlue guifg=black guibg=lightblue
-  hi ShujuuMaster  guibg=indianred3 ctermbg=darkred
-  hi ShujuuServant  guibg=darkslategray4 ctermbg=darkgreen
-  hi ShujuuSlave  guibg=royalblue4 ctermbg=blue
-  hi User1  guibg=indianred3 ctermbg=darkred
-  hi User2  guibg=darkslategray4 ctermbg=darkgreen
-  hi User3  guibg=royalblue4 ctermbg=blue
-  hi TDD_Red  guibg=indianred3 ctermbg=darkred
-  "exe 'hi '. substitute(substitute(s:__Gs_hi('TabLine'), 'guifg=\S\+\ze\s', 'guifg=magenta', ''), 'TabLine', 'TabLineWinnum', '')
-  "exe 'hi '. substitute(substitute(s:__Gs_hi('TabLineSel'), 'guifg=\S\+\ze\s', 'guifg=magenta', ''), 'TabLineSel', 'TabLineSelWinnum', '')
-endfunction
-"}}}
-
-function! s:Other_hl()  "{{{
-  hi Pmenu         guifg=white  guibg=#6A5CB4  gui=NONE
-  hi CursorTrack   guibg=darkslategray4
-endfunction
- "}}}
 
 "a:groupnameの:hiを返す
 function! s:__Gs_hi(groupname) "{{{
   redir => hl
-  exe 'hi '. a:groupname
+  silent exe 'hi '. a:groupname
   redir END
   let hl = substitute(hl, '[\r\n]', '', 'g') "改行除く
   let hl = substitute(hl, 'xxx', '', '')
@@ -2364,8 +2244,8 @@ se cpoptions +=n  "'showbreak'を行番号の間に表示させる
 
 se guioptions=
 "se go +=c  "単純な選択にはポップアップダイアログでなくコンソールダイアログを使う
-"se go +=l  "l/rスクロールバーを常に表示
-"se go +=R  "垂直分割されたときL/Rスクロールバーを表示
+se go +=r  "l/rスクロールバーを常に表示
+se go +=L  "垂直分割されたときL/Rスクロールバーを表示
 "se go +=m  "menubar
 se go +=g  "無効の menubar 項目を灰色表示
 
@@ -2419,9 +2299,6 @@ endif
 "}}}
 
 
-if filereadable(fnamemodify('~/.privacy/.vimrc_privacy.vim', ':p'))
-  source ~/.privacy/.vimrc_privacy.vim  "lingr.vimのパスワードとか
-endif
 
 
 
@@ -2436,7 +2313,6 @@ endif
 
 "=============================================================================
 "=============================================================================
-
 
 
 
@@ -2579,9 +2455,6 @@ set verbosefile=/tmp/vim.log
 "自動で関数の始まりから終わりまでが見える大きさにウィンドウサイズ変更
 "コメント接頭辞に<CR>で属性変更 ] c] a]
 "前回の保存からの変更点をhlさせる
-"ステータスラインの色を変更し、そのウィンドウが別の文脈にあることを示す
-"hatenaようsyntax
-"twitterクライアントとか各種掲示板ビューア・lingrビューア
 "アンド検索（一件目がhitした後二件目のwordで一件目の前後数行を検索
 "
 "-----------------------------------------------------------------------------
@@ -2597,12 +2470,10 @@ set verbosefile=/tmp/vim.log
 "vimのexコマンド補完を利用したバッファセレクタやmruセレクタ、yank履歴セレクタの作成
 "input()式バッファセレクタ（input()方式は汎用性があるからオブジェクトで作る？）
 
-"テスト用不思議変数g:tess01 g:tess02 "通常の変数の機能+変異を記録
 "unite より使いやすいカラー一覧
 "u]コマンドライン型unite
 "uniteをメモ帳・todoリストとして使う。要素の追加・削除がその場で行える
 "uniteチートシート.同上。
-"長い辞書変数を適当に改行した後uniteで閲覧できるようにする
 "hisbird ファイル閲覧履歴
 
 
