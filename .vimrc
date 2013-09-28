@@ -23,8 +23,6 @@ let g:vimfiler_file_icon = '...'
 let g:vimfiler_marked_file_icon = '✓'
 let g:vimfiler_readonly_file_icon = '✗'
 
-let g:vimfiler_force_overwrite_statusline = 0
-
 let g:vimfiler_time_format = '%d-%m-%Y %H:%M:%S'
 let g:vimfiler_data_directory = $HOME.'/.vim/tmp/vimfiler'
 
@@ -94,7 +92,7 @@ NeoBundleLazy 'Shougo/vimfiler'
 NeoBundleLazy 'tyru/open-browser.vim', {'autoload': {'mappings': [['sxn', '<Plug>(openbrowser-']], 'commands': [{'complete': 'customlist,openbrowser#_cmd_complete', 'name': 'OpenBrowserSearch'}, {'complete': 'customlist,openbrowser#_cmd_complete', 'name': 'OpenBrowserSmartSearch'}, 'OpenBrowser']}}
 NeoBundleLazy 'thinca/vim-ref'
 NeoBundleLazy 'basyura/J6uil.vim', {'depends': 'mattn/webapi-vim'}
-NeoBundleLazy 'LeafCage/ref-javadoc', {'depends': 'thinca/vim-ref'}
+NeoBundleLazy 'LeafCage/ref-javadoc', {'depends': 'thinca/vim-ref', 'stay_same': 1}
 "NeoBundle 'vim-jp/vimdoc-ja'
 "--------------------------------------
 "Development
@@ -102,9 +100,9 @@ NeoBundleLazy 'tpope/vim-fugitive', {'augroup': 'fugitive', 'autoload': {'comman
 NeoBundleLazy 'thinca/vim-quickrun', {'autoload': {'commands': 'QuickRun', 'mappings': ['<Plug>(quickrun']}}
 NeoBundleLazy 'kannokanno/vimtest'
 NeoBundleLazy 'kannokanno/vmock'
-NeoBundleLazy 'LeafCage/laptime.vim'
+NeoBundleLazy 'LeafCage/laptime.vim', {'stay_same': 1}
 NeoBundleLazy 'h1mesuke/vim-benchmark'
-NeoBundleLazy 'LeafCage/vimhelpgenerator', {'autoload': {'commands': ['VimHelpGenerator', 'VimHelpGeneratorVirtual']}}
+NeoBundleLazy 'LeafCage/vimhelpgenerator'
 "NeoBundleLazy 'gregsexton/gitv' "vim版Gitk()
 NeoBundleLazy 'cocoa.vim' "Objective-C
 NeoBundleLazy 'javacomplete'
@@ -118,7 +116,7 @@ NeoBundleLazy 'Javascript-OmniCompletion-with-YUI-and-j'
 NeoBundleLazy 'Shougo/neocomplcache'
 NeoBundleLazy 'Shougo/neosnippet'
 NeoBundleLazy 'scrooloose/nerdcommenter', {'autoload': {'mappings': [['inx', '<Plug>NERDCommenter']]}}
-NeoBundleLazy 'LeafCage/nebula.vim', {'autoload': {'commands': ['NebulaPutLazy', 'NebulaPutFromClipboard', 'NebulaYankOptions', 'NebulaPutConfig']}}
+NeoBundleLazy 'LeafCage/nebula.vim', {'autoload': {'commands': ['NebulaPutLazy', 'NebulaPutFromClipboard', 'NebulaYankOptions', 'NebulaPutConfig']}, 'stay_same': 1}
 NeoBundleLazy 'kana/vim-operator-user'
 NeoBundleLazy 'kana/vim-operator-replace' "レジスタにあるものとoperator指定したものを置き換え
 NeoBundleLazy 'kana/vim-textobj-user'
@@ -129,7 +127,8 @@ NeoBundleLazy 'anyakichi/vim-textobj-xbrackets', {'depends': 'kana/vim-textobj-u
 NeoBundleLazy 'sgur/vim-textobj-parameter', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-parameter']}}
 NeoBundleLazy 'osyo-manga/vim-textobj-multiblock', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-multiblock']}}
 NeoBundleLazy 'anyakichi/vim-surround'
-NeoBundleLazy 'LeafCage/unite-recording'
+NeoBundleLazy 'supermomonga/unite-sudden-death', {'autoload': {'unite_sources': ['suddendeath']}}
+NeoBundleLazy 'LeafCage/unite-recording', {'stay_same': 1}
 "--------------------------------------
 "Moving
 NeoBundleLazy 'kana/vim-smartword', {'autoload': {'mappings': ['<Plug>(smartword-']}}
@@ -166,7 +165,7 @@ NeoBundleLazy 'thinca/vim-ambicmd' "コマンド名省入力 ex)NeoBundleUpdate 
 NeoBundle 'tyru/vim-altercmd' "コマンドのエイリアスを作る tyru版あり #B9-6
 "--------------------------------------
 "Info
-NeoBundle 'LeafCage/foldCC'
+NeoBundle 'LeafCage/foldCC', {'stay_same': 1}
 NeoBundle 'tyru/current-func-info.vim'
 NeoBundleLazy 'sgur/vim-gitgutter', {'autoload': {'mappings': [['n', '<Plug>GitGutter']], 'commands': ['GitGutterAll', 'GitGutterToggle', 'GitGutterPrevHunk', 'GitGutterDisable', 'GitGutterLineHighlightsEnable', 'GitGutterNextHunk', 'GitGutterEnable', 'GitGutter', 'GitGutterLineHighlightsToggle', 'GitGutterLineHighlightsDisable']}}
 "NeoBundle 'LeafCage/win-shujuukankei.vim'
@@ -184,7 +183,7 @@ NeoBundleLazy 'jceb/vim-hier' "quickfixエラー箇所をハイライト
 "NeoBundle 'ujihisa/unite-font' "動かない
 NeoBundleLazy 'ujihisa/unite-colorscheme', {'autoload': {'unite_sources': ['colorscheme']}}
 NeoBundleLazy 'pasela/unite-webcolorname', {'autoload': {'unite_sources' : 'webcolorname'}}
-NeoBundleLazy 'LeafCage/unite-gvimrgb', {'autoload': {'unite_sources': ['gvimrgb']}}
+NeoBundleLazy 'LeafCage/unite-gvimrgb', {'autoload': {'unite_sources': ['gvimrgb']}, 'stay_same': 1}
 NeoBundleLazy 'osyo-manga/unite-highlight', {'autoload': {'unite_sources': ['highlight']}}
 NeoBundleLazy 'cocopon/colorswatch.vim', {'autoload': {'commands': ['ColorSwatchGenerate']}}
 "--------------------------------------
@@ -227,7 +226,7 @@ endfunction
 "Library
 let g:uptodate_filenamepatterns = ['lily.vim', 'lib/vimelements.vim']
 let g:uptodate_cellardir = $VIMFILES. '/bundle/LCLIB'
-autocmd FuncUndefined lib#*   exe 'source '. g:uptodate_cellardir. '/'. fnamemodify(expand('<afile>'), ':gs?#?/?:h'). '.vim'
+autocmd vimrc FuncUndefined lib#*   exe 'source '. g:uptodate_cellardir. '/'. fnamemodify(expand('<afile>'), ':gs?#?/?:h'). '.vim'
 if s:bundle_tap('vimproc') "{{{
   call s:bundle_config({'build': {'windows': 'make -f make_mingw32.mak', 'cygwin': 'make -f make_cygwin.mak',
     \ 'mac': 'make -f make_mac.mak', 'unix': 'make -f make_unix.mak',},})
@@ -317,19 +316,32 @@ endif
 "}}}
 "--------------------------------------
 if s:bundle_tap('ctrlp.vim') " {{{
-  call s:bundle_config({'autoload': {'commands': ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU', 'CtrlPLastMode',
-    \ 'CtrlPRoot', 'CtrlPClearCache', 'CtrlPClearAllCaches']}})
+  call s:bundle_config({'autoload': {'commands': ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU', 'CtrlPLastMode', 'CtrlPRoot', 'CtrlPClearCache', 'CtrlPClearAllCaches']}})
   function! s:tapped_bundle.hooks.on_source(bundle)
+    let g:ctrlp_prompt_mappings = {}
+    let g:ctrlp_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
+    let g:ctrlp_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>']
+    let g:ctrlp_prompt_mappings['PrtCurRight()'] = ['<Right>', '<C-f>']
+    let g:ctrlp_prompt_mappings['ToggleType(1)'] = ['<C-l>', '<C-up>']
+    let g:ctrlp_prompt_mappings['ToggleType(-1)'] = ['<C-x>', '<C-down>']
+    let g:ctrlp_prompt_mappings['AcceptSelection("h")'] = ['<C-CR>', '<C-s>']
+    let g:ctrlp_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
   endfunction
+  autocmd vimrc CursorMoved ControlP  let w:lightline = 0
 
-  nnoremap <silent>[C-k]<C-k> :<C-u>CtrlP<CR>
-  nnoremap <silent>[C-k]<C-p> :<C-u>CtrlPBuffer<CR>
-  nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
+  nnoremap <silent>,cf :<C-u>CtrlP<CR>
+  nnoremap <silent>,cb :<C-u>CtrlPBuffer<CR>
+  nnoremap <silent>,cm :<C-u>CtrlPMRU<CR>
+  "nnoremap <silent>[C-k]<C-p> :<C-u>CtrlPBuffer<CR>
+  "nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
+  let g:ctrlp_cache_dir = $VIMSYSTEM. '/.ctrlp'
+  let g:ctrlp_max_files = 1000
   let g:ctrlp_use_migemo = 1
+  let g:ctrlp_show_hidden = 1
   let g:ctrlp_switch_buffer = 'Et'
   let g:ctrlp_reuse_window = 'netrw\|help\|quickfix\|vimfiler\|unite\|vimshell'
   let g:ctrlp_root_markers = ['[root]']
-    let g:ctrlp_open_new_file = 'h'
+  let g:ctrlp_open_new_file = 'h'
     let g:ctrlp_mruf_exclude = '' "mruに追跡したくないfile
   call s:bundle_untap()
 endif
@@ -552,8 +564,8 @@ endif
 if s:bundle_tap('J6uil.vim') "{{{
   call s:bundle_config({'autoload': {'unite_sources': ['J6uil_members', 'J6uil_rooms'], 'mappings': [['n', '<Plug>(J6uil_']], 'commands': ['J6uilReconnect', 'J6uilDisconnect', {'complete': 'custom,J6uil#complete#room', 'name': 'J6uil'}]}})
   function! s:tapped_bundle.hooks.on_source(bundle)
-    autocmd vimrc FileType J6uil  :call s:J6uil_settings(expand('<abuf>'))
-    autocmd vimrc FileType J6uil_say  :nunmap <buffer><C-j>| nmap <silent><buffer>q   :<C-u>bd!<CR>
+    autocmd FileType J6uil  :call s:J6uil_settings(expand('<abuf>'))
+    autocmd FileType J6uil_say  :nunmap <buffer><C-j>| nmap <silent><buffer>q   :<C-u>bd!<CR>
     let g:J6uil_config_dir = $VIMSYSTEM. '/.J6uil'
   endfunction
   function! s:J6uil_settings(bufnr)
@@ -561,10 +573,10 @@ if s:bundle_tap('J6uil.vim') "{{{
     nmap <silent><buffer>dc   <Plug>(J6uil_disconnect)
     nmap <silent><buffer>r   <Plug>(J6uil_reconnect)
     let s:bufnr = str2nr(a:bufnr)
-    noremap ,xl :<C-u>exe 'e' s:bufnr<CR>
-    autocmd vimrc VimLeavePre *   :if bufexists(s:bufnr)| exe 'bd '. s:bufnr| endif
+    noremap ,xj :<C-u>exe 'e' s:bufnr<CR>
+    autocmd VimLeavePre *   :if bufexists(s:bufnr)| exe 'bd '. s:bufnr| endif
   endfunction
-  noremap ,xl :<C-u>J6uil<CR>
+  noremap ,xj :<C-u>J6uil<CR>
 endif
 "}}}
 
@@ -603,7 +615,7 @@ endif
 "}}}
 "--------------------------------------
 if s:bundle_tap('vimhelpgenerator') "{{{
-  call s:bundle_config({})
+  call s:bundle_config({'autoload': {'commands': ['VimHelpGenerator', 'VimHelpGeneratorVirtual']}, 'stay_same': 1})
   function! s:tapped_bundle.hooks.on_source(bundle)
     let g:vimhelpgenerator_version = ''
     let g:vimhelpgenerator_author = 'Author  : LeafCage <leafcage+vim @ gmail.com>'
@@ -921,7 +933,7 @@ endif
 if s:bundle_tap('vim-visualstar') "{{{
   noremap <SID>put_searchstart_sign  :<C-u>call <SID>put_searchstart_sign(0)<CR>
   "nmap <silent>* <Plug>(visualstar-*)N<SID>put_searchstart_sign
-  vmap <silent>* <Plug>(visualstar-*)N<Plug>(anzu-update-search-status)<SID>put_searchstart_sign
+  vmap <silent>* <Plug>(visualstar-*)N<SID>put_searchstart_sign
   "map # <Plug>(visualstar-#)N:<C-u>sign unplace 333<CR>
 endif
 "}}}
@@ -1087,6 +1099,7 @@ endif
 "}}}
 "--------------------------------------
 if s:bundle_tap('vim-anzu') "{{{
+  let g:anzu_status_format = '%p(%i/%l) %#WarningMsg#%w'
   nmap n <Plug>(anzu-n-with-echo)zv
   nmap N <Plug>(anzu-N-with-echo)zv
   nmap * <Plug>(anzu-star-with-echo)Nzz
@@ -1133,18 +1146,19 @@ if s:bundle_tap('lightline.vim') "{{{
   let s:p.tabline.tabsel = [['white', '#002451', 231, 17, 'underline']]
   let s:p.tabline.right = [['black', 'Gray80', 16, 0], ['white', '#002451', 231, 17], ['black', 'DarkGray', 16, 0]]
   let g:lightline#colorscheme#lclightline#palette = s:p
+  unlet s:p
 
+  let g:lightline.tabline = {'right': [['rows'], ['cd'], ['fugitive', 'tabstop']]}
+  let g:lightline.tab = {'active': ['prefix', 'filename']}
+  let g:lightline.tab.inactive = g:lightline.tab.active
   let g:lightline.active = {}
   let g:lightline.inactive = {}
   let g:lightline.active.left = [['winbufnum'], ['dir'], ['filename'], ['filetype', 'readonly', 'modified']]
   let g:lightline.active.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding'], ['cfi', 'currentfuncrow']]
   let g:lightline.inactive.left = [['winbufnum'], ['dir'], ['filename'], ['filetype', 'readonly', 'modified']]
   let g:lightline.inactive.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding']]
-  let g:lightline.tabline = {'right': [['rows'], ['cd'], ['fugitive', 'tabstop']]}
-  let g:lightline.tab = {'active': ['prefix', 'filename']}
-  let g:lightline.tab.inactive = g:lightline.tab.active
 
-  let g:lightline.component = {'dir': '%.35(%{expand("%:h")}%)', 'winbufnum': '%n%{repeat(",", winnr())}', 'rows': '%L', 'cd': '%.35(%{fnamemodify(getcwd(), ":~")}%)','tabstop': '%{&et?"et":""}%{&ts}:%{&sw}:%{&sts},%{&tw}', 'lineinfo': '%3l:%-3v'}
+  let g:lightline.component = {'dir': '%.35(%{expand("%:h:s?\\S$?\\0/?")}%)', 'winbufnum': '%n%{repeat(",", winnr())}%=', 'rows': '%L', 'cd': '%.35(%{fnamemodify(getcwd(), ":~")}%)','tabstop': '%{&et?"et":""}%{&ts}:%{&sw}:%{&sts},%{&tw}', 'lineinfo': '%3l:%-3v'}
   let g:lightline.component_function = {'fugitive': 'StlFugitive', 'cfi': 'StlCurrentFuncInfo', 'currentfuncrow': 'StlCurrentFuncRow', 'anzu': 'anzu#search_status'}
   function! StlFugitive() "{{{
     try
@@ -1365,6 +1379,8 @@ endfunction
 "}}}
 command! -nargs=* -complete=file -bang Rename :call <SID>rename("<args>", "<bang>")
 AlterCommand ren[ame] Rename
+"ファイルを開いたら前回のカーソル位置へ移動
+autocmd vimrc BufReadPost *  if line("'\"")>1 && line("'\"")<=line('$') | exe 'norm! g`"' | endif
 
 "=========================================================
 "Functions
@@ -1498,9 +1514,9 @@ cnoremap <expr><C-h>    getcmdtype()==':' ? getcmdpos()==1 ? 'h ' : "\<C-h>" : "
 cnoremap <expr><C-e>    getcmdtype()==':' ? getcmdline()=~'^\s*$\\|^h $' ? "<C-u>ec " : "\<C-e>" : "\<C-e>"
 "--------------------------------------
 "クリップボード
-"noremap ,y "*y
-noremap <silent>,y :<C-u>let @* = @"<CR>
-"noremap ,Y "*y$
+noremap ,y "*y
+noremap <silent>,yu :<C-u>let @* = @"<CR>
+noremap ,Y "*y$
 noremap ,p "*p
 noremap <F3> "+
 noremap! <F3>   <C-r>+
@@ -1573,14 +1589,8 @@ nnoremap <silent>,0   :<C-u>let &ff = &ff=='dos' ? 'unix' : &ff=='unix' ? 'mac' 
 "Normal mode 編集
 nnoremap guu  gU
 "Normal modeで挿入
-nnoremap <silent><C-j> :<C-u>call <SID>insert_CR()<CR>
-function! s:insert_CR()
-  let foldclosedend = foldclosedend('.')
-  call append(foldclosedend==-1 ? '.' : foldclosedend, '')
-  norm! j
-endfunction
-nnoremap [C-k]<C-j> :i<CR><CR>.<CR>
-nnoremap [space]<C-j> :i<CR><CR>.<CR>
+nnoremap <silent>go :<C-u>call append(foldclosedend('.')==-1 ? '.': foldclosedend('.'), repeat([''], v:count1))<Bar>exe 'norm!' v:count1. 'j'<CR>
+nnoremap gO :i<CR><CR>.<CR>
 "空白を挿入する
 nnoremap [space]a a<Space><Esc>
 "nnoremap <C-Space> a<Space><Esc>
@@ -2030,6 +2040,7 @@ cnoremap <expr> <C-x> expand('%:p:h') . "/"
 cnoremap <expr> <C-z> expand('%:p:r')
 "cnoremap <expr><C-s>    getcmdtype()==':' ? getcmdpos()==1 ? 'set ' : "\<C-s>" : "\<C-s>"
 cnoreabb <expr>ss getcmdtype()==':' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 'ss'
+cnoreabb <expr>sg getcmdtype()==':' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 'sg'
 cnoremap <expr> / getcmdtype()=='/' ? '\/' : '/'
 cnoremap <expr> ? getcmdtype()=='?' ? '\?' : '?'
 "--------------------------------------
@@ -2123,20 +2134,14 @@ se vi+=ra:,rb:  "removable mediaの指定 (mark履歴対象外にする)
 "se vi+=n$VIM/.viminfo  "viminfo file name (作成する場所)
 se vi+=n~/.viminfo  "viminfo file name (作成する場所)
 "--------------------------------------
-"views (カーソル位置などを復元 from thinca)
+"views (カーソル位置などを復元)
 set viewdir=$VIMSYSTEM/viewdir viewoptions=folds,cursor,slash,unix
-aug vimrc
-  au BufLeave * if expand('%') !=# '' && &buftype ==# ''
-    \ | mkview
-    \ | endif
-  au BufReadPost * if !exists('b:view_loaded') &&
-    \ expand('%') !=# '' && &buftype ==# ''
-    \ | silent! loadview
-    \ | let b:view_loaded = 1
-    \ | endif
-  au VimLeave * call map(split(glob(&viewdir . '/*'), "\n"),  'delete(v:val)')
-aug END
-
+"aug vimrc
+"  autocmd BufLeave * if expand('%') !=# '' && &buftype ==# '' | mkview | endif
+"  autocmd BufReadPost * if !exists('b:view_loaded') && expand('%')!='' && &buftype==''
+"    \ | silent! loadview | let b:view_loaded = 1 | endif
+"  autocmd VimLeave * call map(split(glob(&viewdir . '/*'), "\n"),  'delete(v:val)')
+"aug END
 
 "======================================
 "編集設定
