@@ -1100,6 +1100,7 @@ endif
 "--------------------------------------
 if s:bundle_tap('vim-anzu') "{{{
   let g:anzu_status_format = '%p(%i/%l) %#WarningMsg#%w'
+  let g:anzu_no_match_word = '%#ErrorMsg#E486: Pattern not found: %p'
   nmap n <Plug>(anzu-n-with-echo)zv
   nmap N <Plug>(anzu-N-with-echo)zv
   nmap * <Plug>(anzu-star-with-echo)Nzz
@@ -1122,43 +1123,17 @@ endif
 if s:bundle_tap('lightline.vim') "{{{
   command! -bar LightlineUpdate    call lightline#init()| call lightline#colorscheme()| call lightline#update()
   let g:lightline = {'subseparator': {'left': '', 'right': ''}, 'tabline_subseparator': {'left': '|', 'right': ''}}
-  let g:lightline.colorscheme = 'lclightline'
-  let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'visual': {}, 'tabline': {}}
-  let s:p.inactive.middle = [['black', 'Gray80', 16, 0]]
-  let s:p.inactive.left = [s:p.inactive.middle[0], ['black', 'azure', 16, 0], ['black', 'MistyRose', 16, 0], ['white', 'SlateGray', 231, 0], ['black', 'azure', 16, 0]]
-  let s:p.inactive.right = [['black', 'NavajoWhite1', 16, 0], ['black', 'MistyRose', 16, 0], ['white', 'SlateGray', 231, 0], ['black', 'azure', 16, 0]]
-  let s:p.normal.middle = s:p.inactive.middle
-  let s:p.normal.left = map(deepcopy(s:p.inactive.left), 'extend(v:val, ["bold"])')
-  let s:p.normal.right = map(deepcopy(s:p.inactive.right), 'extend(v:val, ["bold"])')
-  let s:p.insert.middle = [['black', 'DarkKhaki', 16, 0, 'bold']]
-  let s:p.insert.left = [s:p.insert.middle[0], ['black', 'LightSkyBlue1', 16, 0, 'bold'], ['black', 'RosyBrown1', 16, 0, 'bold'], ['white', 'SlateGray', 231, 0, 'bold'], ['black', 'azure', 16, 0, 'bold']]
-  let s:p.insert.right = [s:p.insert.middle[0], ['black', 'RosyBrown1', 16, 0, 'bold'], ['white', 'SlateGray', 231, 0, 'bold'], ['black', 'LightSkyBlue1', 16, 0, 'bold']]
-  "let s:p.visual.middle = [['black', 'thistle3', 0, 0, 'bold']]
-  let s:p.visual.middle = [['white', 'darkslateblue', 231, 0, 'bold']]
-  let s:p.visual.middle = [['white', 'mediumpurple4', 231, 0, 'bold']]
-  let s:p.visual.middle = [['black', 'thistle2', 16, 0, 'bold']]
-  let s:p.visual.left = deepcopy(s:p.insert.left)
-  let s:p.visual.left[0] = s:p.visual.middle[0]
-  let s:p.visual.right = deepcopy(s:p.insert.right)
-  let s:p.visual.right[0] = s:p.visual.middle[0]
-  let s:p.tabline.middle = [['black', 'gray', 16, 0]]
-  let s:p.tabline.left = [['black', 'gray60', 16, 0]]
-  let s:p.tabline.tabsel = [['white', '#002451', 231, 17, 'underline']]
-  let s:p.tabline.right = [['black', 'Gray80', 16, 0], ['white', '#002451', 231, 17], ['black', 'DarkGray', 16, 0]]
-  let g:lightline#colorscheme#lclightline#palette = s:p
-  unlet s:p
-
   let g:lightline.tabline = {'right': [['rows'], ['cd'], ['fugitive', 'tabstop']]}
   let g:lightline.tab = {'active': ['prefix', 'filename']}
   let g:lightline.tab.inactive = g:lightline.tab.active
   let g:lightline.active = {}
   let g:lightline.inactive = {}
-  let g:lightline.active.left = [['winbufnum'], ['dir'], ['filename'], ['filetype', 'readonly', 'modified']]
-  let g:lightline.active.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding'], ['cfi', 'currentfuncrow']]
+  let g:lightline.active.left = [['winbufnum'], ['dir'], ['filename'], ['filetype', 'readonly', 'modified'], ['currentfuncrow']]
+  let g:lightline.active.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding'], ['cfi']]
   let g:lightline.inactive.left = [['winbufnum'], ['dir'], ['filename'], ['filetype', 'readonly', 'modified']]
   let g:lightline.inactive.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding']]
 
-  let g:lightline.component = {'dir': '%.35(%{expand("%:h:s?\\S$?\\0/?")}%)', 'winbufnum': '%n%{repeat(",", winnr())}%=', 'rows': '%L', 'cd': '%.35(%{fnamemodify(getcwd(), ":~")}%)','tabstop': '%{&et?"et":""}%{&ts}:%{&sw}:%{&sts},%{&tw}', 'lineinfo': '%3l:%-3v'}
+  let g:lightline.component = {'dir': '%.35(%{expand("%:h:s?\\S$?\\0/?")}%)', 'winbufnum': '%n%{repeat(",", winnr())}%<', 'rows': '%L', 'cd': '%.35(%{fnamemodify(getcwd(), ":~")}%)','tabstop': '%{&et?"et":""}%{&ts}:%{&sw}:%{&sts},%{&tw}', 'lineinfo': '%3l:%-3v'}
   let g:lightline.component_function = {'fugitive': 'StlFugitive', 'cfi': 'StlCurrentFuncInfo', 'currentfuncrow': 'StlCurrentFuncRow', 'anzu': 'anzu#search_status'}
   function! StlFugitive() "{{{
     try
@@ -1195,7 +1170,7 @@ if s:bundle_tap('lightline.vim') "{{{
   endfunction
   "}}}
   function! TalFilename(n) "{{{
-    return TalBufnum(a:n). '-'. substitute(lightline#tab#filename(a:n), '.\{14}\zs.\{-}\(\.\w\+\)\?$', '~\1', '')
+    return TalBufnum(a:n). '-'. substitute(lightline#tab#filename(a:n), '.\{16}\zs.\{-}\(\.\w\+\)\?$', '~\1', '')
   endfunction
   "}}}
   function! TalBufnum(n) "{{{
@@ -1204,6 +1179,32 @@ if s:bundle_tap('lightline.vim') "{{{
     return buflist[winnr - 1]
   endfunction
   "}}}
+
+  let g:lightline.colorscheme = 'lclightline'
+  let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'visual': {}, 'tabline': {}}
+  let s:p.inactive.middle = [['black', 'Gray80', 16, 0]]
+  let s:p.inactive.left = [s:p.inactive.middle[0], ['black', 'azure', 16, 0], ['black', 'MistyRose', 16, 0], ['white', 'SlateGray', 231, 0], ['black', 'azure', 16, 0]]
+  let s:p.inactive.right = [['black', 'NavajoWhite1', 16, 0], ['black', 'MistyRose', 16, 0], ['white', 'SlateGray', 231, 0], ['black', 'azure', 16, 0]]
+  let s:p.normal.middle = s:p.inactive.middle
+  let s:p.normal.left = map(deepcopy(s:p.inactive.left), 'extend(v:val, ["bold"])')
+  let s:p.normal.right = map(deepcopy(s:p.inactive.right), 'extend(v:val, ["bold"])')
+  let s:p.insert.middle = [['black', 'DarkKhaki', 16, 0, 'bold']]
+  let s:p.insert.left = [s:p.insert.middle[0], ['black', 'LightSkyBlue1', 16, 0, 'bold'], ['black', 'RosyBrown1', 16, 0, 'bold'], ['white', 'SlateGray', 231, 0, 'bold'], ['black', 'LightSkyBlue1', 16, 0, 'bold']]
+  let s:p.insert.right = [s:p.insert.middle[0], ['black', 'RosyBrown1', 16, 0, 'bold'], ['white', 'SlateGray', 231, 0, 'bold'], ['black', 'LightSkyBlue1', 16, 0, 'bold']]
+  "let s:p.visual.middle = [['black', 'thistle3', 0, 0, 'bold']]
+  let s:p.visual.middle = [['white', 'darkslateblue', 231, 0, 'bold']]
+  let s:p.visual.middle = [['white', 'mediumpurple4', 231, 0, 'bold']]
+  let s:p.visual.middle = [['black', 'thistle2', 16, 0, 'bold']]
+  let s:p.visual.left = deepcopy(s:p.insert.left)
+  let s:p.visual.left[0] = s:p.visual.middle[0]
+  let s:p.visual.right = deepcopy(s:p.insert.right)
+  let s:p.visual.right[0] = s:p.visual.middle[0]
+  let s:p.tabline.middle = [['black', 'gray', 16, 0]]
+  let s:p.tabline.left = [['black', 'gray60', 16, 0]]
+  let s:p.tabline.tabsel = [['white', '#002451', 231, 17, 'underline']]
+  let s:p.tabline.right = [['black', 'Gray80', 16, 0], ['white', '#002451', 231, 17], ['black', 'DarkGray', 16, 0]]
+  let g:lightline#colorscheme#lclightline#palette = s:p
+  unlet s:p
 endif
 "}}}
 "--------------------------------------
@@ -1298,7 +1299,7 @@ endfunction
 "autocmd vimrc_colorscheme WinLeave * match CursorTrack /\%#/
 "autocmd vimrc_colorscheme WinEnter * match none
 "--------------------------------------
-" Window位置の保存と復帰 "{{{
+"Window位置の保存と復帰 "{{{
 if has('gui_running')
   if has('unix')
     let s:infofile = '~/.vim/.vimpos'
@@ -1334,6 +1335,15 @@ function! s:WinPosSizeSave(filename)"{{{
 endfunction
 "}}}
 "}}}
+"--------------------------------------
+"ファイルを開いたら前回のカーソル位置へ移動
+"autocmd vimrc BufReadPost *  if line("'\"")>1 && line("'\"")<=line('$') | exe 'norm! g`"' | endif
+aug vimrc
+  autocmd BufLeave * if expand('%')!='' && &buftype=='' | mkview | endif
+  autocmd BufReadPost * if !has_key(b:, 'view_loaded') && expand('%')!='' && &buftype==''
+    \ | silent! loadview | let b:view_loaded = 1 | endif
+  autocmd VimLeave * call map(split(glob(&viewdir . '/*'), "\n"),  'delete(v:val)')
+aug END
 
 "=========================================================
 "Commands
@@ -1379,8 +1389,6 @@ endfunction
 "}}}
 command! -nargs=* -complete=file -bang Rename :call <SID>rename("<args>", "<bang>")
 AlterCommand ren[ame] Rename
-"ファイルを開いたら前回のカーソル位置へ移動
-autocmd vimrc BufReadPost *  if line("'\"")>1 && line("'\"")<=line('$') | exe 'norm! g`"' | endif
 
 "=========================================================
 "Functions
@@ -1508,7 +1516,7 @@ inoremap <C-u> <C-g>u<C-u>
 "--------------------------------------
 "参照操作
 cnoremap <F1>   <C-u>h function-list<CR>
-nnoremap <F1>   :<C-u>h function-list<CR>
+nnoremap <expr><F1>   v:count==1 ? ":\<C-u>h :command-completion-custom\<CR>" : ":\<C-u>h function-list\<CR>"
 nnoremap <C-h>  :<C-u>h<Space>
 cnoremap <expr><C-h>    getcmdtype()==':' ? getcmdpos()==1 ? 'h ' : "\<C-h>" : "\<C-h>"
 cnoremap <expr><C-e>    getcmdtype()==':' ? getcmdline()=~'^\s*$\\|^h $' ? "<C-u>ec " : "\<C-e>" : "\<C-e>"
@@ -2136,12 +2144,6 @@ se vi+=n~/.viminfo  "viminfo file name (作成する場所)
 "--------------------------------------
 "views (カーソル位置などを復元)
 set viewdir=$VIMSYSTEM/viewdir viewoptions=folds,cursor,slash,unix
-"aug vimrc
-"  autocmd BufLeave * if expand('%') !=# '' && &buftype ==# '' | mkview | endif
-"  autocmd BufReadPost * if !exists('b:view_loaded') && expand('%')!='' && &buftype==''
-"    \ | silent! loadview | let b:view_loaded = 1 | endif
-"  autocmd VimLeave * call map(split(glob(&viewdir . '/*'), "\n"),  'delete(v:val)')
-"aug END
 
 "======================================
 "編集設定
