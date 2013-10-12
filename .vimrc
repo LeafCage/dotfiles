@@ -169,7 +169,7 @@ NeoBundle 'LeafCage/foldCC', {'stay_same': 1}
 NeoBundle 'tyru/current-func-info.vim'
 NeoBundleLazy 'sgur/vim-gitgutter', {'autoload': {'mappings': [['n', '<Plug>GitGutter']], 'commands': ['GitGutterAll', 'GitGutterToggle', 'GitGutterPrevHunk', 'GitGutterDisable', 'GitGutterLineHighlightsEnable', 'GitGutterNextHunk', 'GitGutterEnable', 'GitGutter', 'GitGutterLineHighlightsToggle', 'GitGutterLineHighlightsDisable']}}
 "NeoBundle 'LeafCage/win-shujuukankei.vim'
-NeoBundleLazy 'osyo-manga/vim-anzu', {'autoload': {'mappings': '<Plug>(anzu-'}} "検索Hit件数を表示する
+NeoBundle 'osyo-manga/vim-anzu', {'autoload': {'mappings': '<Plug>(anzu-'}} "検索Hit件数を表示する
 NeoBundleLazy 'tacroe/unite-mark', {'autoload': {'unite_sources': ['mark']}}
 NeoBundleLazy 'tsukkee/unite-tag', {'autoload': {'unite_sources' : ['tag']}}
 NeoBundleLazy 'tsukkee/unite-help', {'autoload': {'unite_sources' : ['help']}}
@@ -226,7 +226,7 @@ endfunction
 "Library
 let g:uptodate_filenamepatterns = ['lily.vim', 'lib/vimelements.vim']
 let g:uptodate_cellardir = $VIMFILES. '/bundle/LCLIB'
-autocmd vimrc FuncUndefined lib#*   exe 'source '. g:uptodate_cellardir. '/'. fnamemodify(expand('<afile>'), ':gs?#?/?:h'). '.vim'
+autocmd vimrc FuncUndefined lib#*   let _ = g:uptodate_cellardir. '/'. fnamemodify(expand('<afile>'), ':gs?#?/?:h'). '.vim' |if filereadable(_) |exe 'source ' _ | endif | unlet _
 if s:bundle_tap('vimproc') "{{{
   call s:bundle_config({'build': {'windows': 'make -f make_mingw32.mak', 'cygwin': 'make -f make_cygwin.mak',
     \ 'mac': 'make -f make_mac.mak', 'unix': 'make -f make_unix.mak',},})
@@ -240,6 +240,7 @@ if s:bundle_tap('unite.vim') " {{{
     \ 'UniteWithCursorWord', 'UniteWithInput']}})
   function! s:tapped_bundle.hooks.on_source(bundle)
     let g:unite_data_directory = $VIMSYSTEM. '/.unite'
+    let g:unite_cursor_line_highlight = 'Pmenu'
     let g:unite_split_rule = 'botright'  "窓の表示位置
     let g:unite_winheight = 20 "水平分割時の窓高さ
     let g:unite_enable_start_insert = 0
@@ -342,6 +343,7 @@ if s:bundle_tap('ctrlp.vim') " {{{
   let g:ctrlp_reuse_window = 'netrw\|help\|quickfix\|vimfiler\|unite\|vimshell'
   let g:ctrlp_root_markers = ['[root]']
   let g:ctrlp_open_new_file = 'h'
+  "let g:ctrlp_key_loop = 1
     let g:ctrlp_mruf_exclude = '' "mruに追跡したくないfile
   call s:bundle_untap()
 endif
@@ -529,7 +531,7 @@ if s:bundle_tap('vim-ref') "{{{
     "webdictサイトの設定
     let g:ref_source_webdict_sites = {}
     let g:ref_source_webdict_sites.je = {'url': 'http://dictionary.infoseek.ne.jp/jeword/%s',}
-    "let g:ref_source_webdict_sites.ej = {'url': 'http://dictionary.infoseek.ne.jp/ejword/%s',}
+    let g:ref_source_webdict_sites.ej = {'url': 'http://dictionary.infoseek.ne.jp/ejword/%s',}
     let g:ref_source_webdict_sites.alc = {'url': 'http://eow.alc.co.jp/%s', 'keyword_encoding': 'utf-8', 'cache': '0',}
     let g:ref_source_webdict_sites.kok = {'url': 'http://dictionary.infoseek.ne.jp/word/%s?dic=daijisen',}
     let g:ref_source_webdict_sites.wip = {'url': 'http://ja.wikipedia.org/wiki/%s',}
@@ -1099,10 +1101,11 @@ endif
 "}}}
 "--------------------------------------
 if s:bundle_tap('vim-anzu') "{{{
-  let g:anzu_status_format = '%p(%i/%l) %#WarningMsg#%w'
+  "let g:anzu_status_format = '%p(%i/%l) %#WarningMsg#%w'
+  let g:anzu_status_format = '%p(%i/%l)'
   let g:anzu_no_match_word = '%#ErrorMsg#E486: Pattern not found: %p'
-  nmap n <Plug>(anzu-n-with-echo)zv
-  nmap N <Plug>(anzu-N-with-echo)zv
+  nmap n  <Plug>(anzu-jump-n)<Plug>(anzu-update-search-status-with-echo)zv
+  nmap N  <Plug>(anzu-jump-N)<Plug>(anzu-update-search-status-with-echo)zv
   nmap * <Plug>(anzu-star-with-echo)Nzz
 endif
 "}}}
@@ -1145,9 +1148,9 @@ if s:bundle_tap('lightline.vim') "{{{
   endfunction
   "}}}
   function! StlCurrentFuncInfo() "{{{
-    try
+    if exists('*cfi#format')
       return cfi#format('%.43s()', '')
-    endtry
+    end
     return ''
   endfunction
   "}}}
@@ -1597,8 +1600,8 @@ nnoremap <silent>,0   :<C-u>let &ff = &ff=='dos' ? 'unix' : &ff=='unix' ? 'mac' 
 "Normal mode 編集
 nnoremap guu  gU
 "Normal modeで挿入
-nnoremap <silent>go :<C-u>call append(foldclosedend('.')==-1 ? '.': foldclosedend('.'), repeat([''], v:count1))<Bar>exe 'norm!' v:count1. 'j'<CR>
-nnoremap gO :i<CR><CR>.<CR>
+nnoremap <silent><C-j> :<C-u>call append(foldclosedend('.')==-1 ? '.': foldclosedend('.'), repeat([''], v:count1))<Bar>exe 'norm!' v:count1. 'j'<CR>
+nnoremap [C-k]<C-j> :i<CR><CR>.<CR>
 "空白を挿入する
 nnoremap [space]a a<Space><Esc>
 "nnoremap <C-Space> a<Space><Esc>
@@ -2047,8 +2050,7 @@ imap <M-Space>    <Tab><Tab>
 cnoremap <expr> <C-x> expand('%:p:h') . "/"
 cnoremap <expr> <C-z> expand('%:p:r')
 "cnoremap <expr><C-s>    getcmdtype()==':' ? getcmdpos()==1 ? 'set ' : "\<C-s>" : "\<C-s>"
-cnoreabb <expr>ss getcmdtype()==':' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 'ss'
-cnoreabb <expr>sg getcmdtype()==':' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 'sg'
+cnoreabb <expr>s// getcmdtype()==':' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's//'
 cnoremap <expr> / getcmdtype()=='/' ? '\/' : '/'
 cnoremap <expr> ? getcmdtype()=='?' ? '\?' : '?'
 "--------------------------------------
@@ -2103,6 +2105,8 @@ se wrap
 se fdm=marker cms=%s foldcolumn=3
 se showtabline=2
 se completeopt=menu,menuone,preview "補完
+"終了時エラー確認
+"set verbosefile=/tmp/vim.log
 
 "======================================
 "Backup
@@ -2442,8 +2446,6 @@ NeoBundleLazy 't9md/vim-unite-ack' "grepみたいなの
 
 
 
-"終了時エラー確認
-set verbosefile=/tmp/vim.log
 
 
 "=============================================================================
