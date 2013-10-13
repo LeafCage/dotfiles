@@ -3,7 +3,7 @@
 aug vimrc
   au!
 aug END
-let s:bind = {'win': 'm', 'markj': '[C-k]', 'reg': '[@]', 'mode': '<C-q>', 'esc': '<C-o>', 'snip': 's', 'sticky': '[C-k]'}
+let s:bind = {'win': 'm', 'markj': 'M', 'reg': '[@]', 'mode': '<C-q>', 'esc': '<C-o>', 'snip': 's', 'sticky': '[C-k]'}
 "--------------------------------------
 scriptencoding utf8 "このファイルのエンコード
 "BufRead時、'fileencodings'の先頭から'encoding'を試してerrが出なければそれを適用
@@ -14,6 +14,11 @@ set fileformats=dos,unix,mac
 
 
 
+"if !s:iswin
+  "set shell=zsh
+"else
+  "set shell=bash
+"endif
 
 "vimfiler
 let g:vimfiler_tree_leaf_icon = '├'
@@ -199,7 +204,6 @@ NeoBundleLazy 'thinca/vim-fontzoom', {'autoload': {'mappings': ['<Plug>(fontzoom
 "NeoBundle 'thinca/vim-localrc' "特定dir以下に.lvimrcを置くとdir以下のfileだけで設定反映
 NeoBundle 'savevers.vim'
 "--------------------------------------
-"filetype plugin indent on  "ファイル判定をonにする
 
 
 
@@ -1513,7 +1517,7 @@ noremap! <S-F16> <Nop>
 inoremap <M-j> <Nop>
 "--------------------------------------
 "インサートモードでの削除コマンドにundoを有効化させる
-inoremap <C-h> <C-g>u<C-h>
+inoremap <expr><C-h>  pumvisible() ? "\<C-h>" : "\<C-g>u\<C-h>"
 inoremap <C-u> <C-g>u<C-u>
 "inoremap <c-w> <c-g>u<c-w>
 "--------------------------------------
@@ -1792,7 +1796,7 @@ nmap cv <SID>c_window
 nnoremap <SID>c_window    :cw<CR>
 "--------------------------------------
 "Open the Particular Buf
-nnoremap <SID>o_vimrc :e $MYVIMRC_SUBSTANCEDIR/.vimrc<CR>
+nnoremap <SID>o_vimrc :e $MYVIMRC_SUBSTANCEDIR/.vimrc<CR>g`"
 nmap cov <SID>o_vimrc
 nnoremap <SID>o_gitconfig :e $DOTFILES/.gitconfig<CR>
 nmap cog <SID>o_gitconfig
@@ -1838,11 +1842,11 @@ endfunction
 nnoremap <silent> g/ :exe 'sign jump 333 buffer='.bufnr('%')<CR>
 "--------------------------------------
 "Moving
-noremap + ;
+noremap + *
 nnoremap g*   g*N
 noremap L $
 noremap <expr>H   col('.') == match(getline('.'), '^\s*\zs\S')+1 ? '0' : '^'
-noremap <silent>M   :<C-u>call <SID>smart_M('M')<CR>
+noremap <silent>`   :<C-u>call <SID>smart_M('M')<CR>
 function! s:smart_M(move) "{{{
   let s:smart_M_count = get(s:, 'smart_M_count', 0)
   let s:origin_view = s:smart_M_count==0 ? winsaveview() : get(s:, 'origin_view', winsaveview())
@@ -1863,8 +1867,8 @@ noremap [space]ge gE
 omap <C-w> iW
 "mark jump
 exe 'noremap '. s:bind.markj. ' `'
-exe 'noremap '. s:bind.markj. '@ ``'
-exe 'noremap '. s:bind.markj. '<C-k> `"'
+exe 'noremap '. s:bind.markj. '` ``'
+exe 'noremap '. s:bind.markj. '+ `"'
 "次の折り畳みに移動
 nnoremap <silent>zj :<C-u>call <SID>smart_foldjump('j')<CR>
 nnoremap <silent>zk :<C-u>call <SID>smart_foldjump('k')<CR>
@@ -2035,7 +2039,7 @@ inoremap <C-b>  <Esc><Plug>(smartword-b)i
 cnoremap <C-g> <S-Right>
 cnoremap <C-b> <S-Left>
 noremap! <C-a> <Home>
-inoremap <C-e> <End>
+inoremap <expr><C-e>  pumvisible() ? "\<C-e>" : "\<End>"
 "cnoremap <C-e> <End>
 "--------------------------------------
 "挿入バインド(Insert CommandLine)
