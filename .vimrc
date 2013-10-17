@@ -3,7 +3,7 @@
 aug vimrc
   au!
 aug END
-let s:bind = {'win': 'm', 'markj': 'M', 'reg': '[@]', 'mode': '<C-q>', 'esc': '<C-o>', 'snip': 's', 'sticky': '[C-k]'}
+let s:bind = {'win': 'm', 'markj': '`', 'reg': '[@]', 'mode': '<C-q>', 'esc': '<C-o>', 'snip': 's', 'sticky': '[C-k]'}
 "--------------------------------------
 scriptencoding utf8 "このファイルのエンコード
 "BufRead時、'fileencodings'の先頭から'encoding'を試してerrが出なければそれを適用
@@ -140,7 +140,7 @@ NeoBundleLazy 'kana/vim-smartword', {'autoload': {'mappings': ['<Plug>(smartword
 NeoBundle 'deton/jasegment.vim' "WBEを日本語文節区切り移動に
 NeoBundleLazy 'bkad/CamelCaseMotion', {'autoload': {'mappings': ['<Plug>CamelCaseMotion_']}}
 NeoBundleLazy 'deris/columnjump', {'autoload': {'mappings': ['<Plug>(columnjump-']}}
-"NeoBundle 'rhysd/clever-f.vim'
+NeoBundle 'rhysd/clever-f.vim'
 NeoBundleLazy 'thinca/vim-poslist', {'autoload': {'mappings': ['<Plug>(poslist-']}}
 NeoBundleLazy 'thinca/vim-visualstar', {'autoload': {'mappings': ['<Plug>(visualstar-']}}
 NeoBundleLazy 'https://github.com/vim-scripts/DrawIt.git' "図を描写する #Bible5-4
@@ -323,6 +323,7 @@ endif
 if s:bundle_tap('ctrlp.vim') " {{{
   call s:bundle_config({'autoload': {'commands': ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU', 'CtrlPLastMode', 'CtrlPRoot', 'CtrlPClearCache', 'CtrlPClearAllCaches']}})
   function! s:tapped_bundle.hooks.on_source(bundle)
+    nnoremap <S-Space> :
     let g:ctrlp_prompt_mappings = {}
     let g:ctrlp_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
     let g:ctrlp_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>']
@@ -331,6 +332,7 @@ if s:bundle_tap('ctrlp.vim') " {{{
     let g:ctrlp_prompt_mappings['ToggleType(-1)'] = ['<C-x>', '<C-down>']
     let g:ctrlp_prompt_mappings['AcceptSelection("h")'] = ['<C-CR>', '<C-s>']
     let g:ctrlp_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
+    let g:ctrlp_prompt_mappings['PrtInsert("r")'] = ['<S-Left>']
   endfunction
   autocmd vimrc CursorMoved ControlP  let w:lightline = 0
 
@@ -349,6 +351,31 @@ if s:bundle_tap('ctrlp.vim') " {{{
   let g:ctrlp_open_new_file = 'h'
   "let g:ctrlp_key_loop = 1
     let g:ctrlp_mruf_exclude = '' "mruに追跡したくないfile
+  call s:bundle_untap()
+endif
+"}}}
+"--------------------------------------
+if s:bundle_tap('dynacomp.vim') " {{{
+  function! s:tapped_bundle.hooks.on_source(bundle)
+    nnoremap <S-Space> :
+    let g:dynacomp_prompt_mappings = {}
+    let g:dynacomp_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
+    let g:dynacomp_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>']
+    let g:dynacomp_prompt_mappings['PrtCurRight()'] = ['<Right>', '<C-f>']
+    let g:dynacomp_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
+    let g:dynacomp_getreg_mappings = {}
+    let g:dynacomp_getreg_mappings['"'] = ['<C-e>']
+    let g:dynacomp_getreg_mappings['"'] = ['<C-y>']
+  endfunction
+
+  let g:dynacomp_cache_dir = $VIMSYSTEM. '/.dynacomp'
+  "let g:dynacomp_max_files = 1000
+  "let g:dynacomp_use_migemo = 1
+  "let g:dynacomp_show_hidden = 1
+  "let g:dynacomp_switch_buffer = 'Et'
+  "let g:dynacomp_reuse_window = 'netrw\|help\|quickfix\|vimfiler\|unite\|vimshell'
+  "let g:dynacomp_root_markers = ['[root]']
+  "let g:dynacomp_open_new_file = 'h'
   call s:bundle_untap()
 endif
 "}}}
@@ -927,6 +954,14 @@ if s:bundle_tap('columnjump') "{{{
 endif
 "}}}
 "--------------------------------------
+if s:bundle_tap('clever-f') "{{{
+  let g:clever_f_smart_case = 1
+  let g:clever_f_use_migemo = 1
+  let g:clever_f_show_prompt = 1
+  let g:clever_f_chars_match_any_signs = ';'
+endif
+"}}}
+"--------------------------------------
 if s:bundle_tap('vim-poslist') "{{{
   call s:bundle_config({})
   function! s:tapped_bundle.hooks.on_source(bundle)
@@ -939,7 +974,7 @@ endif
 if s:bundle_tap('vim-visualstar') "{{{
   noremap <SID>put_searchstart_sign  :<C-u>call <SID>put_searchstart_sign(0)<CR>
   "nmap <silent>* <Plug>(visualstar-*)N<SID>put_searchstart_sign
-  vmap <silent>* <Plug>(visualstar-*)N<SID>put_searchstart_sign
+  vmap <silent>*  <SID>put_searchstart_sign<Plug>(visualstar-*)N
   "map # <Plug>(visualstar-#)N:<C-u>sign unplace 333<CR>
 endif
 "}}}
@@ -1268,10 +1303,11 @@ autocmd vimrc FileType vim   setl ff=unix
 "--------------------------------------
 "au_keymappings
 autocmd vimrc FileType help   nnoremap <buffer><expr>q winnr('$')==1 ? ":\<C-u>bd\<CR>" : "\<C-w>c"
-autocmd vimrc FileType vim    inoremap <expr><buffer>\
-  \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
+autocmd vimrc BufWinEnter option-window   nnoremap <buffer><expr>q winnr('$')==1 ? ":\<C-u>bd\<CR>" : "\<C-w>c"
 autocmd vimrc FileType qf  noremap <buffer>q    :cclose<CR>
 autocmd vimrc FileType qf  noremap <buffer><CR>    :.cc<CR>
+autocmd vimrc FileType vim    inoremap <expr><buffer>\
+  \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
 autocmd vimrc FileType java  inoremap <expr><C-q>    <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
 function! s:IsEndSemicolon() "{{{
   let c = getline(".")[col("$")-2]
@@ -1355,6 +1391,7 @@ aug END
 "=========================================================
 "Commands
 command! -nargs=*   VimElements    UPP lib#vimelements#collect(<f-args>)
+command! Hitest    silent! source $VIMRUNTIME/syntax/hitest.vim
 "Vim script計測
 command! -bar TimerStart let start_time = reltime()
 command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
@@ -1593,7 +1630,6 @@ vnoremap <expr>j mode()==#'V' ? 'j' : 'gj'|vnoremap <expr>k mode()==#'V' ? 'k' :
 nnoremap <expr>l  foldclosed('.') != -1 ? 'zo' : 'l'
 noremap zq q
 noremap z@ @
-map + *
 nnoremap : ;
 nnoremap <silent>,w :<C-u>up<CR>
 nnoremap ,qu :<C-u>qa<CR>
@@ -1842,11 +1878,11 @@ endfunction
 nnoremap <silent> g/ :exe 'sign jump 333 buffer='.bufnr('%')<CR>
 "--------------------------------------
 "Moving
-noremap + *
+nmap + *
 nnoremap g*   g*N
 noremap L $
 noremap <expr>H   col('.') == match(getline('.'), '^\s*\zs\S')+1 ? '0' : '^'
-noremap <silent>`   :<C-u>call <SID>smart_M('M')<CR>
+noremap <silent>M   :<C-u>call <SID>smart_M('M')<CR>
 function! s:smart_M(move) "{{{
   let s:smart_M_count = get(s:, 'smart_M_count', 0)
   let s:origin_view = s:smart_M_count==0 ? winsaveview() : get(s:, 'origin_view', winsaveview())
@@ -2047,7 +2083,8 @@ inoremap <C-r><C-e> <C-r>"
 cnoremap <C-r><C-e>   <C-r>=substitute(substitute(@", '\n$', '', ''), '\n', '<Bar> ', 'g')<CR>
 noremap! <C-r><C-f> <C-r>=expand('%:t')<CR>
 inoremap <S-C-Tab> <C-d>
-inoremap <C-r><C-t> <C-d>
+inoremap <C-r><C-t> 0<C-d>
+inoremap <C-r><C-d> <C-d>
 inoremap <C-x><C-a> <C-a>
 inoremap <expr><C-Tab>  &et ? "\<C-v>\<C-i>" : repeat(' ', &sts ? &sts : &ts)
 imap <M-Space>    <Tab><Tab>
