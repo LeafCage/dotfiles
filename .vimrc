@@ -90,6 +90,7 @@ NeoBundleLazy 'osyo-manga/vim-gift'
 "Synthesis
 NeoBundleLazy 'Shougo/unite.vim'
 NeoBundleLazy 'kien/ctrlp.vim',
+NeoBundle 'LeafCage/dynacomp.vim'
 NeoBundleLazy 'Shougo/vimshell'
 NeoBundleLazy 'Shougo/vimfiler'
 "--------------------------------------
@@ -108,10 +109,12 @@ NeoBundleLazy 'kannokanno/vmock'
 NeoBundleLazy 'LeafCage/laptime.vim', {'stay_same': 1}
 NeoBundleLazy 'h1mesuke/vim-benchmark'
 NeoBundleLazy 'LeafCage/vimhelpgenerator'
+NeoBundleLazy 'rhysd/conflict-marker.vim', {'autoload': {'unite_sources': ['conflict'], 'mappings': [['n', '<Plug>(conflict-marker-']], 'commands': ['ConflictMarkerBoth', 'ConflictMarkerThemselves', 'ConflictMarkerOurselves', 'ConflictMarkerNextHunk', 'ConflictMarkerPrevHunk', 'ConflictMarkerNone']}}
 "NeoBundleLazy 'gregsexton/gitv' "vim版Gitk()
 NeoBundleLazy 'cocoa.vim' "Objective-C
 NeoBundleLazy 'javacomplete'
 NeoBundleLazy 'Javascript-OmniCompletion-with-YUI-and-j'
+
 "NeoBundle 'mikelue/vim-maven-plugin' "Apache Maven project
 "NeoBundle 'groovy.vim'
 "NeoBundle 'derekwyatt/vim-scala'
@@ -334,13 +337,21 @@ if s:bundle_tap('ctrlp.vim') " {{{
     let g:ctrlp_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
     let g:ctrlp_prompt_mappings['PrtInsert("r")'] = ['<S-Left>']
   endfunction
-  autocmd vimrc CursorMoved ControlP  let w:lightline = 0
 
   nnoremap <silent>,cf :<C-u>CtrlP<CR>
   nnoremap <silent>,cb :<C-u>CtrlPBuffer<CR>
   nnoremap <silent>,cm :<C-u>CtrlPMRU<CR>
+  nmap <C-p> [ctrlp]
+  nnoremap <silent>[ctrlp]f :<C-u>CtrlP<CR>
+  nnoremap <silent>[ctrlp]b :<C-u>CtrlPBuffer<CR>
+  nnoremap <silent>[ctrlp]m :<C-u>CtrlPMRU<CR>
   "nnoremap <silent>[C-k]<C-p> :<C-u>CtrlPBuffer<CR>
   "nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
+  "autocmd vimrc CursorMoved ControlP  let w:lightline = 0
+  let g:ctrlp_buffer_func = {'enter': 'CtrlPEnter'}
+  function! CtrlPEnter()
+    let w:lightline = 0
+  endfunction
   let g:ctrlp_cache_dir = $VIMSYSTEM. '/.ctrlp'
   let g:ctrlp_max_files = 1000
   let g:ctrlp_use_migemo = 1
@@ -363,9 +374,12 @@ if s:bundle_tap('dynacomp.vim') " {{{
     let g:dynacomp_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>']
     let g:dynacomp_prompt_mappings['PrtCurRight()'] = ['<Right>', '<C-f>']
     let g:dynacomp_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
+    let g:dynacomp_prompt_mappings['PrtSelectInsert()'] = ['<C-l>', '<C-v>', '<C-y>']
+    "let g:dynacomp_prompt_mappings['PrtPageNext()'] = ['<C-v>']
+    "let g:dynacomp_prompt_mappings['PrtPagePrevious()'] = ['<C-y>']
     let g:dynacomp_getreg_mappings = {}
     let g:dynacomp_getreg_mappings['"'] = ['<C-e>']
-    let g:dynacomp_getreg_mappings['"'] = ['<C-y>']
+    let g:dynacomp_getreg_mappings['*'] = ['<C-y>']
   endfunction
 
   let g:dynacomp_cache_dir = $VIMSYSTEM. '/.dynacomp'
@@ -955,6 +969,7 @@ endif
 "}}}
 "--------------------------------------
 if s:bundle_tap('clever-f') "{{{
+  let g:clever_f_ignore_case = 1
   let g:clever_f_smart_case = 1
   let g:clever_f_use_migemo = 1
   let g:clever_f_show_prompt = 1
@@ -974,7 +989,8 @@ endif
 if s:bundle_tap('vim-visualstar') "{{{
   noremap <SID>put_searchstart_sign  :<C-u>call <SID>put_searchstart_sign(0)<CR>
   "nmap <silent>* <Plug>(visualstar-*)N<SID>put_searchstart_sign
-  vmap <silent>*  <SID>put_searchstart_sign<Plug>(visualstar-*)N
+  "vmap <silent>*  <SID>put_searchstart_sign<Plug>(visualstar-*)N
+  vmap <silent>*  <Plug>(visualstar-*)N
   "map # <Plug>(visualstar-#)N:<C-u>sign unplace 333<CR>
 endif
 "}}}
