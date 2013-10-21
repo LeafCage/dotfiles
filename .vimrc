@@ -65,7 +65,7 @@ let $DOTFILES = $HOME. '/box/dotfiles'
 "vim関係のpath
 let $BASEDIR = exists('$BASEDIR') ? $BASEDIR : expand($HOME . '/box')
 let $MYVIMRC_SUBSTANCEDIR = $BASEDIR. '/dotfiles/vim'
-let $VIMSYSTEM = $HOME. '/.vimsystem'
+let $VIMCACHE = $HOME. '/.cache/vim'
 let $VIMUSERDIR = $BASEDIR. '/vimuser'
 if has('vim_starting')
   let $VIMFILES = isdirectory(expand('$BASEDIR/vimfiles')) ? $BASEDIR. '/vimfiles' : isdirectory(expand('$HOME/vimfiles')) ? $HOME. '/vimfiles' : $VIM. '/vimfiles'
@@ -90,7 +90,7 @@ NeoBundleLazy 'osyo-manga/vim-gift'
 "Synthesis
 NeoBundleLazy 'Shougo/unite.vim'
 NeoBundleLazy 'kien/ctrlp.vim',
-NeoBundle 'LeafCage/dynacomp.vim'
+NeoBundle 'LeafCage/alti.vim'
 NeoBundleLazy 'Shougo/vimshell'
 NeoBundleLazy 'Shougo/vimfiler'
 "--------------------------------------
@@ -246,7 +246,7 @@ if s:bundle_tap('unite.vim') " {{{
   call s:bundle_config({'autoload': {'commands': [{'name': 'Unite', 'complete': 'customlist,unite#complete_source'},
     \ 'UniteWithCursorWord', 'UniteWithInput']}})
   function! s:tapped_bundle.hooks.on_source(bundle)
-    let g:unite_data_directory = $VIMSYSTEM. '/.unite'
+    let g:unite_data_directory = $VIMCACHE. '/.unite'
     let g:unite_cursor_line_highlight = 'Pmenu'
     let g:unite_split_rule = 'botright'  "窓の表示位置
     let g:unite_winheight = 20 "水平分割時の窓高さ
@@ -341,10 +341,7 @@ if s:bundle_tap('ctrlp.vim') " {{{
   nnoremap <silent>,cf :<C-u>CtrlP<CR>
   nnoremap <silent>,cb :<C-u>CtrlPBuffer<CR>
   nnoremap <silent>,cm :<C-u>CtrlPMRU<CR>
-  nmap <C-p> [ctrlp]
-  nnoremap <silent>[ctrlp]f :<C-u>CtrlP<CR>
-  nnoremap <silent>[ctrlp]b :<C-u>CtrlPBuffer<CR>
-  nnoremap <silent>[ctrlp]m :<C-u>CtrlPMRU<CR>
+  nnoremap <silent><C-p> :<C-u>CtrlP<CR>
   "nnoremap <silent>[C-k]<C-p> :<C-u>CtrlPBuffer<CR>
   "nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
   "autocmd vimrc CursorMoved ControlP  let w:lightline = 0
@@ -352,7 +349,7 @@ if s:bundle_tap('ctrlp.vim') " {{{
   function! CtrlPEnter()
     let w:lightline = 0
   endfunction
-  let g:ctrlp_cache_dir = $VIMSYSTEM. '/.ctrlp'
+  let g:ctrlp_cache_dir = $VIMCACHE. '/ctrlp'
   let g:ctrlp_max_files = 1000
   let g:ctrlp_use_migemo = 1
   let g:ctrlp_show_hidden = 1
@@ -366,30 +363,30 @@ if s:bundle_tap('ctrlp.vim') " {{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('dynacomp.vim') " {{{
+if s:bundle_tap('alti.vim') " {{{
   function! s:tapped_bundle.hooks.on_source(bundle)
-    nnoremap <S-Space> :
-    let g:dynacomp_prompt_mappings = {}
-    let g:dynacomp_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
-    let g:dynacomp_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>']
-    let g:dynacomp_prompt_mappings['PrtCurRight()'] = ['<Right>', '<C-f>']
-    let g:dynacomp_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
-    let g:dynacomp_prompt_mappings['PrtSelectInsert()'] = ['<C-l>', '<C-v>', '<C-y>']
-    "let g:dynacomp_prompt_mappings['PrtPageNext()'] = ['<C-v>']
-    "let g:dynacomp_prompt_mappings['PrtPagePrevious()'] = ['<C-y>']
-    let g:dynacomp_getreg_mappings = {}
-    let g:dynacomp_getreg_mappings['"'] = ['<C-e>']
-    let g:dynacomp_getreg_mappings['*'] = ['<C-y>']
+    "nnoremap <S-Space> :
+    let g:alti_prompt_mappings = {}
+    let g:alti_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
+    let g:alti_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>']
+    let g:alti_prompt_mappings['PrtCurRight()'] = ['<Right>', '<C-f>']
+    let g:alti_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
+    let g:alti_prompt_mappings['PrtSelectInsert()'] = ['<Tab>']
+    let g:alti_prompt_mappings['PrtPageNext()'] = ['<C-v>']
+    let g:alti_prompt_mappings['PrtPagePrevious()'] = ['<C-y>', '<C-l>', '<C-o>']
+    let g:alti_getreg_mappings = {}
+    let g:alti_getreg_mappings['"'] = ['<C-e>']
+    let g:alti_getreg_mappings['*'] = ['<C-y>']
   endfunction
 
-  let g:dynacomp_cache_dir = $VIMSYSTEM. '/.dynacomp'
-  "let g:dynacomp_max_files = 1000
-  "let g:dynacomp_use_migemo = 1
-  "let g:dynacomp_show_hidden = 1
-  "let g:dynacomp_switch_buffer = 'Et'
-  "let g:dynacomp_reuse_window = 'netrw\|help\|quickfix\|vimfiler\|unite\|vimshell'
-  "let g:dynacomp_root_markers = ['[root]']
-  "let g:dynacomp_open_new_file = 'h'
+  let g:alti_cache_dir = $VIMCACHE. '/alti'
+  "let g:alti_max_files = 1000
+  "let g:alti_use_migemo = 1
+  "let g:alti_show_hidden = 1
+  "let g:alti_switch_buffer = 'Et'
+  "let g:alti_reuse_window = 'netrw\|help\|quickfix\|vimfiler\|unite\|vimshell'
+  "let g:alti_root_markers = ['[root]']
+  "let g:alti_open_new_file = 'h'
   call s:bundle_untap()
 endif
 "}}}
@@ -399,7 +396,7 @@ if s:bundle_tap('vimshell') " {{{
     \ 'VimShellExecute', 'VimShellInteractive', 'VimShellTerminal', 'VimShellPop', 'VimShellTab'],
     \ 'mappings': ['<Plug>(vimshell_']}})
   function! s:tapped_bundle.hooks.on_source(bundle)
-    let g:vimshell_temporary_directory = $VIMSYSTEM. '/.vimshell'
+    let g:vimshell_temporary_directory = $VIMCACHE. '/.vimshell'
     let g:vimshell_vimshrc_path = $VIMUSERDIR. '/.vimshrc'
     let g:vimshell_split_command = '8split'
     let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")' "ユーザプロンプトにカレントディレクトリを表示
@@ -445,7 +442,7 @@ if s:bundle_tap('vimfiler') "{{{
     \ {'name': 'Edit', 'complete': 'customlist,vimfiler#complete'},
     \ {'name': 'Write', 'complete': 'customlist,vimfiler#complete' }, 'Read', 'Source'],
     \ 'mappings': ['<Plug>(vimfiler_'], 'explorer': 1,}})
-  let g:vimfiler_data_directory = $VIMSYSTEM. '/.vimfiler'
+  let g:vimfiler_data_directory = $VIMCACHE. '/.vimfiler'
   let g:vimfiler_as_default_explorer = 1
   let g:unite_kind_file_use_trashbox = 1
   let g:vimfiler_safe_mode_by_default = 0
@@ -568,7 +565,7 @@ if s:bundle_tap('vim-ref') "{{{
   call s:bundle_config({'autoload': {'commands': [{'name': 'Ref', 'complete': 'customlist,ref#complete'}, 'RefHistory'],
     \ 'mappings': ['<Plug>(ref-']}})
   function! s:tapped_bundle.hooks.on_source(bundle)
-    let g:ref_cache_dir = $VIMSYSTEM. '/.vim_ref_cache'
+    let g:ref_cache_dir = $VIMCACHE. '/.vim_ref_cache'
     let g:ref_phpmanual_path = 'D:/dic/vim-ref/php-chunked-xhtml'
     let g:ref_javadoc_path = 'D:/dic/vim-ref/java6api'
     let g:ref_javadoc_cmd = 'lynx -dump -width=120 -nonumbers %s'
@@ -613,7 +610,7 @@ if s:bundle_tap('J6uil.vim') "{{{
   function! s:tapped_bundle.hooks.on_source(bundle)
     autocmd FileType J6uil  :call s:J6uil_settings(expand('<abuf>'))
     autocmd FileType J6uil_say  :nunmap <buffer><C-j>| nmap <silent><buffer>q   :<C-u>bd!<CR>
-    let g:J6uil_config_dir = $VIMSYSTEM. '/.J6uil'
+    let g:J6uil_config_dir = $VIMCACHE. '/.J6uil'
   endfunction
   function! s:J6uil_settings(bufnr)
     nmap <silent><buffer>q   :<C-u>bd!<CR>
@@ -677,7 +674,7 @@ endif
 if s:bundle_tap('neocomplecache') "{{{
   call s:bundle_config({'autoload': 'insert': 1})
   function! s:tapped_bundle.hooks.on_source(bundle)
-    let g:neocomplcache_temporary_dir = $VIMSYSTEM. '/.neocon'
+    let g:neocomplcache_temporary_dir = $VIMCACHE. '/.neocon'
     let g:neocomplcache_dictionary_filetype_lists = {}
     let g:neocomplcache_dictionary_filetype_lists.default = ''
     let g:neocomplcache_dictionary_filetype_lists.vim = $VIMUSERDIR. '/.neocon_dict/vim.dict'
@@ -1181,7 +1178,7 @@ endif
 if s:bundle_tap('lightline.vim') "{{{
   command! -bar LightlineUpdate    call lightline#init()| call lightline#colorscheme()| call lightline#update()
   let g:lightline = {'subseparator': {'left': '', 'right': ''}, 'tabline_subseparator': {'left': '|', 'right': ''}}
-  let g:lightline.tabline = {'right': [['rows'], ['cd'], ['fugitive', 'tabstop']]}
+  let g:lightline.tabline = {'right': [['rows'], ['cd'], ['tabopts'], ['fugitive']]}
   let g:lightline.tab = {'active': ['prefix', 'filename']}
   let g:lightline.tab.inactive = g:lightline.tab.active
   let g:lightline.active = {}
@@ -1191,13 +1188,15 @@ if s:bundle_tap('lightline.vim') "{{{
   let g:lightline.inactive.left = [['winbufnum'], ['dir'], ['filename'], ['filetype', 'readonly', 'modified']]
   let g:lightline.inactive.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding']]
 
-  let g:lightline.component = {'dir': '%.35(%{expand("%:h:s?\\S$?\\0/?")}%)', 'winbufnum': '%n%{repeat(",", winnr())}%<', 'rows': '%L', 'cd': '%.35(%{fnamemodify(getcwd(), ":~")}%)','tabstop': '%{&et?"et":""}%{&ts}:%{&sw}:%{&sts},%{&tw}', 'lineinfo': '%3l:%-3v'}
+  let g:lightline.component = {'dir': '%.35(%{expand("%:h:s?\\S$?\\0/?")}%)', 'winbufnum': '%n%{repeat(",", winnr())}%<', 'rows': '%L', 'cd': '%.35(%{fnamemodify(getcwd(), ":~")}%)','tabopts': '%{&et?"et":""}%{&ts}:%{&sw}:%{&sts},%{&tw}', 'lineinfo': '%3l:%-3v'}
   let g:lightline.component_function = {'fugitive': 'StlFugitive', 'cfi': 'StlCurrentFuncInfo', 'currentfuncrow': 'StlCurrentFuncRow', 'anzu': 'anzu#search_status'}
   function! StlFugitive() "{{{
     try
       if &ft !~? 'vimfiler\|gundo' && exists('*fugitive#head')
         return fugitive#head()
       endif
+    catch
+      return ''
     endtry
     return ''
   endfunction
@@ -1210,6 +1209,9 @@ if s:bundle_tap('lightline.vim') "{{{
   endfunction
   "}}}
   function! StlCurrentFuncRow() "{{{
+    if &ft != 'vim'
+      return ''
+    end
     let funcbgn = search('^\s*\<fu\%[nction]\>', 'bcnW', search('^\s*\<endf\%[unction]\>', 'bcnW'))
     if funcbgn > 0
       let row = line('.') - funcbgn
@@ -1239,10 +1241,12 @@ if s:bundle_tap('lightline.vim') "{{{
   "}}}
 
   let g:lightline.colorscheme = 'lclightline'
-  let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'visual': {}, 'tabline': {}}
-  let s:p.inactive.middle = [['black', 'Gray80', 16, 0]]
-  let s:p.inactive.left = [s:p.inactive.middle[0], ['black', 'azure', 16, 0], ['black', 'MistyRose', 16, 0], ['white', 'SlateGray', 231, 0], ['black', 'azure', 16, 0]]
-  let s:p.inactive.right = [['black', 'NavajoWhite1', 16, 0], ['black', 'MistyRose', 16, 0], ['white', 'SlateGray', 231, 0], ['black', 'azure', 16, 0]]
+  let s:p = {'inactive': {}, 'normal': {}, 'insert': {}, 'visual': {}, 'tabline': {}}
+  let s:STL_BASECOLOR = ['black', 'Gray80', 16, 0]
+  let s:STL_ATTRIBUTECOLOR = ['white', 'SlateGray', 231, 0]
+  let s:p.inactive.middle = [s:STL_BASECOLOR]
+  let s:p.inactive.left = [s:STL_BASECOLOR, ['black', 'azure', 16, 0], ['black', 'MistyRose', 16, 0], s:STL_ATTRIBUTECOLOR, ['black', 'azure', 16, 0]]
+  let s:p.inactive.right = [['black', 'NavajoWhite1', 16, 0], ['black', 'MistyRose', 16, 0], s:STL_ATTRIBUTECOLOR, ['black', 'azure', 16, 0]]
   let s:p.normal.middle = s:p.inactive.middle
   let s:p.normal.left = map(deepcopy(s:p.inactive.left), 'extend(v:val, ["bold"])')
   let s:p.normal.right = map(deepcopy(s:p.inactive.right), 'extend(v:val, ["bold"])')
@@ -1260,9 +1264,9 @@ if s:bundle_tap('lightline.vim') "{{{
   let s:p.tabline.middle = [['black', 'gray', 16, 0]]
   let s:p.tabline.left = [['black', 'gray60', 16, 0]]
   let s:p.tabline.tabsel = [['white', '#002451', 231, 17, 'underline']]
-  let s:p.tabline.right = [['black', 'Gray80', 16, 0], ['white', '#002451', 231, 17], ['black', 'DarkGray', 16, 0]]
+  let s:p.tabline.right = [['black', 'Gray80', 16, 0], ['white', '#002451', 231, 17], ['black', 'DarkGray', 16, 0], s:STL_ATTRIBUTECOLOR]
   let g:lightline#colorscheme#lclightline#palette = s:p
-  unlet s:p
+  unlet s:p s:STL_BASECOLOR s:STL_ATTRIBUTECOLOR
 endif
 "}}}
 "--------------------------------------
@@ -1300,6 +1304,12 @@ if filereadable(fnamemodify('~/.privacy/.vimrc_privacy.vim', ':p'))
   source ~/.privacy/.vimrc_privacy.vim  "lingr.vimのパスワードとか
 endif
 
+let g:backdraft_buffer_func = {'enterdraft': 'BackdraftEnterDraft'}
+function! BackdraftEnterDraft() "{{{
+    nmap <buffer>[space]l <Plug>(backdraft_cycle_inc)
+    nmap <buffer>[space]h <Plug>(backdraft_cycle_dec)
+endfunction
+"}}}
 
 
 "=========================================================
@@ -1412,8 +1422,7 @@ command! Hitest    silent! source $VIMRUNTIME/syntax/hitest.vim
 command! -bar TimerStart let start_time = reltime()
 command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
 "plugin撮影用にウィンドウのサイズを一時的に変更する
-command! GuiWinShorten     set lines=30 columns=100
-command! GuiWinRest        set lines=40 columns=140
+command! GuiWin     exe &lines>30 ? 'set lines=30 columns=100' : 'set lines=40 columns=140'
 "パターンとファイル名を逆にしたgrep
 function! s:perg(args)
   execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2])
@@ -1868,8 +1877,9 @@ function! s:get_fileinfo() "{{{
   return ret
 endfunction
 "}}}
-nnoremap mz :mes<CR>
-nnoremap mc :scrip<CR>
+nnoremap mz :<C-u>mes<CR>
+nnoremap mg :<C-u>ec v:errmsg<CR>
+nnoremap mc :<C-u>scrip<CR>
 "nnoremap ma :marks<CR>
 "nnoremap ma :<C-u>Unite mark<CR>
 "検索ハイライト
@@ -2107,7 +2117,9 @@ imap <M-Space>    <Tab><Tab>
 cnoremap <expr> <C-x> expand('%:p:h') . "/"
 cnoremap <expr> <C-z> expand('%:p:r')
 "cnoremap <expr><C-s>    getcmdtype()==':' ? getcmdpos()==1 ? 'set ' : "\<C-s>" : "\<C-s>"
-cnoreabb <expr>s// getcmdtype()==':' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's//'
+cnoreabb <expr>s// getcmdtype()==':' && getcmdline()=~'^s//' ? '%s/\C<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's//'
+cnoreabb <expr>ss getcmdtype()==':' && getcmdline()=~'^ss' ? '%s/\C<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 'ss'
+cnoreabb <expr>ss/ getcmdtype()==':' && getcmdline()=~'^ss/' ? '%s/\C<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 'ss/'
 cnoremap <expr> / getcmdtype()=='/' ? '\/' : '/'
 cnoremap <expr> ? getcmdtype()=='?' ? '\?' : '?'
 "--------------------------------------
@@ -2176,10 +2188,10 @@ se bdir=/tmp/auBcu/,$TEMP,$TMP,.
 "--------------------------------------
 "swapfile
 se swf
-if !isdirectory($VIMSYSTEM. '/vimswap')
-  call mkdir($VIMSYSTEM. '/vimswap', 'p')
+if !isdirectory($VIMCACHE. '/vimswap')
+  call mkdir($VIMCACHE. '/vimswap', 'p')
 endif
-se dir=$VIMSYSTEM/vimswap,.
+se dir=$VIMCACHE/vimswap,.
 for s:dir in split(&dir, ',')[:-2]
   if !isdirectory(s:dir)
     call mkdir(s:dir, "p")
@@ -2204,7 +2216,7 @@ se vi+=ra:,rb:  "removable mediaの指定 (mark履歴対象外にする)
 se vi+=n~/.viminfo  "viminfo file name (作成する場所)
 "--------------------------------------
 "views (カーソル位置などを復元)
-set viewdir=$VIMSYSTEM/viewdir viewoptions=folds,cursor,slash,unix
+set viewdir=$VIMCACHE/viewdir viewoptions=folds,cursor,slash,unix
 
 "======================================
 "編集設定
@@ -2379,7 +2391,6 @@ endif
 
 "=============================================================================
 "=============================================================================
-
 
 
 
