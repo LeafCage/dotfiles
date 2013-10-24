@@ -134,6 +134,7 @@ NeoBundleLazy 'thinca/vim-textobj-plugins', {'depends': 'kana/vim-textobj-user',
 NeoBundleLazy 'anyakichi/vim-textobj-xbrackets', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-xbrackets']}}
 NeoBundleLazy 'sgur/vim-textobj-parameter', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-parameter']}}
 NeoBundleLazy 'osyo-manga/vim-textobj-multiblock', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-multiblock']}}
+NeoBundleLazy 'deris/vim-rengbang', {'autoload': {'mappings': [['nx', '<Plug>(operator-rengbang']], 'commands': ['RengBang', 'RengBangUsePrev']}}
 NeoBundleLazy 'anyakichi/vim-surround'
 NeoBundleLazy 'supermomonga/unite-sudden-death', {'autoload': {'unite_sources': ['suddendeath']}}
 NeoBundleLazy 'LeafCage/unite-recording', {'stay_same': 1}
@@ -143,7 +144,7 @@ NeoBundleLazy 'kana/vim-smartword', {'autoload': {'mappings': ['<Plug>(smartword
 NeoBundle 'deton/jasegment.vim' "WBEを日本語文節区切り移動に
 NeoBundleLazy 'bkad/CamelCaseMotion', {'autoload': {'mappings': ['<Plug>CamelCaseMotion_']}}
 NeoBundleLazy 'deris/columnjump', {'autoload': {'mappings': ['<Plug>(columnjump-']}}
-NeoBundle 'rhysd/clever-f.vim'
+NeoBundleLazy 'rhysd/clever-f.vim', {'autoload': {'mappings': [['sxno', '<Plug>(clever-f-']]}}
 NeoBundleLazy 'thinca/vim-poslist', {'autoload': {'mappings': ['<Plug>(poslist-']}}
 NeoBundleLazy 'thinca/vim-visualstar', {'autoload': {'mappings': ['<Plug>(visualstar-']}}
 NeoBundleLazy 'https://github.com/vim-scripts/DrawIt.git' "図を描写する #Bible5-4
@@ -342,6 +343,7 @@ if s:bundle_tap('ctrlp.vim') " {{{
   nnoremap <silent>,cb :<C-u>CtrlPBuffer<CR>
   nnoremap <silent>,cm :<C-u>CtrlPMRU<CR>
   nnoremap <silent><C-p> :<C-u>CtrlP<CR>
+  nnoremap <silent>m<C-p> :<C-u>CtrlPMRU<CR>
   "nnoremap <silent>[C-k]<C-p> :<C-u>CtrlPBuffer<CR>
   "nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
   "autocmd vimrc CursorMoved ControlP  let w:lightline = 0
@@ -965,12 +967,17 @@ if s:bundle_tap('columnjump') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('clever-f') "{{{
+if s:bundle_tap('clever-f.vim') "{{{
   let g:clever_f_ignore_case = 1
   let g:clever_f_smart_case = 1
   let g:clever_f_use_migemo = 1
   let g:clever_f_show_prompt = 1
   let g:clever_f_chars_match_any_signs = ';'
+  let g:clever_f_not_overwrites_standard_mappings = 1
+  map f <Plug>(clever-f-f)
+  map F <Plug>(clever-f-F)
+  map t <Plug>(clever-f-t)
+  map T <Plug>(clever-f-T)
 endif
 "}}}
 "--------------------------------------
@@ -1101,7 +1108,7 @@ if s:bundle_tap('vim-altercmd') "{{{
   AlterCommand nbu  Unite neobundle/update<C-r>=Eat_whitespace('\s')<CR>
   AlterCommand nbl[g]   Unite neobundle/log
   AlterCommand nbus   Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neosnippet
-  AlterCommand nbum   Unite neobundle/install:vim-quickrun:vital.vim:open-browser.vim:vim-submode:vim-surround:vimtest:vim-fugitive:vim-anzu:lightline.vim
+  AlterCommand nbum   Unite neobundle/install:vim-quickrun:vital.vim:open-browser.vim:vim-submode:vim-surround:vimtest:vim-fugitive:vim-anzu:lightline.vim:clever-f.vim
   AlterCommand nbls NeoBundleList
   AlterCommand nbc NeoBundleClean
   command! -nargs=0 NeoBundleUpdateShougo
@@ -1304,7 +1311,7 @@ if filereadable(fnamemodify('~/.privacy/.vimrc_privacy.vim', ':p'))
   source ~/.privacy/.vimrc_privacy.vim  "lingr.vimのパスワードとか
 endif
 
-let g:backdraft_buffer_func = {'enterdraft': 'BackdraftEnterDraft'}
+"let g:backdraft_buffer_func = {'enterdraft': 'BackdraftEnterDraft'}
 function! BackdraftEnterDraft() "{{{
     nmap <buffer>[space]l <Plug>(backdraft_cycle_inc)
     nmap <buffer>[space]h <Plug>(backdraft_cycle_dec)
