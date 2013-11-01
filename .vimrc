@@ -124,6 +124,7 @@ NeoBundleLazy 'Javascript-OmniCompletion-with-YUI-and-j'
 NeoBundleLazy 'Shougo/neocomplcache'
 NeoBundleLazy 'Shougo/neosnippet'
 NeoBundleLazy 'scrooloose/nerdcommenter', {'autoload': {'mappings': [['inx', '<Plug>NERDCommenter']]}}
+NeoBundle 'LeafCage/yankround.vim', {'stay_same': 1}
 NeoBundleLazy 'LeafCage/nebula.vim', {'autoload': {'commands': ['NebulaPutLazy', 'NebulaPutFromClipboard', 'NebulaYankOptions', 'NebulaPutConfig']}, 'stay_same': 1}
 NeoBundleLazy 'kana/vim-operator-user'
 NeoBundleLazy 'kana/vim-operator-replace' "レジスタにあるものとoperator指定したものを置き換え
@@ -138,6 +139,7 @@ NeoBundleLazy 'deris/vim-rengbang', {'autoload': {'mappings': [['nx', '<Plug>(op
 NeoBundleLazy 'anyakichi/vim-surround'
 NeoBundleLazy 'supermomonga/unite-sudden-death', {'autoload': {'unite_sources': ['suddendeath']}}
 NeoBundleLazy 'LeafCage/unite-recording', {'stay_same': 1}
+NeoBundleLazy 'mattn/ctrlp-mark', {'autoload': {'commands': ['CtrlPMark']}, 'depends': 'kien/ctrlp.vim'}
 "--------------------------------------
 "Moving
 NeoBundleLazy 'kana/vim-smartword', {'autoload': {'mappings': ['<Plug>(smartword-']}}
@@ -178,7 +180,8 @@ NeoBundle 'LeafCage/foldCC', {'stay_same': 1}
 NeoBundle 'tyru/current-func-info.vim'
 NeoBundleLazy 'sgur/vim-gitgutter', {'autoload': {'mappings': [['n', '<Plug>GitGutter']], 'commands': ['GitGutterAll', 'GitGutterToggle', 'GitGutterPrevHunk', 'GitGutterDisable', 'GitGutterLineHighlightsEnable', 'GitGutterNextHunk', 'GitGutterEnable', 'GitGutter', 'GitGutterLineHighlightsToggle', 'GitGutterLineHighlightsDisable']}}
 "NeoBundle 'LeafCage/win-shujuukankei.vim'
-NeoBundle 'osyo-manga/vim-anzu', {'autoload': {'mappings': '<Plug>(anzu-'}} "検索Hit件数を表示する
+NeoBundleLazy 'LeafCage/lastmess.vim', {'autoload': {'mappings': [['n', '<Plug>(lastmess']], 'commands': ['LastMess']}, 'type': 'nosync'}
+NeoBundleLazy 'osyo-manga/vim-anzu'
 NeoBundleLazy 'tacroe/unite-mark', {'autoload': {'unite_sources': ['mark']}}
 NeoBundleLazy 'tsukkee/unite-tag', {'autoload': {'unite_sources' : ['tag']}}
 NeoBundleLazy 'tsukkee/unite-help', {'autoload': {'unite_sources' : ['help']}}
@@ -197,9 +200,8 @@ NeoBundleLazy 'osyo-manga/unite-highlight', {'autoload': {'unite_sources': ['hig
 NeoBundleLazy 'cocopon/colorswatch.vim', {'autoload': {'commands': ['ColorSwatchGenerate']}}
 "--------------------------------------
 "GUI
+NeoBundleLazy 'daisuzu/rainbowcyclone.vim', {'augroup': 'RainbowCyclone', 'autoload': {'mappings': [['n', '<Plug>(rc_']], 'commands': ['RCList', 'RCReset', 'RCConcat', 'RC']}}
 NeoBundle 'itchyny/lightline.vim'
-NeoBundleLazy 't9md/vim-quickhl' "複数の検索ハイライト
-NeoBundleLazy 'MultipleSearch' "複数回の検索を可能にして、それぞれの検索結果を違うハイライトで表示する
 "NeoBundle 'altercation/vim-colors-solarized' "なんか良いらしいcolorscheme
 NeoBundleLazy 'tyru/winmove.vim', {'autoload': {'mappings': ['<Plug>(winmove-']}, 'gui':1}
 NeoBundleLazy 'thinca/vim-fontzoom', {'autoload': {'mappings': ['<Plug>(fontzoom-'], 'commands': 'Fontzoom'}}
@@ -256,7 +258,7 @@ if s:bundle_tap('unite.vim') " {{{
     "let g:unite_source_grep_recursive_opt = '-R'
     "let g:unite_source_grep_default_opts = '-Hn'
     "let g:unite_source_find_command = 'find'
-    let g:unite_source_history_yank_enable = 1  "unite-history/yankを有効化する（ヤンクしたテキストの履歴）
+    "let g:unite_source_history_yank_enable = 1  "unite-history/yankを有効化する（ヤンクしたテキストの履歴）
     let g:unite_kind_jump_list_after_jump_scroll=0
     let g:unite_source_rec_min_cache_files = 1000
     let g:unite_source_rec_max_cache_files = 5000
@@ -273,10 +275,11 @@ if s:bundle_tap('unite.vim') " {{{
   autocmd vimrc BufLeave [\[\*]unite[\]\*]  wincmd =
   "やたら長い変数をechoするとき見やすく表示
   command! -complete=var -nargs=+ UPP  exe 'Unite output:PP\ '. escape(<q-args>, ': ')
+  command! -nargs=+ -complete=customlist,unite#complete#source  UniteMS    bot sp| Unite -no-split <args>
   "文字関係
   nnoremap ,dg :<C-u>Unite -buffer-name=register register<CR>
-  nnoremap ,dy :<C-u>Unite history/yank<CR>
-  xnoremap ,dy d:<C-u>Unite history/yank<CR>
+  "nnoremap ,dy :<C-u>Unite history/yank<CR>
+  "xnoremap ,dy d:<C-u>Unite history/yank<CR>
   inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite -start-insert history/yank\<CR>"
   "file/buf関係
   nnoremap ,dfl :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
@@ -344,6 +347,9 @@ if s:bundle_tap('ctrlp.vim') " {{{
   nnoremap <silent>,cm :<C-u>CtrlPMRU<CR>
   nnoremap <silent><C-p> :<C-u>CtrlP<CR>
   nnoremap <silent>m<C-p> :<C-u>CtrlPMRU<CR>
+  let g:ctrlp_smallreg_dir = $VIMCACHE. '/ctrlp/smallreg'
+  nnoremap <silent>g<C-p> :<C-u>CtrlPMark<CR>
+  nnoremap <silent>,b<C-p> :<C-u>CtrlPBuffer<CR>
   "nnoremap <silent>[C-k]<C-p> :<C-u>CtrlPBuffer<CR>
   "nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
   "autocmd vimrc CursorMoved ControlP  let w:lightline = 0
@@ -352,13 +358,14 @@ if s:bundle_tap('ctrlp.vim') " {{{
     let w:lightline = 0
   endfunction
   let g:ctrlp_cache_dir = $VIMCACHE. '/ctrlp'
-  let g:ctrlp_max_files = 1000
+  let g:ctrlp_max_files = 250
   let g:ctrlp_use_migemo = 1
   let g:ctrlp_show_hidden = 1
   let g:ctrlp_switch_buffer = 'Et'
   let g:ctrlp_reuse_window = 'netrw\|help\|quickfix\|vimfiler\|unite\|vimshell'
   let g:ctrlp_root_markers = ['[root]']
   let g:ctrlp_open_new_file = 'h'
+  let g:ctrlp_working_path_mode = 'rc'
   "let g:ctrlp_key_loop = 1
     let g:ctrlp_mruf_exclude = '' "mruに追跡したくないfile
   call s:bundle_untap()
@@ -768,6 +775,18 @@ if s:bundle_tap('nerdcommenter') "{{{
 endif
 "}}}
 "--------------------------------------
+if s:bundle_tap('yankround.vim') "{{{
+  let g:yankround_dir = $VIMCACHE. '/yankround'
+  nmap p <Plug>(yankround-p)
+  nmap P <Plug>(yankround-P)
+  nmap <expr><C-p>    yankround#is_active() ? "\<Plug>(yankround-prev)" : "[ctrlp]"
+  nmap <C-n> <Plug>(yankround-next)
+  nnoremap <silent><SID>(ctrlp) :<C-u>CtrlP<CR>
+  nmap <expr><C-p>    yankround#is_active() ? "\<Plug>(yankround-prev)" : "<SID>(ctrlp)"
+  nnoremap <silent>[@]<C-p> :<C-u>CtrlPYankRound<CR>
+endif
+"}}}
+"--------------------------------------
 if s:bundle_tap('nebula.vim') "{{{
   nnoremap <silent>,bl    :<C-u>NebulaPutLazy<CR>
   nnoremap <silent>,bc    :<C-u>NebulaPutConfig<CR>
@@ -983,7 +1002,8 @@ endif
 "--------------------------------------
 if s:bundle_tap('vim-poslist') "{{{
   call s:bundle_config({})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+  function! s:tapped_bundle.hooks.on_post_source(bundle)
+    call poslist#save_current_pos()
   endfunction
   nmap <M-o> <Plug>(poslist-prev-pos)
   nmap <M-i> <Plug>(poslist-next-pos)
@@ -1159,12 +1179,25 @@ if s:bundle_tap('foldCC') "{{{
 endif
 "}}}
 "--------------------------------------
+if s:bundle_tap('lastmess.vim') "{{{
+  let g:lastmess_ignore_pattern = 'スキャン中\|検索したので\|箇所変更しました;\|行 削除しました;\|行 追加しました\|\d\+L, \d\+C$\|行 --\d\+%--$\|--バッファに行がありません--$'
+  let g:lastmess_default_count = 30
+  nmap mz <Plug>(lastmess)
+  nnoremap mg :<C-u>mes<CR>
+else
+  nnoremap mz :<C-u>mes<CR>
+endif
+"}}}
+"--------------------------------------
 if s:bundle_tap('vim-anzu') "{{{
+  call s:bundle_config({'autoload': {'mappings': ['<Plug>(anzu-', '<Plug>(anzu-jump-n)<Plug>', '<Plug>(anzu-jump-N)<Plug>']}})
   "let g:anzu_status_format = '%p(%i/%l) %#WarningMsg#%w'
   let g:anzu_status_format = '%p(%i/%l)'
   let g:anzu_no_match_word = '%#ErrorMsg#E486: Pattern not found: %p'
-  nmap n  <Plug>(anzu-jump-n)<Plug>(anzu-update-search-status-with-echo)zv
-  nmap N  <Plug>(anzu-jump-N)<Plug>(anzu-update-search-status-with-echo)zv
+  nmap n  <Plug>(anzu-jump-n)<Plug>(anzu-echo-search-status)zv
+  nmap N  <Plug>(anzu-jump-N)<Plug>(anzu-echo-search-status)zv
+  "nmap n  <Plug>(anzu-jump-n):<C-u>AnzuUpdateSearchStatusOutput<CR>zv
+  "nmap N  <Plug>(anzu-jump-N)<Plug>(anzu-update-search-status-with-echo)zv
   nmap * <Plug>(anzu-star-with-echo)Nzz
 endif
 "}}}
@@ -1182,6 +1215,22 @@ endif
 
 "======================================
 "GUI
+if s:bundle_tap('rainbowcyclone.vim') "{{{
+  let g:rainwbow_cyclone_colors = []
+  call add(g:rainwbow_cyclone_colors, 'term=reverse ctermfg=1 ctermbg=12 gui=bold guifg=Black guibg=Red')
+  call add(g:rainwbow_cyclone_colors, 'term=reverse ctermfg=1 ctermbg=6  gui=bold guifg=Black guibg=Orange')
+  call add(g:rainwbow_cyclone_colors, 'term=reverse ctermfg=1 ctermbg=14 gui=bold guifg=Black guibg=Khaki')
+  call add(g:rainwbow_cyclone_colors, 'term=reverse ctermfg=1 ctermbg=10 gui=bold guifg=Black guibg=ForestGreen')
+  call add(g:rainwbow_cyclone_colors, 'term=reverse ctermfg=1 ctermbg=9  gui=bold guifg=Black guibg=Blue')
+  call add(g:rainwbow_cyclone_colors, 'term=reverse ctermfg=1 ctermbg=1  gui=bold guifg=Black guibg=SlateBlue')
+  call add(g:rainwbow_cyclone_colors, 'term=reverse ctermfg=1 ctermbg=5  gui=bold guifg=Black guibg=Purple')
+  nmap c/ <Plug>(rc_search_forward)
+  nmap c? <Plug>(rc_search_backward)
+  nmap c* <Plug>(rc_search_forward_with_cursor)N
+  nmap c, <Plug>(rc_highlight_with_last_pattern)
+endif
+"}}}
+"--------------------------------------
 if s:bundle_tap('lightline.vim') "{{{
   command! -bar LightlineUpdate    call lightline#init()| call lightline#colorscheme()| call lightline#update()
   let g:lightline = {'subseparator': {'left': '', 'right': ''}, 'tabline_subseparator': {'left': '|', 'right': ''}}
@@ -1323,6 +1372,7 @@ endfunction
 "Autocmd
 autocmd vimrc VimResized * exe "normal! \<c-w>="
 autocmd vimrc QuickfixCmdPost * if !empty(getqflist()) | cwindow | endif
+autocmd vimrc VimLeavePre * set verbosefile=/tmp/vim.log
 "改行時にコメントしない(上手く動いていない(上書きされてる))
 "autocmd vimrc FileType * setlocal fo-=ro
 "--------------------------------------
@@ -1367,6 +1417,7 @@ endfunction
 "}}}
 function! s:define_other_highlight()  "{{{
   hi Pmenu          guifg=white  guibg=#6A5CB4  gui=NONE
+  "hi Cursor          guifg=Black  guibg=Green
   "hi CursorTrack    guibg=darkslategray4
   hi ZenkakuSpace   cterm=underline ctermfg=darkgrey gui=underline guifg=darkgrey
 endfunction
@@ -1429,7 +1480,7 @@ command! Hitest    silent! source $VIMRUNTIME/syntax/hitest.vim
 command! -bar TimerStart let start_time = reltime()
 command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
 "plugin撮影用にウィンドウのサイズを一時的に変更する
-command! GuiWin     exe &lines>30 ? 'set lines=30 columns=100' : 'set lines=40 columns=140'
+command! GuiWin     exe &lines>26 ? 'set lines=26 columns=83' : 'set lines=40 columns=140'
 "パターンとファイル名を逆にしたgrep
 function! s:perg(args)
   execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2])
@@ -1599,9 +1650,10 @@ cnoremap <expr><C-e>    getcmdtype()==':' ? getcmdline()=~'^\s*$\\|^h $' ? "<C-u
 "--------------------------------------
 "クリップボード
 noremap ,y "*y
-noremap <silent>,yu :<C-u>let @* = @"<CR>
+nnoremap <silent>,yu :<C-u>let @* = @"<CR>
 noremap ,Y "*y$
 noremap ,p "*p
+noremap ,P "*P
 noremap <F3> "+
 noremap! <F3>   <C-r>+
 noremap <C-z> "+
@@ -1884,14 +1936,12 @@ function! s:get_fileinfo() "{{{
   return ret
 endfunction
 "}}}
-nnoremap mz :<C-u>mes<CR>
-nnoremap mg :<C-u>ec v:errmsg<CR>
 nnoremap mc :<C-u>scrip<CR>
 "nnoremap ma :marks<CR>
 "nnoremap ma :<C-u>Unite mark<CR>
 "検索ハイライト
 sign define SearchStart text=索 texthl=Search
-noremap <silent> z/ :nohlsearch<CR>:sign unplace 333<CR>
+noremap <silent> z/ :<C-u>RCReset<CR>:nohlsearch<CR>:sign unplace 333<CR>
 "noremap <silent>n :<C-u>call <SID>put_searchstart_sign(1)<CR>nzv
 function! s:put_searchstart_sign(is_nN_bindsearch) "{{{
   let [lnr, bufnr] = [line('.'), bufnr('%')]
@@ -1913,6 +1963,7 @@ nnoremap <silent> g/ :exe 'sign jump 333 buffer='.bufnr('%')<CR>
 "Moving
 nmap + *
 nnoremap g*   g*N
+noremap U %
 noremap L $
 noremap <expr>H   col('.') == match(getline('.'), '^\s*\zs\S')+1 ? '0' : '^'
 noremap <silent>M   :<C-u>call <SID>smart_M('M')<CR>
@@ -2013,6 +2064,8 @@ endfunction
 "}}}
 "--------------------------------------
 "編集バインド(Normal)
+nnoremap x "_x
+nnoremap s "_s
 function! s:delete_trailing_whitespaces() "{{{
   let save_view = winsaveview()
   let save_search=@/
@@ -2063,7 +2116,8 @@ nnoremap [C-k]<C-t>k :call PeekEcho()<CR>
 ":source
 "nnoremap  [C-k]v     source $MYVIMRC<CR>
 nnoremap  ,xv    source $MYVIMRC<CR>
-nnoremap  [C-k]<C-s> :so %<CR>
+nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>redraw!<Bar>echom 'source %'<Bar> endif<CR>
+
 
 "======================================
 "Visual mode
@@ -2352,7 +2406,7 @@ se shm +=I  "Vim開始挨拶メッセージを表示しない
 "=============================================================================
 "Gvim
 "-----------------------------------------------------------------------------
-"colorscheme siicEvening
+colorscheme siicEvening
 
 "エラー時の音とビジュアルベルの抑制
 au GUIEnter * set vb t_vb=
