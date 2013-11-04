@@ -669,6 +669,10 @@ endif
 "--------------------------------------
 if s:bundle_tap('vimhelpgenerator') "{{{
   call s:bundle_config({'autoload': {'commands': ['VimHelpGenerator', 'VimHelpGeneratorVirtual']}, 'stay_same': 1})
+  aug vimhelpgenerator
+    autocmd!
+    autocmd FileType help   command! -nargs=0 -range -buffer   HelpIntoMarkdown    call vimhelpgenerator#helpintomarkdown#generate(<line1>, <line2>)
+  aug END
   function! s:tapped_bundle.hooks.on_source(bundle)
     let g:vimhelpgenerator_version = ''
     let g:vimhelpgenerator_author = 'Author  : LeafCage <leafcage+vim @ gmail.com>'
@@ -779,6 +783,8 @@ if s:bundle_tap('yankround.vim') "{{{
   let g:yankround_dir = $VIMCACHE. '/yankround'
   nmap p <Plug>(yankround-p)
   nmap P <Plug>(yankround-P)
+  nmap gp <Plug>(yankround-gp)
+  nmap gP <Plug>(yankround-gP)
   nmap <expr><C-p>    yankround#is_active() ? "\<Plug>(yankround-prev)" : "[ctrlp]"
   nmap <C-n> <Plug>(yankround-next)
   nnoremap <silent><SID>(ctrlp) :<C-u>CtrlP<CR>
@@ -1391,6 +1397,7 @@ autocmd vimrc FileType qf  noremap <buffer>q    :cclose<CR>
 autocmd vimrc FileType qf  noremap <buffer><CR>    :.cc<CR>
 autocmd vimrc FileType vim    inoremap <expr><buffer>\
   \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
+autocmd vimrc FileType markdown   inoremap <buffer><expr><CR> getline('.')=~'\S\s$' ? "\<Space>\<CR>" : "\<CR>"
 autocmd vimrc FileType java  inoremap <expr><C-q>    <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
 function! s:IsEndSemicolon() "{{{
   let c = getline(".")[col("$")-2]
@@ -2064,7 +2071,6 @@ endfunction
 "}}}
 "--------------------------------------
 "編集バインド(Normal)
-nnoremap x "_x
 nnoremap s "_s
 function! s:delete_trailing_whitespaces() "{{{
   let save_view = winsaveview()
@@ -2116,11 +2122,12 @@ nnoremap [C-k]<C-t>k :call PeekEcho()<CR>
 ":source
 "nnoremap  [C-k]v     source $MYVIMRC<CR>
 nnoremap  ,xv    source $MYVIMRC<CR>
-nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>redraw!<Bar>echom 'source %'<Bar> endif<CR>
+nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>redraw!<Bar>echom 'sourced:'expand('%')<Bar> endif<CR>
 
 
 "======================================
 "Visual mode
+vnoremap . :norm .<CR>
 vnoremap zf :call <SID>Fixed_zf()<CR>
 function! s:Fixed_zf() range "{{{
   let cmsStart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
@@ -2178,9 +2185,7 @@ imap <M-Space>    <Tab><Tab>
 cnoremap <expr> <C-x> expand('%:p:h') . "/"
 cnoremap <expr> <C-z> expand('%:p:r')
 "cnoremap <expr><C-s>    getcmdtype()==':' ? getcmdpos()==1 ? 'set ' : "\<C-s>" : "\<C-s>"
-cnoreabb <expr>s// getcmdtype()==':' && getcmdline()=~'^s//' ? '%s/\C<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's//'
-cnoreabb <expr>ss getcmdtype()==':' && getcmdline()=~'^ss' ? '%s/\C<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 'ss'
-cnoreabb <expr>ss/ getcmdtype()==':' && getcmdline()=~'^ss/' ? '%s/\C<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 'ss/'
+cnoreabb <expr>s getcmdtype()==':' && getcmdline()=~'^s' ? '%s/\C<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's'
 cnoremap <expr> / getcmdtype()=='/' ? '\/' : '/'
 cnoremap <expr> ? getcmdtype()=='?' ? '\?' : '?'
 "--------------------------------------
@@ -2406,7 +2411,7 @@ se shm +=I  "Vim開始挨拶メッセージを表示しない
 "=============================================================================
 "Gvim
 "-----------------------------------------------------------------------------
-colorscheme siicEvening
+"colorscheme siicEvening
 
 "エラー時の音とビジュアルベルの抑制
 au GUIEnter * set vb t_vb=
