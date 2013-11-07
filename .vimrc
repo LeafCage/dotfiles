@@ -730,7 +730,7 @@ endif
 "}}}
 "--------------------------------------
 if s:bundle_tap('neosnippet') "{{{
-  call s:bundle_config({'autoload': {'mappings': [['isx', '<Plug>(neosnippet_']], 'commands': ['NeoSnippetMakeCache, NeoSnippetEdit', 'NeoSnippetSource']}})
+  call s:bundle_config({'autoload': {'unite_sources': ['neosnippet_file', 'snippet', 'snippet_target'], 'mappings': [['sxi', '<Plug>(neosnippet_']], 'commands': [{'complete': 'file', 'name': 'NeoSnippetSource'}, {'complete': 'customlist,neosnippet#filetype_complete', 'name': 'NeoSnippetMakeCache'}, {'complete': 'customlist,neosnippet#edit_complete', 'name': 'NeoSnippetEdit'}]}})
   function! s:tapped_bundle.hooks.on_source(bundle)
     let g:neosnippet#snippets_directory = $VIMUSERDIR. '/snippets'
     au FileType snippet  setl nobl
@@ -1186,7 +1186,7 @@ endif
 "}}}
 "--------------------------------------
 if s:bundle_tap('lastmess.vim') "{{{
-  let g:lastmess_ignore_pattern = 'スキャン中\|検索したので\|箇所変更しました;\|行 削除しました;\|行 追加しました\|\d\+L, \d\+C$\|行 --\d\+%--$\|--バッファに行がありません--$'
+  let g:lastmess_ignore_pattern = 'スキャン中\|検索したので\|箇所変更しました;\|行 削除しました;\|行 追加しました\|\d\+L, \d\+C$\|行 --\d\+%--$\|--バッファに行がありません--$\|\s*\d\+:\s\%(\~\|\u:\)/'
   let g:lastmess_default_count = 30
   nmap mz <Plug>(lastmess)
   nnoremap mg :<C-u>mes<CR>
@@ -1398,6 +1398,7 @@ autocmd vimrc FileType qf  noremap <buffer><CR>    :.cc<CR>
 autocmd vimrc FileType vim    inoremap <expr><buffer>\
   \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
 autocmd vimrc FileType markdown   inoremap <buffer><expr><CR> getline('.')=~'\S\s$' ? "\<Space>\<CR>" : "\<CR>"
+autocmd vimrc FileType markdown   nnoremap <buffer><silent><CR> :<C-u>if getline('.')=~'\s$'<Bar>call setline('.', substitute(getline('.'), '\s\+$', '', ''))<Bar>else<Bar>call setline('.', substitute(getline('.'), '$', '  ', ''))<Bar>endif<CR>
 autocmd vimrc FileType java  inoremap <expr><C-q>    <SID>IsEndSemicolon() ? "<C-O>$;<CR>" : "<C-O>$<CR>"
 function! s:IsEndSemicolon() "{{{
   let c = getline(".")[col("$")-2]
@@ -1483,11 +1484,13 @@ aug END
 "Commands
 command! -nargs=*   VimElements    UPP lib#vimelements#collect(<f-args>)
 command! Hitest    silent! source $VIMRUNTIME/syntax/hitest.vim
+command! MessageClear for n in range(200) | echom "" | endfor| ec 'Cleared Message'
+nnoremap mC :<C-u>MessageClear<CR>
 "Vim script計測
 command! -bar TimerStart let start_time = reltime()
 command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
 "plugin撮影用にウィンドウのサイズを一時的に変更する
-command! GuiWin     exe &lines>26 ? 'set lines=26 columns=83' : 'set lines=40 columns=140'
+command! GuiWin     exe &lines>26 ? 'set lines=27 columns=87' : 'set lines=40 columns=140'
 "パターンとファイル名を逆にしたgrep
 function! s:perg(args)
   execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2])
@@ -2031,17 +2034,18 @@ endfunction
 "折り畳み操作
 nnoremap <silent><C-_> :call <SID>smart_foldcloser()<CR>
 function! s:smart_foldcloser() "{{{
+  if !&fen
+    return
+  endif
   if foldlevel('.') == 0
     norm! zM
     return
   endif
- 
   let foldc_lnum = foldclosed('.')
   norm! zc
   if foldc_lnum == -1
     return
   endif
- 
   if foldclosed('.') != foldc_lnum
     return
   endif
