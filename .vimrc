@@ -785,10 +785,9 @@ if s:bundle_tap('yankround.vim') "{{{
   nmap P <Plug>(yankround-P)
   nmap gp <Plug>(yankround-gp)
   nmap gP <Plug>(yankround-gP)
-  nmap <expr><C-p>    yankround#is_active() ? "\<Plug>(yankround-prev)" : "[ctrlp]"
-  nmap <C-n> <Plug>(yankround-next)
   nnoremap <silent><SID>(ctrlp) :<C-u>CtrlP<CR>
   nmap <expr><C-p>    yankround#is_active() ? "\<Plug>(yankround-prev)" : "<SID>(ctrlp)"
+  nmap <C-n> <Plug>(yankround-next)
   nnoremap <silent>[@]<C-p> :<C-u>CtrlPYankRound<CR>
 endif
 "}}}
@@ -1366,10 +1365,10 @@ if filereadable(fnamemodify('~/.privacy/.vimrc_privacy.vim', ':p'))
   source ~/.privacy/.vimrc_privacy.vim  "lingr.vimのパスワードとか
 endif
 
-"let g:backdraft_buffer_func = {'enterdraft': 'BackdraftEnterDraft'}
+let g:backdraft_buffer_func = {'enterdraft': 'BackdraftEnterDraft'}
 function! BackdraftEnterDraft() "{{{
-    nmap <buffer>[space]l <Plug>(backdraft_cycle_inc)
-    nmap <buffer>[space]h <Plug>(backdraft_cycle_dec)
+  nmap <buffer><expr><C-p>    yankround#is_active() ? "\<Plug>(yankround-prev)" : "\<Plug>(backdraft_cycle_dec)"
+  nmap <buffer><expr><C-n>    yankround#is_active() ? "\<Plug>(yankround-next)" : "\<Plug>(backdraft_cycle_inc)"
 endfunction
 "}}}
 
@@ -1383,7 +1382,7 @@ autocmd vimrc VimLeavePre * set verbosefile=/tmp/vim.log
 "autocmd vimrc FileType * setlocal fo-=ro
 "--------------------------------------
 "au_filetype
-autocmd vimrc BufRead,BufNewFile *.markdown,*.md    setl ft=markdown nofoldenable
+autocmd vimrc BufRead,BufNewFile,BufAdd *.markdown,*.md    setl ft=markdown nofoldenable
 autocmd vimrc FileType js   setlocal ft=javascript
 "--------------------------------------
 "au_option
@@ -1511,7 +1510,7 @@ command! -nargs=1 -complete=augroup  AugKiller  autocmd! <args>
 function! s:rename(name, bang) "{{{
   let crrpath = expand("%:p")
   let v:errmsg = ""
-  silent! exe "saveas" . a:bang . " " . a:name
+  silent! exe "saveas" . a:bang a:name
   if v:errmsg =~# '^$\|^E329'
     if expand("%:p") !=# crrpath && filewritable(expand("%:p"))
       silent exe "bwipe! " . crrpath
