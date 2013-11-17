@@ -29,8 +29,13 @@ let g:vimfiler_marked_file_icon = '✓'
 let g:vimfiler_readonly_file_icon = '✗'
 
 let g:vimfiler_time_format = '%d-%m-%Y %H:%M:%S'
-let g:vimfiler_data_directory = $HOME.'/.vim/tmp/vimfiler'
 
+let g:backdraft_buffer_func = {'enterdraft': 'BackdraftEnterDraft'}
+function! BackdraftEnterDraft() "{{{
+  nmap <buffer><expr><C-p>    yankround#is_active() ? "\<Plug>(yankround-prev)" : "\<Plug>(backdraft_cycle_dec)"
+  nmap <buffer><expr><C-n>    yankround#is_active() ? "\<Plug>(yankround-next)" : "\<Plug>(backdraft_cycle_inc)"
+endfunction
+"}}}
 
 
 
@@ -216,40 +221,23 @@ NeoBundle 'savevers.vim'
 
 "=============================================================================
 "各種プラグイン設定
-"設定用関数
-function! s:bundle_tap(bundle) "{{{
-  let s:tapped_bundle = neobundle#get(a:bundle)
-  return neobundle#is_installed(a:bundle)
-endfunction
-"}}}
-function! s:bundle_config(config) "{{{
-  if get(s:, 'tapped_bundle', {}) != {}
-    call neobundle#config(s:tapped_bundle.name, a:config)
-  endif
-endfunction
-"}}}
-function! s:bundle_untap() "{{{
-  let s:tapped_bundle = {}
-endfunction
-"}}}
-
 "======================================
 "Library
 let g:uptodate_filenamepatterns = ['lily.vim', 'lib/vimelements.vim']
 let g:uptodate_cellardir = $VIMFILES. '/bundle/LCLIB'
 autocmd vimrc FuncUndefined lib#*   let _ = g:uptodate_cellardir. '/'. fnamemodify(expand('<afile>'), ':gs?#?/?:h'). '.vim' |if filereadable(_) |exe 'source ' _ | endif | unlet _
-if s:bundle_tap('vimproc') "{{{
-  call s:bundle_config({'build': {'windows': 'make -f make_mingw32.mak', 'cygwin': 'make -f make_cygwin.mak',
+if neobundle#tap('vimproc') "{{{
+  call neobundle#config({'build': {'windows': 'make -f make_mingw32.mak', 'cygwin': 'make -f make_cygwin.mak',
     \ 'mac': 'make -f make_mac.mak', 'unix': 'make -f make_unix.mak',},})
 endif
 "}}}
 
 "======================================
 "Synthesis
-if s:bundle_tap('unite.vim') " {{{
-  call s:bundle_config({'autoload': {'commands': [{'name': 'Unite', 'complete': 'customlist,unite#complete_source'},
+if neobundle#tap('unite.vim') " {{{
+  call neobundle#config({'autoload': {'commands': [{'name': 'Unite', 'complete': 'customlist,unite#complete_source'},
     \ 'UniteWithCursorWord', 'UniteWithInput']}})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+  function! neobundle#tapped.hooks.on_source(bundle)
     let g:unite_data_directory = $VIMCACHE. '/.unite'
     let g:unite_cursor_line_highlight = 'Pmenu'
     let g:unite_split_rule = 'botright'  "窓の表示位置
@@ -323,14 +311,12 @@ if s:bundle_tap('unite.vim') " {{{
   nnoremap ,d@ :<C-u>Unite menu:main<CR>
   nnoremap ,d:m :<C-u>Unite menu:main<CR>
   nnoremap ,d:g :<C-u>Unite menu:git<CR>
-
-  call s:bundle_untap()
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('ctrlp.vim') " {{{
-  call s:bundle_config({'autoload': {'commands': ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU', 'CtrlPLastMode', 'CtrlPRoot', 'CtrlPClearCache', 'CtrlPClearAllCaches']}})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+if neobundle#tap('ctrlp.vim') " {{{
+  call neobundle#config({'autoload': {'commands': ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU', 'CtrlPLastMode', 'CtrlPRoot', 'CtrlPClearCache', 'CtrlPClearAllCaches']}})
+  function! neobundle#tapped.hooks.on_source(bundle)
     nnoremap <S-Space> :
     let g:ctrlp_prompt_mappings = {}
     let g:ctrlp_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
@@ -369,12 +355,11 @@ if s:bundle_tap('ctrlp.vim') " {{{
   let g:ctrlp_working_path_mode = 'rc'
   "let g:ctrlp_key_loop = 1
     let g:ctrlp_mruf_exclude = '' "mruに追跡したくないfile
-  call s:bundle_untap()
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('alti.vim') " {{{
-  function! s:tapped_bundle.hooks.on_source(bundle)
+if neobundle#tap('alti.vim') " {{{
+  function! neobundle#tapped.hooks.on_source(bundle)
     "nnoremap <S-Space> :
     let g:alti_prompt_mappings = {}
     let g:alti_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
@@ -397,15 +382,14 @@ if s:bundle_tap('alti.vim') " {{{
   "let g:alti_reuse_window = 'netrw\|help\|quickfix\|vimfiler\|unite\|vimshell'
   "let g:alti_root_markers = ['[root]']
   "let g:alti_open_new_file = 'h'
-  call s:bundle_untap()
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vimshell') " {{{
-  call s:bundle_config({'autoload': {'commands': [{'name': 'VimShell', 'complete': 'customlist,vimshell#complete'},
+if neobundle#tap('vimshell') " {{{
+  call neobundle#config({'autoload': {'commands': [{'name': 'VimShell', 'complete': 'customlist,vimshell#complete'},
     \ 'VimShellExecute', 'VimShellInteractive', 'VimShellTerminal', 'VimShellPop', 'VimShellTab'],
     \ 'mappings': ['<Plug>(vimshell_']}})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+  function! neobundle#tapped.hooks.on_source(bundle)
     let g:vimshell_temporary_directory = $VIMCACHE. '/.vimshell'
     let g:vimshell_vimshrc_path = $VIMUSERDIR. '/.vimshrc'
     let g:vimshell_split_command = '8split'
@@ -441,12 +425,11 @@ if s:bundle_tap('vimshell') " {{{
 
   noremap <silent>,xs :let A = expand('%:p:h')<Bar> exe 'VimShellTab '. A<Bar>unlet A<CR>
   noremap <silent>,sh :let A = expand('%:p:h')<Bar> exe 'VimShell -split '. A<Bar>unlet A<CR>
-  call s:bundle_untap()
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vimfiler') "{{{
-  call s:bundle_config({'depends': ['Shougo/unite.vim',], 'autoload': {'commands':
+if neobundle#tap('vimfiler') "{{{
+  call neobundle#config({'depends': ['Shougo/unite.vim',], 'autoload': {'commands':
     \ [{'name': 'VimFiler', 'complete': 'customlist,vimfiler#complete'},
     \ {'name': 'VimFilerExplorer', 'complete': 'customlist,vimfiler#complete'},
     \ {'name': 'Edit', 'complete': 'customlist,vimfiler#complete'},
@@ -462,7 +445,7 @@ if s:bundle_tap('vimfiler') "{{{
   "call vimfiler#set_execute_file('vim', 'vim')
   "シンタックス
   "let g:vimfiler_extensions = {'text': '', 'image': '', 'archive': '', 'system': '', 'multimedia': '',}
-  function! s:tapped_bundle.hooks.on_source(bundle)
+  function! neobundle#tapped.hooks.on_source(bundle)
     au FileType vimfiler  let b:vimfiler.is_visible_dot_files = 1| setl nobl| autocmd BufLeave <buffer> setl nobl
 
     "vf basic-Keymaps "{{{
@@ -554,14 +537,13 @@ if s:bundle_tap('vimfiler') "{{{
     return fnamemodify(prjRootPath, ':h')
   endfunction
   "}}}
-  call s:bundle_untap()
 endif
 "}}}
 
 "======================================
 "Network&Documents
-if s:bundle_tap('open-browser.vim') "{{{
-  call s:bundle_config({'autoload': {'mappings': ['<Plug>(openbrowser-'], 'commands':
+if neobundle#tap('open-browser.vim') "{{{
+  call neobundle#config({'autoload': {'mappings': ['<Plug>(openbrowser-'], 'commands':
     \ ['OpenBrowser', 'OpenBrowserSearch', 'OpenBrowserSmartSearch']}})
   nmap ,xo <Plug>(openbrowser-smart-search)
   vmap ,xo <Plug>(openbrowser-smart-search)
@@ -570,10 +552,10 @@ if s:bundle_tap('open-browser.vim') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-ref') "{{{
-  call s:bundle_config({'autoload': {'commands': [{'name': 'Ref', 'complete': 'customlist,ref#complete'}, 'RefHistory'],
+if neobundle#tap('vim-ref') "{{{
+  call neobundle#config({'autoload': {'commands': [{'name': 'Ref', 'complete': 'customlist,ref#complete'}, 'RefHistory'],
     \ 'mappings': ['<Plug>(ref-']}})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+  function! neobundle#tapped.hooks.on_source(bundle)
     let g:ref_cache_dir = $VIMCACHE. '/.vim_ref_cache'
     let g:ref_phpmanual_path = 'D:/dic/vim-ref/php-chunked-xhtml'
     let g:ref_javadoc_path = 'D:/dic/vim-ref/java6api'
@@ -614,9 +596,9 @@ if s:bundle_tap('vim-ref') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('J6uil.vim') "{{{
-  call s:bundle_config({'autoload': {'unite_sources': ['J6uil_members', 'J6uil_rooms'], 'mappings': [['n', '<Plug>(J6uil_']], 'commands': ['J6uilReconnect', 'J6uilDisconnect', {'complete': 'custom,J6uil#complete#room', 'name': 'J6uil'}]}})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+if neobundle#tap('J6uil.vim') "{{{
+  call neobundle#config({'autoload': {'unite_sources': ['J6uil_members', 'J6uil_rooms'], 'mappings': [['n', '<Plug>(J6uil_']], 'commands': ['J6uilReconnect', 'J6uilDisconnect', {'complete': 'custom,J6uil#complete#room', 'name': 'J6uil'}]}})
+  function! neobundle#tapped.hooks.on_source(bundle)
     autocmd FileType J6uil  :call s:J6uil_settings(expand('<abuf>'))
     autocmd FileType J6uil_say  :nunmap <buffer><C-j>| nmap <silent><buffer>q   :<C-u>bd!<CR>
     let g:J6uil_config_dir = $VIMCACHE. '/.J6uil'
@@ -635,30 +617,29 @@ endif
 
 "======================================
 "Development
-if s:bundle_tap('vim-fugitive') "{{{
-  function! s:tapped_bundle.hooks.on_post_source(bundle)
+if neobundle#tap('vim-fugitive') "{{{
+  function! neobundle#tapped.hooks.on_post_source(bundle)
     doautoall fugitive BufNewFile
   endfunction
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-quickrun') "{{{
-  call s:bundle_config({})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+if neobundle#tap('vim-quickrun') "{{{
+  call neobundle#config({})
+  function! neobundle#tapped.hooks.on_source(bundle)
     let g:quickrun_config = {}
     let g:quickrun_config.markdown = {'type': 'markdown/kramdown', 'cmdopt': '-s', 'outputter': 'browser'}
   endfunction
 
   nmap ,xq <Plug>(quickrun)
-  call s:bundle_untap()
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vimtest') "{{{
-  call s:bundle_config({'autoload': {'commands': [{'name': 'VimTest', 'complete': 'file'},
+if neobundle#tap('vimtest') "{{{
+  call neobundle#config({'autoload': {'commands': [{'name': 'VimTest', 'complete': 'file'},
   \ {'name': 'VimTestBuffer', 'complete': 'file'}, {'name': 'VimTestStdout', 'complete': 'file'},
   \ {'name': 'VimTestQuickfix', 'complete': 'file'}]}})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+  function! neobundle#tapped.hooks.on_source(bundle)
     let g:vimtest_config = {}
     "let g:vimtest_config.outputter = 'stdout' "cmdline
     let g:vimtest_config.outputter = 'buffer'
@@ -667,13 +648,13 @@ if s:bundle_tap('vimtest') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vimhelpgenerator') "{{{
-  call s:bundle_config({'autoload': {'commands': ['VimHelpGenerator', 'VimHelpGeneratorVirtual']}, 'stay_same': 1})
+if neobundle#tap('vimhelpgenerator') "{{{
+  call neobundle#config({'autoload': {'commands': ['VimHelpGenerator', 'VimHelpGeneratorVirtual']}, 'stay_same': 1})
   aug vimhelpgenerator
     autocmd!
     autocmd FileType help   command! -nargs=0 -range -buffer   HelpIntoMarkdown    call vimhelpgenerator#helpintomarkdown#generate(<line1>, <line2>)
   aug END
-  function! s:tapped_bundle.hooks.on_source(bundle)
+  function! neobundle#tapped.hooks.on_source(bundle)
     let g:vimhelpgenerator_version = ''
     let g:vimhelpgenerator_author = 'Author  : LeafCage <leafcage+vim @ gmail.com>'
     let g:vimhelpgenerator_contents = {'contents': 1, 'introduction': 1, 'usage': 1, 'interface': 1, 'variables': 1, 'commands': 1, 'key-mappings': 1, 'functions': 1, 'todo': 1, 'changelog': 0,}
@@ -684,9 +665,9 @@ endif
 
 "======================================
 "Insert
-if s:bundle_tap('neocomplecache') "{{{
-  call s:bundle_config({'autoload': 'insert': 1})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+if neobundle#tap('neocomplecache') "{{{
+  call neobundle#config({'autoload': 'insert': 1})
+  function! neobundle#tapped.hooks.on_source(bundle)
     let g:neocomplcache_temporary_dir = $VIMCACHE. '/.neocon'
     let g:neocomplcache_dictionary_filetype_lists = {}
     let g:neocomplcache_dictionary_filetype_lists.default = ''
@@ -729,9 +710,9 @@ if s:bundle_tap('neocomplecache') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('neosnippet') "{{{
-  call s:bundle_config({'autoload': {'unite_sources': ['neosnippet_file', 'snippet', 'snippet_target'], 'mappings': [['sxi', '<Plug>(neosnippet_']], 'commands': [{'complete': 'file', 'name': 'NeoSnippetSource'}, {'complete': 'customlist,neosnippet#filetype_complete', 'name': 'NeoSnippetMakeCache'}, {'complete': 'customlist,neosnippet#edit_complete', 'name': 'NeoSnippetEdit'}]}})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+if neobundle#tap('neosnippet') "{{{
+  call neobundle#config({'autoload': {'unite_sources': ['neosnippet_file', 'snippet', 'snippet_target'], 'mappings': [['sxi', '<Plug>(neosnippet_']], 'commands': [{'complete': 'file', 'name': 'NeoSnippetSource'}, {'complete': 'customlist,neosnippet#filetype_complete', 'name': 'NeoSnippetMakeCache'}, {'complete': 'customlist,neosnippet#edit_complete', 'name': 'NeoSnippetEdit'}]}})
+  function! neobundle#tapped.hooks.on_source(bundle)
     let g:neosnippet#snippets_directory = $VIMUSERDIR. '/snippets'
     au FileType snippet  setl nobl
     au FileType snippet setl nofoldenable
@@ -763,9 +744,9 @@ if s:bundle_tap('neosnippet') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('nerdcommenter') "{{{
-  call s:bundle_config({})
-  function! s:tapped_bundle.hooks.on_post_source(bundle)
+if neobundle#tap('nerdcommenter') "{{{
+  call neobundle#config({})
+  function! neobundle#tapped.hooks.on_post_source(bundle)
     doautocmd NERDCommenter BufEnter
   endfunction
   nmap gc [cm]
@@ -779,7 +760,7 @@ if s:bundle_tap('nerdcommenter') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('yankround.vim') "{{{
+if neobundle#tap('yankround.vim') "{{{
   let g:yankround_dir = $VIMCACHE. '/yankround'
   nmap p <Plug>(yankround-p)
   nmap P <Plug>(yankround-P)
@@ -792,7 +773,7 @@ if s:bundle_tap('yankround.vim') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('nebula.vim') "{{{
+if neobundle#tap('nebula.vim') "{{{
   nnoremap <silent>,bl    :<C-u>NebulaPutLazy<CR>
   nnoremap <silent>,bc    :<C-u>NebulaPutConfig<CR>
   nnoremap <silent>,by    :<C-u>NebulaYankOptions<CR>
@@ -800,8 +781,8 @@ if s:bundle_tap('nebula.vim') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-operator-replace') "{{{
-  call s:bundle_config({'depends': 'vim-operator-user', 'autoload': {'mappings': ['<Plug>(operator-replace)']}})
+if neobundle#tap('vim-operator-replace') "{{{
+  call neobundle#config({'depends': 'vim-operator-user', 'autoload': {'mappings': ['<Plug>(operator-replace)']}})
   nmap yr   <Plug>(operator-replace)
   nmap cr   <Plug>(operator-replace)
   nmap cy   <Plug>(operator-replace)
@@ -809,9 +790,9 @@ if s:bundle_tap('vim-operator-replace') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-textobj-user') "{{{
-  call s:bundle_config({'autoload': {'mappings': [['xo', '<Plug>(textobj-piece']]}})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+if neobundle#tap('vim-textobj-user') "{{{
+  call neobundle#config({'autoload': {'mappings': [['xo', '<Plug>(textobj-piece']]}})
+  function! neobundle#tapped.hooks.on_source(bundle)
     call textobj#user#plugin('cword', {'-': {'*pattern*': '\k*\%#\k*', 'select': ['*',], }, })
     let textobj_star = {'select-a': 'a*', 'select-i': 'i*',
       \ '*select-a-function*': 's:Textobj_star_a', '*select-i-function*': 's:Textobj_star_i', '*sfile*': expand('<sfile>')}
@@ -887,7 +868,7 @@ if s:bundle_tap('vim-textobj-user') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-textovj-wiw') "{{{
+if neobundle#tap('vim-textovj-wiw') "{{{
   let g:textobj_wiw_no_default_key_mappings = 1
   xmap aw <Plug>(textobj-wiw-a)
   xmap iw <Plug>(textobj-wiw-i)
@@ -896,7 +877,7 @@ if s:bundle_tap('vim-textovj-wiw') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-textovj-plugins') "between {{{
+if neobundle#tap('vim-textovj-plugins') "between {{{
   let g:textobj_between_no_default_key_mappings = 1
   xmap ag <Plug>(textobj-between-a)
   xmap ig <Plug>(textobj-between-i)
@@ -905,7 +886,7 @@ if s:bundle_tap('vim-textovj-plugins') "between {{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-textovj-parameter') "{{{
+if neobundle#tap('vim-textovj-parameter') "{{{
   let g:textobj_parameter_no_default_key_mappings = 1
   xmap a8 <Plug>(textobj-parameter-a)
   xmap i8 <Plug>(textobj-parameter-i)
@@ -914,7 +895,7 @@ if s:bundle_tap('vim-textovj-parameter') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-textobj-multiblock') "{{{
+if neobundle#tap('vim-textobj-multiblock') "{{{
   let g:textobj_multiblock_no_default_key_mappings = 1
   omap ab <Plug>(textobj-multiblock-a)
   omap ib <Plug>(textobj-multiblock-i)
@@ -923,9 +904,9 @@ if s:bundle_tap('vim-textobj-multiblock') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-surround') "{{{
-  call s:bundle_config({'autoload': {'mappings': ['<Plug>Ysurround', '<Plug>Csurround', '<Plug>Ygsurround', '<Plug>Dsurround', ['i', '<Plug>ISurround'], ['sx', '<Plug>VgSurround'], ['sx', '<Plug>Vsurround'], '<Plug>SurroundRepeat', '<Plug>Yssurround', ['i', '<Plug>Isurround'], ['sx', '<Plug>Vgsurround'], '<Plug>Ygssurround', ['sx', '<Plug>VSurround']]}})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+if neobundle#tap('vim-surround') "{{{
+  call neobundle#config({'autoload': {'mappings': ['<Plug>Ysurround', '<Plug>Csurround', '<Plug>Ygsurround', '<Plug>Dsurround', ['i', '<Plug>ISurround'], ['sx', '<Plug>VgSurround'], ['sx', '<Plug>Vsurround'], '<Plug>SurroundRepeat', '<Plug>Yssurround', ['i', '<Plug>Isurround'], ['sx', '<Plug>Vgsurround'], '<Plug>Ygssurround', ['sx', '<Plug>VSurround']]}})
+  function! neobundle#tapped.hooks.on_source(bundle)
     let g:surround_no_mappings = 1
   endfunction
   nmap      ds   <Plug>Dsurround
@@ -946,7 +927,7 @@ runtime macros/matchit.vim
 let b:match_ignorecase = 1
 let b:batch_words = &matchpairs . ",\<if\>:\<endif\>"
 "--------------------------------------
-if s:bundle_tap('vim-smartword') "{{{
+if neobundle#tap('vim-smartword') "{{{
   map w <Plug>(smartword-w)
   map b <Plug>(smartword-b)
   map e <Plug>(smartword-e)
@@ -954,18 +935,18 @@ if s:bundle_tap('vim-smartword') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('jasegment.vim') "{{{
-  call s:bundle_config({'autoload': {'mappings': [['sxno', '<Plug>JaSegment']], 'commands': ['JaSegmentSplit']}})
+if neobundle#tap('jasegment.vim') "{{{
+  call neobundle#config({'autoload': {'mappings': [['sxno', '<Plug>JaSegment']], 'commands': ['JaSegmentSplit']}})
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-smalls') "{{{
-  call s:bundle_config({'autoload': {'mappings': [['n', '<Plug>(smalls']], 'commands': [{'complete': 'customlist,s:dir', 'name': 'Smalls'}]}})
+if neobundle#tap('vim-smalls') "{{{
+  call neobundle#config({'autoload': {'mappings': [['n', '<Plug>(smalls']], 'commands': [{'complete': 'customlist,s:dir', 'name': 'Smalls'}]}})
   nmap t <Plug>(smalls)
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('CamelCaseMotion') "{{{
+if neobundle#tap('CamelCaseMotion') "{{{
   map <silent> mw <Plug>CamelCaseMotion_w
   map <silent> mb <Plug>CamelCaseMotion_b
   map <silent> me <Plug>CamelCaseMotion_e
@@ -985,7 +966,7 @@ if s:bundle_tap('CamelCaseMotion') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('columnjump') "{{{
+if neobundle#tap('columnjump') "{{{
   nmap <expr>gj   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-forward)"
   nmap <expr>gk   &wrap && winwidth(0) < col('$') ? "\<SID>k" : "\<Plug>(columnjump-backward)"
   vmap <expr>gj   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-forward)"
@@ -997,7 +978,7 @@ if s:bundle_tap('columnjump') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('clever-f.vim') "{{{
+if neobundle#tap('clever-f.vim') "{{{
   let g:clever_f_ignore_case = 1
   let g:clever_f_smart_case = 1
   let g:clever_f_use_migemo = 1
@@ -1011,9 +992,9 @@ if s:bundle_tap('clever-f.vim') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-poslist') "{{{
-  call s:bundle_config({})
-  function! s:tapped_bundle.hooks.on_post_source(bundle)
+if neobundle#tap('vim-poslist') "{{{
+  call neobundle#config({})
+  function! neobundle#tapped.hooks.on_post_source(bundle)
     call poslist#save_current_pos()
   endfunction
   nmap <M-o> <Plug>(poslist-prev-pos)
@@ -1021,7 +1002,7 @@ if s:bundle_tap('vim-poslist') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-visualstar') "{{{
+if neobundle#tap('vim-visualstar') "{{{
   noremap <SID>put_searchstart_sign  :<C-u>call <SID>put_searchstart_sign(0)<CR>
   "nmap <silent>* <Plug>(visualstar-*)N<SID>put_searchstart_sign
   "vmap <silent>*  <SID>put_searchstart_sign<Plug>(visualstar-*)N
@@ -1041,8 +1022,8 @@ let g:Syster_dir = $BASEDIR. '/syster'
 let g:lastbuf_level= 2
 exe 'noremap <silent>'. s:bind.win. 'u :LastBuf<CR>'
 "--------------------------------------
-if s:bundle_tap('vim-gf-user') "{{{
-  function! s:tapped_bundle.hooks.on_post_source(bundle)
+if neobundle#tap('vim-gf-user') "{{{
+  function! neobundle#tapped.hooks.on_post_source(bundle)
     NeoBundleSource vim-gf-autoload
   endfunction
   let g:gf_user_no_default_key_mappings = 1
@@ -1059,27 +1040,27 @@ if s:bundle_tap('vim-gf-user') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-automatic') "{{{
+if neobundle#tap('vim-automatic') "{{{
   let g:automatic_config = [{'match': {'bufname': '[\[\*]unite[\]\*]', 'any_unite_sources': ['quickfix']}, 'set': {'height': '30%'}}]
 endif
 "}}}
 
 "======================================
 "Bind&Command
-"if s:bundle_tap('vim-arpeggio') "{{{
+"if neobundle#tap('vim-arpeggio') "{{{
   "let g:arpeggio_timeoutlen = 80
   "call arpeggio#load()
   "call arpeggio#map('nicv', '', 0, 'fj', '<Esc>')
 "endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-ambicmd') "{{{
+if neobundle#tap('vim-ambicmd') "{{{
   "cnoremap <expr> <C-l>   getcmdtype()==':' && getcmdpos()==1 ? 'let ' : ambicmd#expand("\<Right>")
   cnoremap <expr><C-n>    ambicmd#expand("\<C-n>")
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-submode') "{{{
+if neobundle#tap('vim-submode') "{{{
   let g:submode_timeoutlen = 5000
 
   "; ,
@@ -1131,7 +1112,7 @@ if s:bundle_tap('vim-submode') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-altercmd') "{{{
+if neobundle#tap('vim-altercmd') "{{{
   call altercmd#load()
   "neobundle
   AlterCommand nb   Unite neobundle
@@ -1182,7 +1163,7 @@ endif
 
 "======================================
 "Info
-if s:bundle_tap('foldCC') "{{{
+if neobundle#tap('foldCC') "{{{
   set fdt =FoldCCtext()
   let g:foldCCtext_tail = 'v:foldend-v:foldstart+1'
   let g:foldCCtext_enable_autofdc_adjuster = 1
@@ -1190,7 +1171,7 @@ if s:bundle_tap('foldCC') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('lastmess.vim') "{{{
+if neobundle#tap('lastmess.vim') "{{{
   let g:lastmess_ignore_pattern = 'スキャン中\|検索したので\|箇所変更しました;\|行 削除しました;\|行 追加しました\|\d\+L, \d\+C$\|行 --\d\+%--$\|--バッファに行がありません--$\|\s*\d\+:\s\%(\~\|\u:\)/'
   let g:lastmess_default_count = 30
   nmap mz <Plug>(lastmess)
@@ -1200,8 +1181,8 @@ else
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-anzu') "{{{
-  call s:bundle_config({'autoload': {'mappings': ['<Plug>(anzu-', '<Plug>(anzu-jump-n)<Plug>', '<Plug>(anzu-jump-N)<Plug>']}})
+if neobundle#tap('vim-anzu') "{{{
+  call neobundle#config({'autoload': {'mappings': ['<Plug>(anzu-', '<Plug>(anzu-jump-n)<Plug>', '<Plug>(anzu-jump-N)<Plug>']}})
   "let g:anzu_status_format = '%p(%i/%l) %#WarningMsg#%w'
   let g:anzu_status_format = '%p(%i/%l)'
   let g:anzu_no_match_word = '%#ErrorMsg#E486: Pattern not found: %p'
@@ -1213,7 +1194,7 @@ if s:bundle_tap('vim-anzu') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-hier') "{{{
+if neobundle#tap('vim-hier') "{{{
   " ハイライトの設定
   execute "highlight ucurl_my gui=undercurl guisp=Red"
   let g:hier_highlight_group_qf = "ucurl_my"
@@ -1226,7 +1207,7 @@ endif
 
 "======================================
 "GUI
-if s:bundle_tap('rainbowcyclone.vim') "{{{
+if neobundle#tap('rainbowcyclone.vim') "{{{
   let g:rainwbow_cyclone_colors = []
   call add(g:rainwbow_cyclone_colors, 'term=reverse ctermfg=1 ctermbg=12 gui=bold guifg=Black guibg=Red')
   call add(g:rainwbow_cyclone_colors, 'term=reverse ctermfg=1 ctermbg=6  gui=bold guifg=Black guibg=Orange')
@@ -1242,7 +1223,7 @@ if s:bundle_tap('rainbowcyclone.vim') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('lightline.vim') "{{{
+if neobundle#tap('lightline.vim') "{{{
   command! -bar LightlineUpdate    call lightline#init()| call lightline#colorscheme()| call lightline#update()
   let g:lightline = {'subseparator': {'left': '', 'right': ''}, 'tabline_subseparator': {'left': '|', 'right': ''}}
   let g:lightline.tabline = {'right': [['rows'], ['cd'], ['tabopts'], ['fugitive']]}
@@ -1337,10 +1318,10 @@ if s:bundle_tap('lightline.vim') "{{{
 endif
 "}}}
 "--------------------------------------
-if s:bundle_tap('vim-quickhl') "{{{
-  call s:bundle_config({'autoload': {'mappings': ['<Plug>(quickhl-'], 'commands':
+if neobundle#tap('vim-quickhl') "{{{
+  call neobundle#config({'autoload': {'mappings': ['<Plug>(quickhl-'], 'commands':
     \ ['QuickhlList', 'QuickhlReset', 'QuickhlDump', 'QuickhlColors', 'QuickhlReloadColors', 'QuickhlAdd', 'QuickhlLock', 'QuickhlMatch']}})
-  function! s:tapped_bundle.hooks.on_source(bundle)
+  function! neobundle#tapped.hooks.on_source(bundle)
   endfunction
   map ,xh <Plug>(quickhl-toggle)
   map ,xH <Plug>(quickhl-reset)
@@ -1349,7 +1330,7 @@ endif
 
 "======================================
 "Maintenance
-if s:bundle_tap('savevers.vim') "{{{
+if neobundle#tap('savevers.vim') "{{{
   set patchmode=.vbcu
   let g:savevers_types = "*"
   "let g:savevers_dirs = &backupdir
@@ -1358,25 +1339,19 @@ if s:bundle_tap('savevers.vim') "{{{
   nmap <silent> <F7> :VersDiff -<cr>
   nmap <silent> <F8> :VersDiff +<cr>
   nmap <silent> <F9> :VersDiff -c<cr>
-  call s:bundle_untap()
 endif
 "}}}
-"--------------------------------------
+
+"======================================
+"neobundle END
+call neobundle#untap()
 filetype plugin indent on  "ファイル判定をonにする
-unlet s:tapped_bundle
-delf s:bundle_tap | delf s:bundle_config | delf s:bundle_untap
 let g:loaded_getscriptPlugin = 1 | let g:loaded_netrwPlugin = 1 | let g:loaded_vimballPlugin = 1
 
 if filereadable(fnamemodify('~/.privacy/.vimrc_privacy.vim', ':p'))
   source ~/.privacy/.vimrc_privacy.vim  "lingr.vimのパスワードとか
 endif
 
-let g:backdraft_buffer_func = {'enterdraft': 'BackdraftEnterDraft'}
-function! BackdraftEnterDraft() "{{{
-  nmap <buffer><expr><C-p>    yankround#is_active() ? "\<Plug>(yankround-prev)" : "\<Plug>(backdraft_cycle_dec)"
-  nmap <buffer><expr><C-n>    yankround#is_active() ? "\<Plug>(yankround-next)" : "\<Plug>(backdraft_cycle_inc)"
-endfunction
-"}}}
 
 
 "=========================================================
