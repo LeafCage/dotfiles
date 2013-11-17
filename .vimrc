@@ -144,6 +144,7 @@ NeoBundleLazy 'mattn/ctrlp-mark', {'autoload': {'commands': ['CtrlPMark']}, 'dep
 "Moving
 NeoBundleLazy 'kana/vim-smartword', {'autoload': {'mappings': ['<Plug>(smartword-']}}
 NeoBundle 'deton/jasegment.vim' "WBEを日本語文節区切り移動に
+NeoBundleLazy 't9md/vim-smalls'
 NeoBundleLazy 'bkad/CamelCaseMotion', {'autoload': {'mappings': ['<Plug>CamelCaseMotion_']}}
 NeoBundleLazy 'deris/columnjump', {'autoload': {'mappings': ['<Plug>(columnjump-']}}
 NeoBundleLazy 'rhysd/clever-f.vim', {'autoload': {'mappings': [['sxno', '<Plug>(clever-f-']]}}
@@ -335,8 +336,8 @@ if s:bundle_tap('ctrlp.vim') " {{{
     let g:ctrlp_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
     let g:ctrlp_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>']
     let g:ctrlp_prompt_mappings['PrtCurRight()'] = ['<Right>', '<C-f>']
-    let g:ctrlp_prompt_mappings['ToggleType(1)'] = ['<C-l>', '<C-up>']
-    let g:ctrlp_prompt_mappings['ToggleType(-1)'] = ['<C-x>', '<C-down>']
+    let g:ctrlp_prompt_mappings['ToggleType(1)'] = ['<C-_>', '<C-l>', '<C-up>']
+    let g:ctrlp_prompt_mappings['ToggleType(-1)'] = ['<C-^>', '<C-x>', '<C-down>']
     let g:ctrlp_prompt_mappings['AcceptSelection("h")'] = ['<C-CR>', '<C-s>']
     let g:ctrlp_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
     let g:ctrlp_prompt_mappings['PrtInsert("r")'] = ['<S-Left>']
@@ -462,8 +463,7 @@ if s:bundle_tap('vimfiler') "{{{
   "シンタックス
   "let g:vimfiler_extensions = {'text': '', 'image': '', 'archive': '', 'system': '', 'multimedia': '',}
   function! s:tapped_bundle.hooks.on_source(bundle)
-    au FileType vimfiler  setl nobl
-    au FileType vimfiler  let b:vimfiler.is_visible_dot_files = 1
+    au FileType vimfiler  let b:vimfiler.is_visible_dot_files = 1| setl nobl| autocmd BufLeave <buffer> setl nobl
 
     "vf basic-Keymaps "{{{
     let g:vimfiler_no_default_key_mappings = 1
@@ -959,6 +959,12 @@ if s:bundle_tap('jasegment.vim') "{{{
 endif
 "}}}
 "--------------------------------------
+if s:bundle_tap('vim-smalls') "{{{
+  call s:bundle_config({'autoload': {'mappings': [['n', '<Plug>(smalls']], 'commands': [{'complete': 'customlist,s:dir', 'name': 'Smalls'}]}})
+  nmap t <Plug>(smalls)
+endif
+"}}}
+"--------------------------------------
 if s:bundle_tap('CamelCaseMotion') "{{{
   map <silent> mw <Plug>CamelCaseMotion_w
   map <silent> mb <Plug>CamelCaseMotion_b
@@ -1000,8 +1006,8 @@ if s:bundle_tap('clever-f.vim') "{{{
   let g:clever_f_not_overwrites_standard_mappings = 1
   map f <Plug>(clever-f-f)
   map F <Plug>(clever-f-F)
-  map t <Plug>(clever-f-t)
-  map T <Plug>(clever-f-T)
+  "map t <Plug>(clever-f-t)
+  "map T <Plug>(clever-f-T)
 endif
 "}}}
 "--------------------------------------
@@ -1524,13 +1530,18 @@ function! s:rename(name, bang) "{{{
 endfunction
 "}}}
 command! -nargs=* -complete=file -bang Rename :call <SID>rename("<args>", "<bang>")
-AlterCommand ren[ame] Rename
+AlterCommand re[name] Rename
 
 "=========================================================
 "Functions
 function! Eat_whitespace(pat) "{{{
   let c = nr2char(getchar(0))
-  return c=~a:pat ? '' : c
+  if c=~a:pat
+    return ''
+  elseif c=~'\r'
+    return ''
+  end
+  return c
 endfunction
 "}}}
 " Call a script local function.
