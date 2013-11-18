@@ -942,7 +942,7 @@ endif
 "--------------------------------------
 if neobundle#tap('vim-smalls') "{{{
   call neobundle#config({'autoload': {'mappings': [['n', '<Plug>(smalls']], 'commands': [{'complete': 'customlist,s:dir', 'name': 'Smalls'}]}})
-  nmap t <Plug>(smalls)
+  nmap <C-g> <Plug>(smalls)
 endif
 "}}}
 "--------------------------------------
@@ -1172,7 +1172,7 @@ endif
 "}}}
 "--------------------------------------
 if neobundle#tap('lastmess.vim') "{{{
-  let g:lastmess_ignore_pattern = 'スキャン中\|検索したので\|箇所変更しました;\|行 削除しました;\|行 追加しました\|\d\+L, \d\+C$\|行 --\d\+%--$\|--バッファに行がありません--$\|\s*\d\+:\s\%(\~\|\u:\)/'
+  let g:lastmess_ignore_pattern = 'スキャン中\|検索したので\|箇所変更しました;\|行 削除しました;\|行 追加しました\|\d\+L, \d\+C$\|行 --\d\+%--$\|--バッファに行がありません--$\|^\s*\d\+:\s\%(\~\|\u:\)/'
   let g:lastmess_default_count = 30
   nmap mz <Plug>(lastmess)
   nnoremap mg :<C-u>mes<CR>
@@ -1917,7 +1917,7 @@ nnoremap <SID>o_gitconfig :e $DOTFILES/.gitconfig<CR>
 nmap cog <SID>o_gitconfig
 "--------------------------------------
 "Info
-nnoremap <C-g><C-z> :<C-u>echo <SID>get_fileinfo()<CR>
+nnoremap <silent>t :<C-u>echo <SID>get_fileinfo()<CR>
 function! s:get_fileinfo() "{{{
   let ret = ''
   let ret .= printf('"%s" (upd:%s) [%schrs] tw=%d (%d/%dv)%d',
