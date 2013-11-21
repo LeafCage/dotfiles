@@ -1379,7 +1379,7 @@ autocmd vimrc VimLeavePre * set verbosefile=/tmp/vim.log
 "autocmd vimrc FileType * setlocal fo-=ro
 "--------------------------------------
 "au_filetype
-autocmd vimrc BufRead,BufNewFile,BufAdd *.markdown,*.md    setl ft=markdown nofoldenable
+autocmd vimrc BufWinEnter   *.markdown,*.md    setl ft=markdown nofoldenable
 autocmd vimrc FileType js   setlocal ft=javascript
 "--------------------------------------
 "au_option
