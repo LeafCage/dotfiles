@@ -119,6 +119,7 @@ NeoBundleLazy 'rhysd/conflict-marker.vim', {'autoload': {'unite_sources': ['conf
 NeoBundleLazy 'cocoa.vim' "Objective-C
 NeoBundleLazy 'javacomplete'
 NeoBundleLazy 'Javascript-OmniCompletion-with-YUI-and-j'
+NeoBundle 'elzr/vim-json'
 
 "NeoBundle 'mikelue/vim-maven-plugin' "Apache Maven project
 "NeoBundle 'groovy.vim'
@@ -152,7 +153,7 @@ NeoBundle 'deton/jasegment.vim' "WBEを日本語文節区切り移動に
 NeoBundleLazy 't9md/vim-smalls'
 NeoBundleLazy 'bkad/CamelCaseMotion', {'autoload': {'mappings': ['<Plug>CamelCaseMotion_']}}
 NeoBundleLazy 'deris/columnjump', {'autoload': {'mappings': ['<Plug>(columnjump-']}}
-NeoBundleLazy 'rhysd/clever-f.vim', {'autoload': {'mappings': [['sxno', '<Plug>(clever-f-']]}}
+"NeoBundleLazy 'rhysd/clever-f.vim', {'autoload': {'mappings': [['sxno', '<Plug>(clever-f-']]}}
 NeoBundleLazy 'thinca/vim-poslist', {'autoload': {'mappings': ['<Plug>(poslist-']}}
 NeoBundleLazy 'thinca/vim-visualstar', {'autoload': {'mappings': ['<Plug>(visualstar-']}}
 NeoBundleLazy 'https://github.com/vim-scripts/DrawIt.git' "図を描写する #Bible5-4
@@ -182,6 +183,7 @@ NeoBundleLazy 'thinca/vim-ambicmd' "コマンド名省入力 ex)NeoBundleUpdate 
 NeoBundle 'tyru/vim-altercmd' "コマンドのエイリアスを作る tyru版あり #B9-6
 "--------------------------------------
 "Info
+NeoBundleLazy 'osyo-manga/vim-over', {'autoload': {'commands': ['OverCommandLineNoremap', 'OverCommandLine']}}
 NeoBundle 'LeafCage/foldCC', {'stay_same': 1}
 NeoBundle 'tyru/current-func-info.vim'
 NeoBundleLazy 'sgur/vim-gitgutter', {'autoload': {'mappings': [['n', '<Plug>GitGutter']], 'commands': ['GitGutterAll', 'GitGutterToggle', 'GitGutterPrevHunk', 'GitGutterDisable', 'GitGutterLineHighlightsEnable', 'GitGutterNextHunk', 'GitGutterEnable', 'GitGutter', 'GitGutterLineHighlightsToggle', 'GitGutterLineHighlightsDisable']}}
@@ -234,7 +236,7 @@ endif
 
 "======================================
 "Synthesis
-if neobundle#tap('unite.vim') " {{{
+if neobundle#tap('unite.vim') "{{{
   call neobundle#config({'autoload': {'commands': [{'name': 'Unite', 'complete': 'customlist,unite#complete_source'},
     \ 'UniteWithCursorWord', 'UniteWithInput']}})
   function! neobundle#tapped.hooks.on_source(bundle)
@@ -314,7 +316,7 @@ if neobundle#tap('unite.vim') " {{{
 endif
 "}}}
 "--------------------------------------
-if neobundle#tap('ctrlp.vim') " {{{
+if neobundle#tap('ctrlp.vim') "{{{
   call neobundle#config({'autoload': {'commands': ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU', 'CtrlPLastMode', 'CtrlPRoot', 'CtrlPClearCache', 'CtrlPClearAllCaches']}})
   function! neobundle#tapped.hooks.on_source(bundle)
     nnoremap <S-Space> :
@@ -358,9 +360,9 @@ if neobundle#tap('ctrlp.vim') " {{{
 endif
 "}}}
 "--------------------------------------
-if neobundle#tap('alti.vim') " {{{
+if neobundle#tap('alti.vim') "{{{
   function! neobundle#tapped.hooks.on_source(bundle)
-    "nnoremap <S-Space> :
+    nnoremap <S-Space> :
     let g:alti_prompt_mappings = {}
     let g:alti_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
     let g:alti_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>']
@@ -385,7 +387,7 @@ if neobundle#tap('alti.vim') " {{{
 endif
 "}}}
 "--------------------------------------
-if neobundle#tap('vimshell') " {{{
+if neobundle#tap('vimshell') "{{{
   call neobundle#config({'autoload': {'commands': [{'name': 'VimShell', 'complete': 'customlist,vimshell#complete'},
     \ 'VimShellExecute', 'VimShellInteractive', 'VimShellTerminal', 'VimShellPop', 'VimShellTab'],
     \ 'mappings': ['<Plug>(vimshell_']}})
@@ -778,6 +780,7 @@ if neobundle#tap('nebula.vim') "{{{
   nnoremap <silent>,bc    :<C-u>NebulaPutConfig<CR>
   nnoremap <silent>,by    :<C-u>NebulaYankOptions<CR>
   nnoremap <silent>,bp    :<C-u>NebulaPutFromClipboard<CR>
+  nnoremap <silent>,bt    :<C-u>NebulaYankTap!<CR>
 endif
 "}}}
 "--------------------------------------
@@ -941,8 +944,14 @@ endif
 "}}}
 "--------------------------------------
 if neobundle#tap('vim-smalls') "{{{
-  call neobundle#config({'autoload': {'mappings': [['n', '<Plug>(smalls']], 'commands': [{'complete': 'customlist,s:dir', 'name': 'Smalls'}]}})
-  nmap <C-g> <Plug>(smalls)
+  call neobundle#config({'autoload': {'mappings': [['n', '<Plug>(smalls']], 'commands': ['Smalls']}})
+  function! neobundle#tapped.hooks.on_post_source(bundle)
+    call smalls#keyboard#cli#extend_table({"\<C-j>": 'do_jump_first'})
+    call smalls#keyboard#excursion#extend_table({"\<C-j>": 'do_set'})
+  endfunction
+  "let g:smalls_jump_keys = ',ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  nmap gs <Plug>(smalls)
+  nmap - <Plug>(smalls)
 endif
 "}}}
 "--------------------------------------
@@ -1120,7 +1129,7 @@ if neobundle#tap('vim-altercmd') "{{{
   AlterCommand nbu  Unite neobundle/update<C-r>=Eat_whitespace('\s')<CR>
   AlterCommand nbl[g]   Unite neobundle/log
   AlterCommand nbus   Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neosnippet
-  AlterCommand nbum   Unite neobundle/install:vim-quickrun:vital.vim:open-browser.vim:vim-submode:vim-surround:vimtest:vim-fugitive:vim-anzu:lightline.vim:clever-f.vim
+  AlterCommand nbum   Unite neobundle/install:vim-quickrun:vital.vim:vim-fugitive:vim-anzu:lightline.vim:vim-smalls:jsegment.vim:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim
   AlterCommand nbls NeoBundleList
   AlterCommand nbc NeoBundleClean
   command! -nargs=0 NeoBundleUpdateShougo
@@ -1163,6 +1172,13 @@ endif
 
 "======================================
 "Info
+if neobundle#tap('vim-over') "{{{
+  cnoreabb <silent><expr>s getcmdtype()==':' && getcmdline()=~'^s' ? 'OverCommandLine<CR><C-u>%s/<C-r>=get([], getchar(0), '')<CR>' : 's'
+else
+  cnoreabb <expr>s getcmdtype()==':' && getcmdline()=~'^s' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's'
+endif
+"}}}
+"--------------------------------------
 if neobundle#tap('foldCC') "{{{
   set fdt =FoldCCtext()
   let g:foldCCtext_tail = 'v:foldend-v:foldstart+1'
@@ -1465,7 +1481,7 @@ aug END
 command! -nargs=*   VimElements    UPP lib#vimelements#collect(<f-args>)
 command! Hitest    silent! source $VIMRUNTIME/syntax/hitest.vim
 command! MessageClear for n in range(200) | echom "" | endfor| ec 'Cleared Message'
-nnoremap mC :<C-u>MessageClear<CR>
+nnoremap mc :<C-u>MessageClear<CR>
 "Vim script計測
 command! -bar TimerStart let start_time = reltime()
 command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
@@ -1917,7 +1933,7 @@ nnoremap <SID>o_gitconfig :e $DOTFILES/.gitconfig<CR>
 nmap cog <SID>o_gitconfig
 "--------------------------------------
 "Info
-nnoremap <silent>t :<C-u>echo <SID>get_fileinfo()<CR>
+nnoremap <silent><C-g>  :<C-u>echo <SID>get_fileinfo()<CR>
 function! s:get_fileinfo() "{{{
   let ret = ''
   let ret .= printf('"%s" (upd:%s) [%schrs] tw=%d (%d/%dv)%d',
@@ -1931,7 +1947,7 @@ function! s:get_fileinfo() "{{{
   return ret
 endfunction
 "}}}
-nnoremap mc :<C-u>scrip<CR>
+nnoremap mS :<C-u>scrip<CR>
 "nnoremap ma :marks<CR>
 "nnoremap ma :<C-u>Unite mark<CR>
 "検索ハイライト
@@ -1958,10 +1974,11 @@ nnoremap <silent> g/ :exe 'sign jump 333 buffer='.bufnr('%')<CR>
 "Moving
 nmap + *
 nnoremap g*   g*N
-noremap U %
+nnoremap t ;
+noremap T %
 noremap L $
 noremap <expr>H   col('.') == match(getline('.'), '^\s*\zs\S')+1 ? '0' : '^'
-noremap <silent>M   :<C-u>call <SID>smart_M('M')<CR>
+noremap <silent>U   :<C-u>call <SID>smart_M('M')<CR>
 function! s:smart_M(move) "{{{
   let s:smart_M_count = get(s:, 'smart_M_count', 0)
   let s:origin_view = s:smart_M_count==0 ? winsaveview() : get(s:, 'origin_view', winsaveview())
@@ -2117,6 +2134,7 @@ nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に
 "======================================
 "Visual mode
 vnoremap . :norm .<CR>
+xnoremap re y:%s/<C-r>=substitute(@0, '/', '\\/', 'g')<CR>//gI<Left><Left><Left>
 vnoremap zf :call <SID>Fixed_zf()<CR>
 function! s:Fixed_zf() range "{{{
   let cmsStart = matchstr(&cms,'\V\s\*\zs\.\+\ze%s')
@@ -2174,7 +2192,6 @@ imap <M-Space>    <Tab><Tab>
 cnoremap <expr> <C-x> expand('%:p:h') . "/"
 cnoremap <expr> <C-z> expand('%:p:r')
 "cnoremap <expr><C-s>    getcmdtype()==':' ? getcmdpos()==1 ? 'set ' : "\<C-s>" : "\<C-s>"
-cnoreabb <expr>s getcmdtype()==':' && getcmdline()=~'^s' ? '%s/\C<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's'
 cnoremap <expr> / getcmdtype()=='/' ? '\/' : '/'
 cnoremap <expr> ? getcmdtype()=='?' ? '\?' : '?'
 "--------------------------------------
