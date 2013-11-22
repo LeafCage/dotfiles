@@ -1129,7 +1129,7 @@ if neobundle#tap('vim-altercmd') "{{{
   AlterCommand nbu  Unite neobundle/update<C-r>=Eat_whitespace('\s')<CR>
   AlterCommand nbl[g]   Unite neobundle/log
   AlterCommand nbus   Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neosnippet
-  AlterCommand nbum   Unite neobundle/install:vim-quickrun:vital.vim:vim-fugitive:vim-anzu:lightline.vim:vim-smalls:jsegment.vim:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim
+  AlterCommand nbum   Unite neobundle/install:vital.vim:vim-over:vim-anzu:vim-smalls:jsegment.vim:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim:vim-quickrun:vim-fugitive:lightline.vim
   AlterCommand nbls NeoBundleList
   AlterCommand nbc NeoBundleClean
   command! -nargs=0 NeoBundleUpdateShougo
@@ -1173,6 +1173,7 @@ endif
 "======================================
 "Info
 if neobundle#tap('vim-over') "{{{
+  let g:over_command_line_key_mappings = {"\<C-k>": "\<C-b>"}
   cnoreabb <silent><expr>s getcmdtype()==':' && getcmdline()=~'^s' ? 'OverCommandLine<CR><C-u>%s/<C-r>=get([], getchar(0), '')<CR>' : 's'
 else
   cnoreabb <expr>s getcmdtype()==':' && getcmdline()=~'^s' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's'
@@ -1936,11 +1937,10 @@ nmap cog <SID>o_gitconfig
 nnoremap <silent><C-g>  :<C-u>echo <SID>get_fileinfo()<CR>
 function! s:get_fileinfo() "{{{
   let ret = ''
-  let ret .= printf('"%s" (upd:%s) [%schrs] tw=%d (%d/%dv)%d',
+  let ret .= printf('"%s" (upd:%s) [%schrs] (%d/%dv) winwidth%d',
     \ bufname("%"),
     \ strftime("%Y_%m%d %H:%M",getftime(bufname("%"))),
     \ (exists('b:charCounterCount') ? b:charCounterCount : ''),
-    \ &tw,
     \ virtcol('.'), virtcol('$'), winwidth(0),
     \ )[:&co-2]
   let ret .= "\n". FoldCCnavi()
