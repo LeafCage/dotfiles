@@ -5,9 +5,10 @@ aug vimrc
 aug END
 let s:bind = {'win': 'm', 'markj': '`', 'reg': '[@]', 'mode': '<C-q>', 'esc': '<C-o>', 'snip': 's', 'sticky': '[C-k]'}
 "--------------------------------------
-scriptencoding utf8 "このファイルのエンコード
+set encoding=utf8
+scriptencoding utf8
 "BufRead時、'fileencodings'の先頭から'encoding'を試してerrが出なければそれを適用
-set encoding=utf8 fileencodings=utf8,cp932,iso-2022-jp,euc-jp,default,latin
+set fileencodings=utf8,cp932,iso-2022-jp,euc-jp,default,latin
 "改行コードの自動認識（新規作成されるファイルフォーマットをdosにしたい）
 set fileformats=dos,unix,mac
 
@@ -131,7 +132,7 @@ NeoBundleLazy 'Shougo/neocomplcache'
 NeoBundleLazy 'Shougo/neosnippet'
 NeoBundleLazy 'scrooloose/nerdcommenter', {'autoload': {'mappings': [['inx', '<Plug>NERDCommenter']]}}
 NeoBundle 'LeafCage/yankround.vim', {'stay_same': 1}
-NeoBundleLazy 'LeafCage/nebula.vim', {'autoload': {'commands': ['NebulaPutLazy', 'NebulaPutFromClipboard', 'NebulaYankOptions', 'NebulaPutConfig']}, 'stay_same': 1}
+NeoBundleLazy 'LeafCage/nebula.vim', {'autoload': {'commands': ['NebulaPutLazy', 'NebulaPutFromClipboard', 'NebulaYankOptions', 'NebulaPutConfig', 'NebulaYankTap']}, 'stay_same': 1}
 NeoBundleLazy 'kana/vim-operator-user'
 NeoBundleLazy 'kana/vim-operator-replace' "レジスタにあるものとoperator指定したものを置き換え
 NeoBundleLazy 'kana/vim-textobj-user'
@@ -448,7 +449,7 @@ if neobundle#tap('vimfiler') "{{{
   "シンタックス
   "let g:vimfiler_extensions = {'text': '', 'image': '', 'archive': '', 'system': '', 'multimedia': '',}
   function! neobundle#tapped.hooks.on_source(bundle)
-    au FileType vimfiler  let b:vimfiler.is_visible_dot_files = 1| setl nobl| autocmd BufLeave <buffer> setl nobl
+    au FileType vimfiler  let b:vimfiler.is_visible_dot_files = 1| setl nobl nonu| autocmd BufLeave <buffer> setl nobl
 
     "vf basic-Keymaps "{{{
     let g:vimfiler_no_default_key_mappings = 1
@@ -1031,6 +1032,12 @@ let g:Syster_dir = $BASEDIR. '/syster'
 let g:lastbuf_level= 2
 exe 'noremap <silent>'. s:bind.win. 'u :LastBuf<CR>'
 "--------------------------------------
+if neobundle#tap('vim-altr') "{{{
+  map <F2> <Plug>(altr-forward)
+  map <S-F2> <Plug>(altr-back)
+endif
+"}}}
+"--------------------------------------
 if neobundle#tap('vim-gf-user') "{{{
   function! neobundle#tapped.hooks.on_post_source(bundle)
     NeoBundleSource vim-gf-autoload
@@ -1483,6 +1490,15 @@ command! -nargs=*   VimElements    UPP lib#vimelements#collect(<f-args>)
 command! Hitest    silent! source $VIMRUNTIME/syntax/hitest.vim
 command! MessageClear for n in range(200) | echom "" | endfor| ec 'Cleared Message'
 nnoremap mc :<C-u>MessageClear<CR>
+function! s:scriptid(...) "{{{
+  let arg = a:0 ? a:1 : expand('%')
+  if arg=~'^\d\+$'
+    return lily#sid_to_path(arg)
+  end
+  return lily#scriptnames(arg)
+endfunction
+"}}}
+command! -nargs=?   Script    echo <SID>scriptid(<f-args>)
 "Vim script計測
 command! -bar TimerStart let start_time = reltime()
 command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
