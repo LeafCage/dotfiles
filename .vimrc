@@ -108,15 +108,14 @@ NeoBundleLazy 'LeafCage/ref-javadoc', {'depends': 'thinca/vim-ref', 'stay_same':
 "NeoBundle 'vim-jp/vimdoc-ja'
 "--------------------------------------
 "Development
-NeoBundleLazy 'tpope/vim-fugitive', {'augroup': 'fugitive', 'autoload': {'commands': 'Git'}}
+NeoBundleLazy 'tpope/vim-fugitive'
 NeoBundleLazy 'thinca/vim-quickrun', {'autoload': {'commands': 'QuickRun', 'mappings': ['<Plug>(quickrun']}}
 NeoBundleLazy 'kannokanno/vimtest'
 NeoBundleLazy 'kannokanno/vmock'
 NeoBundleLazy 'LeafCage/laptime.vim', {'stay_same': 1}
-NeoBundleLazy 'h1mesuke/vim-benchmark'
 NeoBundleLazy 'LeafCage/vimhelpgenerator'
 NeoBundleLazy 'rhysd/conflict-marker.vim', {'autoload': {'unite_sources': ['conflict'], 'mappings': [['n', '<Plug>(conflict-marker-']], 'commands': ['ConflictMarkerBoth', 'ConflictMarkerThemselves', 'ConflictMarkerOurselves', 'ConflictMarkerNextHunk', 'ConflictMarkerPrevHunk', 'ConflictMarkerNone']}}
-"NeoBundleLazy 'gregsexton/gitv' "vim版Gitk()
+NeoBundleLazy 'gregsexton/gitv', {'autoload': {'commands': ['Gitv']}}
 NeoBundleLazy 'cocoa.vim' "Objective-C
 NeoBundleLazy 'javacomplete'
 NeoBundleLazy 'Javascript-OmniCompletion-with-YUI-and-j'
@@ -626,6 +625,7 @@ endif
 "======================================
 "Development
 if neobundle#tap('vim-fugitive') "{{{
+  call neobundle#config({'augroup': 'fugitive', 'autoload': {'commands': ['Git', 'Gcd', 'Glcd', 'Gstatus', 'Gcommit', 'Ggrep', 'Glgrep', 'Glog', 'Gllog', 'Gedit', 'Gsplit', 'Gvsplit', 'Gtabedit', 'Gpedit', 'Gread', 'Gwrite', 'Gwq', 'Gdiff', 'Gsdiff', 'Gvdiff', 'Gmove', 'Gremove', 'Gblame', 'Gbrowse']}})
   function! neobundle#tapped.hooks.on_post_source(bundle)
     doautoall fugitive BufNewFile
   endfunction
@@ -756,14 +756,14 @@ if neobundle#tap('nerdcommenter') "{{{
   function! neobundle#tapped.hooks.on_post_source(bundle)
     doautocmd NERDCommenter BufEnter
   endfunction
-  nmap gc [cm]
-  vmap gc [cm]
-  nmap [cm]c <Plug>NERDCommenterToggle
-  vmap [cm]c <Plug>NERDCommenterToggle
-  nmap [cm]a <Plug>NERDCommenterAppend
-  nmap [cm]9 <Plug>NERDCommenterToEOL
-  vmap [cm]x <Plug>NERDCommenterSexy
-  vmap [cm]b <Plug>NERDCommenterMinimal
+  nmap gc [CM]
+  vmap gc [CM]
+  nmap [CM]c <Plug>NERDCommenterToggle
+  vmap [CM]c <Plug>NERDCommenterToggle
+  nmap [CM]a <Plug>NERDCommenterAppend
+  nmap [CM]9 <Plug>NERDCommenterToEOL
+  vmap [CM]x <Plug>NERDCommenterSexy
+  vmap [CM]b <Plug>NERDCommenterMinimal
 endif
 "}}}
 "--------------------------------------
@@ -1166,7 +1166,7 @@ if neobundle#tap('vim-altercmd') "{{{
   AlterCommand zv  Ref javadoc
 
   AlterCommand gi[t]     Git
-  AlterCommand gir  Git remote add origin git@github.com:LeafCage/.git<Left><Left><Left><Left>
+  AlterCommand gd     Gsdiff
   AlterCommand c[tags]  !start ctags %
   AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h:h')<CR>
   AlterCommand sf     setf
@@ -2363,6 +2363,16 @@ se shm +=o  "書き込み時のメッセージをその後の読み込みメッ�
 se shm +=I  "Vim開始挨拶メッセージを表示しない
 
 
+se diffopt=filler,horizontal
+" difforig（バッファと元ファイルでの更新を比較・変更箇所表示）を使用可能にする。
+command! DiffOrig new +set\ bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+" ファイルまたはバッファ番号を指定して差分表示。#なら裏バッファと比較
+command! -nargs=? -complete=file Diff if '<args>'=='' | browse vertical diffsplit|else| vertical diffsplit <args>|endif
+" パッチコマンド
+set patchexpr=MyPatch()
+function! MyPatch()
+  :call system($VIM."\\'.'patch -o " . v:fname_out . " " . v:fname_in . " < " . v:fname_diff)
+endfunction
 
 
 
@@ -2440,45 +2450,6 @@ endif
 
 
 
-" diffの設定"{{{
-if has('win32') || has('win64')"{{{
-  set diffexpr=MyDiff()
-
-  function! MyDiff()
-    let opt = '-a --binary '
-    if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-    if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-    let arg1 = v:fname_in
-    if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
-    let arg2 = v:fname_new
-    if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
-    let arg3 = v:fname_out
-    if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-    let eq = ''
-    if $VIMRUNTIME =~ ' '
-      if &sh =~ '\<cmd'
-        let cmd = '""' . $VIMRUNTIME . '\diff"'
-        let eq = '"'
-      else
-        let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-      endif
-    else
-      let cmd = $VIMRUNTIME . '\diff'
-    endif
-    silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
-  endfunction
-endif"}}}
-
-" difforig（バッファと元ファイルでの更新を比較・変更箇所表示）を使用可能にする。
-command! DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
-" ファイルまたはバッファ番号を指定して差分表示。#なら裏バッファと比較
-command! -nargs=? -complete=file Diff if '<args>'=='' | browse vertical diffsplit|else| vertical diffsplit <args>|endif
-" パッチコマンド
-set patchexpr=MyPatch()
-function! MyPatch()
-  :call system($VIM."\\'.'patch -o " . v:fname_out . " " . v:fname_in . " < " . v:fname_diff)
-endfunction
-"}}}
 
 " スクラッチ
 " ==========
