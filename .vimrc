@@ -120,6 +120,7 @@ NeoBundleLazy 'rhysd/conflict-marker.vim', {'autoload': {'unite_sources': ['conf
 NeoBundleLazy 'cocoa.vim' "Objective-C
 NeoBundleLazy 'javacomplete'
 NeoBundleLazy 'Javascript-OmniCompletion-with-YUI-and-j'
+NeoBundle 'thinca/vim-scall'
 NeoBundle 'elzr/vim-json'
 
 "NeoBundle 'mikelue/vim-maven-plugin' "Apache Maven project
@@ -1553,92 +1554,6 @@ function! Eat_whitespace(pat) "{{{
     return ''
   end
   return c
-endfunction
-"}}}
-" Call a script local function.
-" Usage:
-" - S('local_func')
-"   -> call s:local_func() in current file.
-" - S('plugin/hoge.vim:local_func', 'string', 10)
-"   -> call s:local_func('string', 10) in *plugin/hoge.vim.
-" - S('plugin/hoge:local_func("string", 10)')
-"   -> call s:local_func("string", 10) in *plugin/hoge(.vim)?.
-function! S(f, ...) "{{{
-  let [file, func] =a:f =~# ':' ?  split(a:f, ':') : [expand('%:p'), a:f]
-  let fname = matchstr(func, '^\w*')
- 
-  " Get sourced scripts.
-  redir =>slist
-  scriptnames
-  redir END
- 
-  let filepat = '\V' . substitute(file, '\\', '/', 'g') . '\v%(\.vim)?$'
-  for s in split(slist, "\n")
-    let p = matchlist(s, '^\s*\(\d\+\):\s*\(.*\)$')
-    if empty(p)
-      continue
-    endif
-    let [nr, sfile] = p[1 : 2]
-    let sfile = fnamemodify(sfile, ':p:gs?\\?/?')
-    if sfile =~# filepat &&
-      \    exists(printf("*\<SNR>%d_%s", nr, fname))
-      let cfunc = printf("\<SNR>%d_%s", nr, func)
-      break
-    endif
-  endfor
- 
-  if !exists('nr')
-    echoerr Not sourced: ' . file
-    return
-  elseif !exists('cfunc')
-    let file = fnamemodify(file, ':p')
-    echoerr printf(
-      \    'File found, but function is not defined: %s: %s()', file, fname)
-    return
-  endif
- 
-  return 0 <= match(func, '^\w*\s*(.*)\s*$')
-    \      ? eval(cfunc) : call(cfunc, a:000)
-endfunction
-"}}}
-"YankRingっぽくyank/historiesを使う
-noremap <silent><Plug>(yank-replace-n) :call <SID>yank_replace(1)<CR>
-noremap <silent><Plug>(yank-replace-p) :call <SID>yank_replace(-1)<CR>
-let s:yank_histories_replace_idx = 0
-function! s:yank_replace(fluct) "{{{
-  let yank_histories = s:_get_yank_histories()
-  if exists('s:yank_histories_cache') && s:yank_histories_cache != yank_histories
-    let s:yank_histories_replace_idx = 0
-  endif
-  let s:yank_histories_cache = copy(yank_histories)
- 
-  let yank_histories_len = len(yank_histories)
-  let s:yank_histories_replace_idx += a:fluct
-  let s:yank_histories_replace_idx = s:yank_histories_replace_idx>=yank_histories_len? 0
-    \ : s:yank_histories_replace_idx<0 ? yank_histories_len-1
-    \ : s:yank_histories_replace_idx
-  echo s:yank_histories_replace_idx
- 
-  let replace_content = get(yank_histories, s:yank_histories_replace_idx, '')
- 
-  let [bgn, end] = [line("'["), line("']")]
-  if bgn != line('.') || bgn == 0 || end == 0
-    return
-  endif
-  let [save_reg, save_regtype] = [getreg('"'), getregtype('"')]
-  call setreg('"', replace_content,)
-  silent exe 'normal! u'
-  silent exe 'normal! '. (0? 'gv' :''). '""'. 'p'
-  call setreg('"', save_reg, save_regtype)
-endfunction
-"}}}
-function! s:_get_yank_histories() "{{{
-  let l = []
-  let c = unite#sources#history_yank#define().gather_candidates('','')
-  for pkd in c
-    call add(l, pkd.word)
-  endfor
-  return l
 endfunction
 "}}}
 
