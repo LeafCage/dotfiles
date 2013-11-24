@@ -128,7 +128,11 @@ NeoBundle 'elzr/vim-json'
 "--------------------------------------
 "Insert
 "NeoBundle 'kana/vim-smartchr'
-NeoBundleLazy 'Shougo/neocomplcache'
+if has('lua')
+  NeoBundleLazy 'Shougo/neocomplete.vim', {'autoload': {'insert': 1}}
+else
+  NeoBundleLazy 'Shougo/neocomplcache', {'autoload': {'insert': 1}}
+end
 NeoBundleLazy 'Shougo/neosnippet'
 NeoBundleLazy 'scrooloose/nerdcommenter', {'autoload': {'mappings': [['inx', '<Plug>NERDCommenter']]}}
 NeoBundle 'LeafCage/yankround.vim', {'stay_same': 1}
@@ -669,7 +673,6 @@ endif
 "======================================
 "Insert
 if neobundle#tap('neocomplecache') "{{{
-  call neobundle#config({'autoload': 'insert': 1})
   function! neobundle#tapped.hooks.on_source(bundle)
     let g:neocomplcache_temporary_dir = $VIMCACHE. '/.neocon'
     let g:neocomplcache_dictionary_filetype_lists = {}
@@ -1990,7 +1993,26 @@ nnoremap <silent> g/ :exe 'sign jump 333 buffer='.bufnr('%')<CR>
 "Moving
 nmap + *
 nnoremap g*   g*N
+let g:f_pos = [0, 0]
+function! s:imoff_f(is_vmode) "{{{
+  let save_gcr = &gcr
+  set gcr=n:hor20
+  let c = nr2char(getchar())
+  if a:is_vmode && c!="\<Esc>"
+    let g:f_pos = [bufnr('%'), line('.')]
+  else
+    let g:f_pos = [0, 0]
+  end
+  let &gcr = save_gcr
+  return c
+endfunction
+"}}}
+noremap <silent>f    :<C-u>exe 'norm!' v:count1.'f'. <SID>imoff_f(0)<CR>
+noremap <silent>F    :<C-u>exe 'norm!' v:count1.'F'. <SID>imoff_f(0)<CR>
+vnoremap <silent>f    :<C-u>exe 'norm! ' visualmode(). v:count1.'f'. <SID>imoff_f(1)<CR>
+vnoremap <silent>F    :<C-u>exe 'norm! ' visualmode(). v:count1.'F'. <SID>imoff_f(1)<CR>
 nnoremap t ;
+vnoremap <expr>t    bufnr('%')==g:f_pos[0] && line('.')==g:f_pos[1] ? ';' : ":\<C-u>exe 'norm!' visualmode(). v:count1.'t'. <SID>imoff_f(1)\<CR>"
 noremap T %
 noremap L $
 noremap <expr>H   col('.') == match(getline('.'), '^\s*\zs\S')+1 ? '0' : '^'
