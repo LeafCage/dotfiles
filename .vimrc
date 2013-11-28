@@ -155,9 +155,8 @@ NeoBundleLazy 'mattn/ctrlp-mark', {'autoload': {'commands': ['CtrlPMark']}, 'dep
 "Moving
 NeoBundleLazy 'kana/vim-smartword', {'autoload': {'mappings': ['<Plug>(smartword-']}}
 NeoBundle 'deton/jasegment.vim' "WBEを日本語文節区切り移動に
-NeoBundleLazy 't9md/vim-smalls'
+NeoBundleLazy 'haya14busa/vim-easymotion', {'autoload': {'mappings': [['sxno', '<Plug>(easymotion-s)']]}}
 NeoBundleLazy 'bkad/CamelCaseMotion', {'autoload': {'mappings': ['<Plug>CamelCaseMotion_']}}
-NeoBundleLazy 'deris/columnjump', {'autoload': {'mappings': ['<Plug>(columnjump-']}}
 "NeoBundleLazy 'rhysd/clever-f.vim', {'autoload': {'mappings': [['sxno', '<Plug>(clever-f-']]}}
 NeoBundleLazy 'thinca/vim-poslist', {'autoload': {'mappings': ['<Plug>(poslist-']}}
 NeoBundleLazy 'thinca/vim-visualstar', {'autoload': {'mappings': ['<Plug>(visualstar-']}}
@@ -948,15 +947,16 @@ if neobundle#tap('jasegment.vim') "{{{
 endif
 "}}}
 "--------------------------------------
-if neobundle#tap('vim-smalls') "{{{
-  call neobundle#config({'autoload': {'mappings': [['n', '<Plug>(smalls']], 'commands': ['Smalls']}})
-  function! neobundle#tapped.hooks.on_post_source(bundle)
-    call smalls#keyboard#cli#extend_table({"\<C-j>": 'do_jump_first'})
-    call smalls#keyboard#excursion#extend_table({"\<C-j>": 'do_set'})
-  endfunction
-  "let g:smalls_jump_keys = ',ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  nmap gs <Plug>(smalls)
-  nmap - <Plug>(smalls)
+if neobundle#tap('vim-easymotion') "{{{
+  let g:EasyMotion_keys='hklyuiopnm,qwertzxcvbasdgjf;'
+  let g:EasyMotion_smartcase = 1
+  let g:EasyMotion_use_migemo = 1
+  map S <Plug>(easymotion-s)
+  let g:EasyMotion_startofline=0
+  nnoremap <expr>gj   &wrap && winwidth(0) < col('$') ? "j" : ":call EasyMotion#JK(0, 0)\<CR>"
+  nnoremap <expr>gk   &wrap && winwidth(0) < col('$') ? "k" : ":call EasyMotion#JK(0, 1)\<CR>"
+  vnoremap <expr>gj   &wrap && winwidth(0) < col('$') ? "j" : ":\<C-u>call EasyMotion#JK(1, 0)\<CR>"
+  vnoremap <expr>gk   &wrap && winwidth(0) < col('$') ? "k" : ":\<C-u>call EasyMotion#JK(1, 1)\<CR>"
 endif
 "}}}
 "--------------------------------------
@@ -977,18 +977,6 @@ if neobundle#tap('CamelCaseMotion') "{{{
   "vmap <silent> ib <Plug>CamelCaseMotion_ib
   omap <silent> ie <Plug>CamelCaseMotion_ie
   vmap <silent> ie <Plug>CamelCaseMotion_ie
-endif
-"}}}
-"--------------------------------------
-if neobundle#tap('columnjump') "{{{
-  nmap <expr>gj   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-forward)"
-  nmap <expr>gk   &wrap && winwidth(0) < col('$') ? "\<SID>k" : "\<Plug>(columnjump-backward)"
-  vmap <expr>gj   &wrap && winwidth(0) < col('$') ? "\<SID>j" : "\<Plug>(columnjump-forward)"
-  vmap <expr>gk   &wrap && winwidth(0) < col('$') ? "\<SID>k" : "\<Plug>(columnjump-backward)"
-  nnoremap <SID>j j
-  vnoremap <SID>j j
-  nnoremap <SID>k k
-  vnoremap <SID>k k
 endif
 "}}}
 "--------------------------------------
@@ -1140,7 +1128,7 @@ if neobundle#tap('vim-altercmd') "{{{
   AlterCommand nbu  Unite neobundle/update<C-r>=Eat_whitespace('\s')<CR>
   AlterCommand nbl[g]   Unite neobundle/log
   AlterCommand nbus   Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neosnippet
-  AlterCommand nbum   Unite neobundle/install:vital.vim:vim-over:vim-anzu:vim-smalls:jsegment.vim:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim:vim-quickrun:vim-fugitive:lightline.vim
+  AlterCommand nbum   Unite neobundle/install:vital.vim:vim-over:vim-anzu:jasegment.vim:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim:vim-quickrun:vim-fugitive:lightline.vim
   AlterCommand nbls NeoBundleList
   AlterCommand nbc NeoBundleClean
   command! -nargs=0 NeoBundleUpdateShougo
@@ -1964,8 +1952,8 @@ function! s:imoff_f(is_vmode) "{{{
   return c
 endfunction
 "}}}
-noremap <silent>f    :<C-u>exe 'norm!' v:count1.'f'. <SID>imoff_f(0)<CR>
-noremap <silent>F    :<C-u>exe 'norm!' v:count1.'F'. <SID>imoff_f(0)<CR>
+nnoremap <silent>f    :<C-u>exe 'norm!' v:count1.'f'. <SID>imoff_f(0)<CR>
+nnoremap <silent>F    :<C-u>exe 'norm!' v:count1.'F'. <SID>imoff_f(0)<CR>
 vnoremap <silent>f    :<C-u>exe 'norm! ' visualmode(). v:count1.'f'. <SID>imoff_f(1)<CR>
 vnoremap <silent>F    :<C-u>exe 'norm! ' visualmode(). v:count1.'F'. <SID>imoff_f(1)<CR>
 nnoremap t ;
