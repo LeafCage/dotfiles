@@ -354,7 +354,7 @@ if neobundle#tap('ctrlp.vim') "{{{
   let g:ctrlp_max_files = 250
   let g:ctrlp_use_migemo = 1
   let g:ctrlp_show_hidden = 1
-  let g:ctrlp_switch_buffer = 'Et'
+  let g:ctrlp_switch_buffer = ''
   let g:ctrlp_reuse_window = 'netrw\|help\|quickfix\|vimfiler\|unite\|vimshell'
   let g:ctrlp_root_markers = ['[root]']
   let g:ctrlp_open_new_file = 'h'
@@ -2192,6 +2192,7 @@ cmap <C-@> <C-c>
 vmap <C-@> <C-c>
 exe 'inoremap '. s:bind.esc. ' <Esc>'
 exe 'cmap '. s:bind.esc. ' <C-c>'
+cnoreabb <expr>b getcmdtype()==':' && getcmdline()=='b' ? 'ls<CR>:b' : 'b'
 "TODO 現在のコマンドラインをyankする
 "cnoremap <C-y>
 
