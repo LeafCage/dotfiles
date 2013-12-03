@@ -214,6 +214,7 @@ NeoBundleLazy 'cocopon/colorswatch.vim', {'autoload': {'commands': ['ColorSwatch
 "GUI
 NeoBundleLazy 'daisuzu/rainbowcyclone.vim', {'augroup': 'RainbowCyclone', 'autoload': {'mappings': [['n', '<Plug>(rc_']], 'commands': ['RCList', 'RCReset', 'RCConcat', 'RC']}}
 NeoBundle 'itchyny/lightline.vim'
+"NeoBundle 'kien/rainbow_parentheses.vim'
 "NeoBundle 'altercation/vim-colors-solarized' "なんか良いらしいcolorscheme
 NeoBundleLazy 'tyru/winmove.vim', {'autoload': {'mappings': ['<Plug>(winmove-']}, 'gui':1}
 NeoBundleLazy 'thinca/vim-fontzoom', {'autoload': {'mappings': ['<Plug>(fontzoom-'], 'commands': 'Fontzoom'}}
@@ -952,6 +953,7 @@ if neobundle#tap('vim-easymotion') "{{{
   let g:EasyMotion_smartcase = 1
   let g:EasyMotion_use_migemo = 1
   map S <Plug>(easymotion-s)
+  map gl <Plug>(easymotion-s)
   let g:EasyMotion_startofline=0
   nnoremap <expr>gj   &wrap && winwidth(0) < col('$') ? "j" : ":call EasyMotion#JK(0, 0)\<CR>"
   nnoremap <expr>gk   &wrap && winwidth(0) < col('$') ? "k" : ":call EasyMotion#JK(0, 1)\<CR>"
@@ -1158,6 +1160,7 @@ if neobundle#tap('vim-altercmd') "{{{
   AlterCommand c[tags]  !start ctags %
   AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h:h')<CR>
   AlterCommand sf     setf
+  AlterCommand sc     Script
   AlterCommand ft     setf
   AlterCommand so     so %
   AlterCommand me    mes
@@ -1203,8 +1206,6 @@ if neobundle#tap('vim-anzu') "{{{
   let g:anzu_no_match_word = '%#ErrorMsg#E486: Pattern not found: %p'
   nmap n  <Plug>(anzu-jump-n)<Plug>(anzu-echo-search-status)zv
   nmap N  <Plug>(anzu-jump-N)<Plug>(anzu-echo-search-status)zv
-  "nmap n  <Plug>(anzu-jump-n):<C-u>AnzuUpdateSearchStatusOutput<CR>zv
-  "nmap N  <Plug>(anzu-jump-N)<Plug>(anzu-update-search-status-with-echo)zv
   nmap * <Plug>(anzu-star-with-echo)Nzz
 endif
 "}}}
@@ -1330,6 +1331,14 @@ if neobundle#tap('lightline.vim') "{{{
   let s:p.tabline.right = [['black', 'Gray80', 16, 0], ['white', '#002451', 231, 17], ['black', 'DarkGray', 16, 0], s:STL_ATTRIBUTECOLOR]
   let g:lightline#colorscheme#lclightline#palette = s:p
   unlet s:p s:STL_BASECOLOR s:STL_ATTRIBUTECOLOR
+endif
+"}}}
+"--------------------------------------
+if neobundle#tap('rainbow_parentheses.vim') "{{{
+  autocmd vimrc VimEnter * RainbowParenthesesToggle
+  autocmd vimrc Syntax * RainbowParenthesesLoadRound
+  autocmd vimrc Syntax * RainbowParenthesesLoadSquare
+  autocmd vimrc Syntax * RainbowParenthesesLoadBraces
 endif
 "}}}
 "--------------------------------------
@@ -2061,6 +2070,10 @@ endfunction
 "--------------------------------------
 "編集バインド(Normal)
 nnoremap s "_s
+nmap yd "_d
+nmap yD "_D
+nmap yc "_c
+nmap yC "_C
 function! s:delete_trailing_whitespaces() "{{{
   let save_view = winsaveview()
   let save_search=@/
