@@ -223,6 +223,9 @@ NeoBundleLazy 'thinca/vim-fontzoom', {'autoload': {'mappings': ['<Plug>(fontzoom
 "NeoBundle 'thinca/vim-localrc' "特定dir以下に.lvimrcを置くとdir以下のfileだけで設定反映
 NeoBundle 'savevers.vim'
 "--------------------------------------
+"Accessory
+NeoBundle 'ynkdir/vim-diff'
+"--------------------------------------
 
 
 
@@ -1363,6 +1366,12 @@ if neobundle#tap('savevers.vim') "{{{
   nmap <silent> <F7> :VersDiff -<cr>
   nmap <silent> <F8> :VersDiff +<cr>
   nmap <silent> <F9> :VersDiff -c<cr>
+endif
+"}}}
+"======================================
+"Accessory
+if neobundle#tap('vim-diff') "{{{
+  set diffexpr=diff#diffexpr()
 endif
 "}}}
 
