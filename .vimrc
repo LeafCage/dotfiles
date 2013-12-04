@@ -1194,7 +1194,7 @@ endif
 "}}}
 "--------------------------------------
 if neobundle#tap('lastmess.vim') "{{{
-  let g:lastmess_ignore_pattern = 'スキャン中\|検索したので\|箇所変更しました;\|行 削除しました;\|行 追加しました\|\d\+L, \d\+C$\|行 --\d\+%--$\|--バッファに行がありません--$\|^\s*\d\+:\s\%(\~\|\u:\)/'
+  let g:lastmess_ignore_pattern = 'スキャン中\|検索したので\|箇所変更しました;\|行 削除しました;\|行 追加しました\|\d\+L, \d\+C$\|行 --\d\+%--$\|--バッファに行がありません--$\|既に一番新しい変更です\|^\s*\d\+:\s\%(\~\|\u:\)/'
   let g:lastmess_default_count = 30
   nmap mz <Plug>(lastmess)
   nnoremap mg :<C-u>mes<CR>
@@ -1512,7 +1512,7 @@ command! -nargs=?   Script    echo <SID>scriptid(<f-args>)
 command! -bar TimerStart let start_time = reltime()
 command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
 "plugin撮影用にウィンドウのサイズを一時的に変更する
-command! GuiWin     exe &lines>26 ? 'set lines=27 columns=87' : 'set lines=40 columns=140'
+command! GuiWin     exe &lines>27 ? 'set lines=27 columns=87' : 'set lines=40 columns=140'
 "パターンとファイル名を逆にしたgrep
 function! s:perg(args)
   execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2])
@@ -2581,7 +2581,6 @@ NeoBundleLazy 't9md/vim-unite-ack' "grepみたいなの
 "アンド検索（一件目がhitした後二件目のwordで一件目の前後数行を検索
 "
 "-----------------------------------------------------------------------------
-"次の空白文字へ
 "レインボーブランケットをsyntaxにインポート
 "マーキングコメント。"[削] とか"★とかを付け外しする（ノーマルコメント←→特殊コメント）
 "折り畳み先頭行のシンタックスを目立たせる
@@ -2590,8 +2589,6 @@ NeoBundleLazy 't9md/vim-unite-ack' "grepみたいなの
 " expander
 " コマンドラインからzencodingっぽく　暗号＋修飾したいもので修飾済みの文字列挿入
 "
-"vimのexコマンド補完を利用したバッファセレクタやmruセレクタ、yank履歴セレクタの作成
-"input()式バッファセレクタ（input()方式は汎用性があるからオブジェクトで作る？）
 
 "unite より使いやすいカラー一覧
 "u]コマンドライン型unite
