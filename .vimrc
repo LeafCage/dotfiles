@@ -1543,10 +1543,11 @@ function! s:grep_for_cmdprompt(cmd, argstr) "{{{
   let dflbase = expand('%:p:h')
   let dflbase = dflbase==?expand('$HOME') ? expand('%') : dflbase.'/**/*'
   let opts = i==0 ? '' : join(args[:i-1])
-  exe a:cmd opts '-8 ' iconv(args[i], 'utf-8', 'cp932') ' ' get(args, i+1, dflbase)
+  let g:greped = a:cmd. ' '. opts. ' -8 '. iconv(escape(args[i], '#%'), 'utf-8', 'cp932'). ' '. get(args, i+1, dflbase)
+  exe g:greped
 endfunction
 "}}}
-command! -nargs=* -complete=file   Grep    call s:grep_for_cmdprompt('grep', <q-args>)
+command! -nargs=* -complete=file   Grep    call s:grep_for_cmdprompt('grep', '<args>')
 "失敗したaugを無効にする
 command! -nargs=1 -complete=augroup  KillAug  autocmd! <args>
 command! -nargs=1 -complete=augroup  AugKiller  autocmd! <args>
@@ -2159,7 +2160,7 @@ nnoremap [C-k]<C-t>k :call PeekEcho()<CR>
 ":source
 "nnoremap  [C-k]v     source $MYVIMRC<CR>
 nnoremap  ,xv    source $MYVIMRC<CR>
-nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>echoh MoreMsg<Bar>echom 'sourced:'expand('%')<Bar>echoh NONE<Bar> endif<CR>
+nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>echoh MoreMsg<Bar>echom 'sourced:'expand('%') strftime('%X', localtime())<Bar>echoh NONE<Bar> endif<CR>
 
 
 "======================================
