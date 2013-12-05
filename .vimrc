@@ -54,17 +54,23 @@ if !exists("$HOME")
 endif
 "}}}
 "$PATHを追加{{{
-function! s:add_path(path)
+function! s:PATH_add(path)
   let $PATH .= $PATH =~ a:path ? '' : a:path. ';'
 endfunction
 if has('vim_starting')
   let $PATH .= ';'
-  call s:add_path('/bnr/cmd/MinGW/bin')
-  call s:add_path('/bnr/cmd/path')
-  call s:add_path('/bnr/cmd/PortableGit-1.7.11-preview20120620/bin')
-  call s:add_path('C:/Program Files/Java/jdk1.7.0_09/bin')
+  call s:PATH_add('/bnr/cmd/MinGW/bin')
+  call s:PATH_add('/bnr/cmd/path')
+  call s:PATH_add('/bnr/cmd/PortableGit-1.7.11-preview20120620/bin')
+  call s:PATH_add('C:/Program Files/Java/jdk1.7.0_09/bin')
+  let $GOROOT = '/bnr/cmd/go'
+  call s:PATH_add($GOROOT.'/bin')
+  let $GOPATH = $HOME. '/_go'
+  call s:PATH_add($GOPATH.'/bin')
+  call s:PATH_add('/bnr/cmd/MercurialCmdPortable/App/Mercurial')
 endif
 "}}}
+let $JVGREP_OUTPUT_ENCODING = 'cp932'
 let $TERM = exists('$TERM') ? $TERM : 'msys'
 let $DOTFILES = $HOME. '/box/dotfiles'
 "--------------------------------------
@@ -134,9 +140,10 @@ else
   NeoBundleLazy 'Shougo/neocomplcache', {'autoload': {'insert': 1}}
 end
 NeoBundleLazy 'Shougo/neosnippet'
+NeoBundleLazy 'mattn/emmet-vim', {'autoload': {'commands': ['Emmet', 'EmmetInstall']}}
 NeoBundleLazy 'scrooloose/nerdcommenter', {'autoload': {'mappings': [['inx', '<Plug>NERDCommenter']]}}
 NeoBundle 'LeafCage/yankround.vim', {'stay_same': 1}
-NeoBundleLazy 'LeafCage/nebula.vim', {'autoload': {'commands': ['NebulaPutLazy', 'NebulaPutFromClipboard', 'NebulaYankOptions', 'NebulaPutConfig', 'NebulaYankTap']}, 'stay_same': 1}
+NeoBundleLazy 'LeafCage/nebula.vim', {'autoload': {'commands': ['NebulaPutLazy', 'NebulaPutFromClipboard', 'NebulaYankOptions', 'NebulaYankConfig', 'NebulaPutConfig', 'NebulaYankTap']}}
 NeoBundleLazy 'kana/vim-operator-user'
 NeoBundleLazy 'kana/vim-operator-replace' "レジスタにあるものとoperator指定したものを置き換え
 NeoBundleLazy 'kana/vim-textobj-user'
@@ -223,8 +230,9 @@ NeoBundleLazy 'thinca/vim-fontzoom', {'autoload': {'mappings': ['<Plug>(fontzoom
 "NeoBundle 'thinca/vim-localrc' "特定dir以下に.lvimrcを置くとdir以下のfileだけで設定反映
 NeoBundle 'savevers.vim'
 "--------------------------------------
-"Accessory
+"Helper
 NeoBundle 'ynkdir/vim-diff'
+NeoBundle 'fuenor/qfixgrep'
 "--------------------------------------
 
 
@@ -785,8 +793,7 @@ endif
 "--------------------------------------
 if neobundle#tap('nebula.vim') "{{{
   nnoremap <silent>,bl    :<C-u>NebulaPutLazy<CR>
-  nnoremap <silent>,bc    :<C-u>NebulaPutConfig<CR>
-  nnoremap <silent>,by    :<C-u>NebulaYankOptions<CR>
+  nnoremap <silent>,bc    :<C-u>NebulaYankConfig<CR>
   nnoremap <silent>,bp    :<C-u>NebulaPutFromClipboard<CR>
   nnoremap <silent>,bt    :<C-u>NebulaYankTap!<CR>
 endif
@@ -1196,6 +1203,7 @@ endif
 if neobundle#tap('lastmess.vim') "{{{
   let g:lastmess_ignore_pattern = 'スキャン中\|検索したので\|箇所変更しました;\|行 削除しました;\|行 追加しました\|\d\+L, \d\+C$\|行 --\d\+%--$\|--バッファに行がありません--$\|既に一番新しい変更です\|^\s*\d\+:\s\%(\~\|\u:\)/'
   let g:lastmess_default_count = 30
+  let g:lastmess_special_highlight = [['MoreMsg', '^sourced:']]
   nmap mz <Plug>(lastmess)
   nnoremap mg :<C-u>mes<CR>
 else
@@ -1369,9 +1377,18 @@ if neobundle#tap('savevers.vim') "{{{
 endif
 "}}}
 "======================================
-"Accessory
+"Helper
 if neobundle#tap('vim-diff') "{{{
   set diffexpr=diff#diffexpr()
+endif
+"}}}
+"--------------------------------------
+if neobundle#tap('qfixgrep') "{{{
+  call neobundle#config({'autoload': {'commands': ['ToggleGrepRecursiveMode', 'REGrepadd', 'OpenQFixWin', 'RFGrep', 'MoveToQFixWin', 'BGrepadd', 'ToggleGrepCurrentDirMode', 'VGrepadd', 'RFGrepadd', 'MyGrepWriteResult', 'MyGrepReadResult', 'Vimgrep', 'BGrep', 'RGrepadd', 'Vimgrepadd', 'FGrep', 'QFixCopen', 'ToggleMultiEncodingGrep', 'QFixAltWincmd', 'REGrep', 'QFdo', 'QFixCclose', 'RGrep', 'CloseQFixWin', 'EGrep', 'ToggleDamemoji', 'Grepadd', 'EGrepadd', 'ToggleLocationListMode', 'Grep', 'VGrep', 'ToggleQFixWin', 'FList', 'FGrepadd']}})
+  let g:MyGrep_Key = ','
+  let g:MyGrep_KeyB = 'g'
+  let g:mygrepprg = 'grep'
+  "let g:mygrepprg = 'jvgrep'
 endif
 "}}}
 
@@ -2133,7 +2150,7 @@ nnoremap [C-k]<C-t>k :call PeekEcho()<CR>
 ":source
 "nnoremap  [C-k]v     source $MYVIMRC<CR>
 nnoremap  ,xv    source $MYVIMRC<CR>
-nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>redraw!<Bar>echom 'sourced:'expand('%')<Bar> endif<CR>
+nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>echoh MoreMsg<Bar>echom 'sourced:'expand('%')<Bar>echoh NONE<Bar> endif<CR>
 
 
 "======================================
