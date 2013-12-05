@@ -232,7 +232,7 @@ NeoBundle 'savevers.vim'
 "--------------------------------------
 "Helper
 NeoBundle 'ynkdir/vim-diff'
-NeoBundle 'fuenor/qfixgrep'
+"NeoBundle 'fuenor/qfixgrep'
 "--------------------------------------
 
 
@@ -262,6 +262,8 @@ if neobundle#tap('unite.vim') "{{{
     let g:unite_winheight = 20 "水平分割時の窓高さ
     let g:unite_enable_start_insert = 0
     let g:unite_source_grep_command = 'jvgrep'  "grepコマンド
+    let g:unite_source_grep_recursive_opt = '-R'
+    let g:unite_source_grep_default_opts = '-n --enc utf-8,utf-8,euc-jp'
     "let g:unite_source_grep_recursive_opt = '-R'
     "let g:unite_source_grep_default_opts = '-Hn'
     "let g:unite_source_find_command = 'find'
@@ -1525,24 +1527,26 @@ function! s:scriptid(...) "{{{
 endfunction
 "}}}
 command! -nargs=?   Script    echo <SID>scriptid(<f-args>)
+"command! -bar Tasks execute 'vimgrep /\C\v<(TODO|FIXME|XXX)>/ **/*.'. expand('%:e')
+command! -bar Tasks execute 'vimgrep /\C\v<(TODO|FIXME|XXX)>/ ' expand('%:h'). '**/*.'. expand('%:e')
 "Vim script計測
 command! -bar TimerStart let start_time = reltime()
 command! -bar TimerEnd   echo reltimestr(reltime(start_time)) | unlet start_time
 "plugin撮影用にウィンドウのサイズを一時的に変更する
 command! GuiWin     exe &lines>27 ? 'set lines=27 columns=87' : 'set lines=40 columns=140'
-"パターンとファイル名を逆にしたgrep
-function! s:perg(args)
-  execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2])
+function! s:grep_for_cmdprompt(cmd, argstr) "{{{
+  let args = split(a:argstr, '\%(\\\@<!\s\)\+')
+  let i = 0
+  while match(args, '^-', i)!=-1
+    let i+=1
+  endwhile
+  let dflbase = expand('%:p:h')
+  let dflbase = dflbase==?expand('$HOME') ? expand('%') : dflbase.'/**/*'
+  let opts = i==0 ? '' : join(args[:i-1])
+  exe a:cmd opts '-8 ' iconv(args[i], 'utf-8', 'cp932') ' ' get(args, i+1, dflbase)
 endfunction
-command! -complete=file -nargs=+ Perg  call s:perg([<f-args>])
-AlterCommand perg Perg
-"現在ファイルのあるディレクトリでvimgrep
-function! s:CurrentGrep(args)
-  execute 'vimgrep' '/'.a:args[0].'/ '.expand(a:args[1]).'/**/*'
-  cwindow
-endfunction
-command! -nargs=+   CurrentGrep  call s:CurrentGrep([<f-args>])
-AlterCommand crrg[rep] CurrentGrep %:h<Left><Left><Left><Left>
+"}}}
+command! -nargs=* -complete=file   Grep    call s:grep_for_cmdprompt('grep', <q-args>)
 "失敗したaugを無効にする
 command! -nargs=1 -complete=augroup  KillAug  autocmd! <args>
 command! -nargs=1 -complete=augroup  AugKiller  autocmd! <args>
@@ -1564,7 +1568,6 @@ function! s:rename(name, bang) "{{{
 endfunction
 "}}}
 command! -nargs=* -complete=file -bang Rename :call <SID>rename("<args>", "<bang>")
-AlterCommand re[name] Rename
 function! s:git_log_viewer() "{{{
   let crrfiledir = expand('%:h')
   new [gitdiff]
@@ -1608,6 +1611,12 @@ function! FoldTextOfGitLog() "{{{
 endfunction
 "}}}
 command! GitLogViewer   call s:git_log_viewer()
+if exists(':AlterCommand')
+  if has('win32')
+    AlterCommand gr[e] Grep
+  end
+  AlterCommand re[name] Rename
+end
 
 "=========================================================
 "Functions
@@ -2337,6 +2346,7 @@ se fo +=m  "マルチバイト文字でも整形を有効にする
 se wrapscan hlsearch incsearch
 se tags=./tags,tags,../tags  "tagsファイルの読み込み先
 set grepprg=jvgrep ""-n;:行番表示-H;:ファイル名表示
+"set grepformat=%f:%l:%m
 "set grepprg=internal  " vimgrep をデフォルトのgrepとする場合internal
 "set grepprg=D:/bnr/cmd/cygwingrep/bin/cyggrep.exe\ -nH ""-n;:行番表示-H;:ファイル名表示
 "set grepprg=cyggrep.exe\ -nH
