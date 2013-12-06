@@ -1543,11 +1543,13 @@ function! s:grep_for_cmdprompt(cmd, argstr) "{{{
   let dflbase = expand('%:p:h')
   let dflbase = dflbase==?expand('$HOME') ? expand('%') : dflbase.'/**/*'
   let opts = i==0 ? '' : join(args[:i-1])
-  let g:greped = a:cmd. ' '. opts. ' -8 '. iconv(escape(args[i], '#%'), 'utf-8', 'cp932'). ' '. get(args, i+1, dflbase)
-  exe g:greped
+  let pat = has('win32') ? iconv(escape(args[i], '#%'), 'utf-8', 'cp932') : escape(args[i], '#%')
+  let target = i+1>=len(args) ? dflbase : join(args[(i+1):])
+  let g:greped = a:cmd. ' '. opts. ' -8 '. pat. ' '. target
+  silent exe g:greped
 endfunction
 "}}}
-command! -nargs=* -complete=file   Grep    call s:grep_for_cmdprompt('grep', '<args>')
+command! -nargs=+ -complete=file   Grep    call s:grep_for_cmdprompt('grep', '<args>')
 "失敗したaugを無効にする
 command! -nargs=1 -complete=augroup  KillAug  autocmd! <args>
 command! -nargs=1 -complete=augroup  AugKiller  autocmd! <args>
@@ -2242,6 +2244,8 @@ vmap <C-@> <C-c>
 exe 'inoremap '. s:bind.esc. ' <Esc>'
 exe 'cmap '. s:bind.esc. ' <C-c>'
 cnoreabb <expr>b getcmdtype()==':' && getcmdline()=='b' ? 'ls<CR>:b' : 'b'
+cnoreabb <expr>md getcmdtype()==':' && getcmdline()=~#'^\s*setf\%[iletype]' ? 'markdown' : 'md'
+cnoreabb <expr>mkd getcmdtype()==':' && getcmdline()=~#'^\s*setf\%[iletype]' ? 'markdown' : 'mkd'
 "TODO 現在のコマンドラインをyankする
 "cnoremap <C-y>
 
