@@ -192,6 +192,7 @@ NeoBundle 'osyo-manga/vim-automatic', {'depends': 'osyo-manga/vim-gift', 'vim_ve
 NeoBundleLazy 'kana/vim-submode', {'autoload': {'commands': ['SubmodeRestoreOptions']}}
 NeoBundleLazy 'thinca/vim-ambicmd' "コマンド名省入力 ex)NeoBundleUpdate > NBU
 NeoBundle 'tyru/vim-altercmd' "コマンドのエイリアスを作る tyru版あり #B9-6
+NeoBundle 'LeafCage/cmdlineplus.vim', {'autoload': {'mappings': [['c', '<Plug>(cmdlineplus-']]}}
 "--------------------------------------
 "Info
 NeoBundleLazy 'osyo-manga/vim-over', {'autoload': {'commands': ['OverCommandLineNoremap', 'OverCommandLine']}}
@@ -1183,6 +1184,17 @@ if neobundle#tap('vim-altercmd') "{{{
   AlterCommand jc   !javac -d ../classes
 endif
 "}}}
+"--------------------------------------
+if neobundle#tap('cmdlineplus.vim') "{{{
+  cmap <C-g> <Plug>(cmdlineplus-forward-word)
+  cmap <C-b> <Plug>(cmdlineplus-backward-word)
+  cmap <C-\><C-k>  <Plug>(cmdlineplus-killline)
+  cmap <C-\><C-\>  <Plug>(cmdlineplus-escape-special)
+  cmap <C-\>i  <Plug>(cmdlineplus-escape-input)
+  cmap <C-\><C-y>  <Plug>(cmdlineplus-yank)
+  cmap <C-\><C-c>  <Plug>(cmdlineplus-yank-clipboard)
+endif
+"}}}
 
 "======================================
 "Info
@@ -1682,6 +1694,7 @@ noremap! <F3>   <C-r>+
 noremap <C-z> "+
 inoremap <C-r><C-y>   <C-r>+
 cnoremap <C-r><C-y>   <C-r>=substitute(@+, '\n$', '', 'g')<CR>
+cnoremap <C-y>   <C-r>=substitute(@+, '\n$', '', 'g')<CR>
 nnoremap <C-c> "+y
 vnoremap <C-c> "+y
 vnoremap <C-y> "+y
@@ -2127,8 +2140,8 @@ nnoremap <silent>,es    :<C-u>call <SID>delete_trailing_whitespaces()<CR>
 nnoremap [@]: @:
 nmap c. @:
 "ペーストしたテキストを再選択するBible3-15
-onoremap <expr> [@]@ '`[' . strpart(getregtype(), 0,1) . '`]'
-vnoremap <expr> [@]@ '`[' . strpart(getregtype(), 0,1) . '`]'
+onoremap [@]@ `[`]
+vnoremap <expr> [@]@ "\<Esc>`[". strpart(getregtype(), 0,1). '`]'
 onoremap <silent> gv :normal gv<CR>
 "前回保存した状態にまでアンドゥ
 nnoremap [space]u :earlier 1f<CR>
@@ -2207,8 +2220,8 @@ noremap! <C-k> <Left>
 noremap! <C-f> <Right>
 inoremap <C-g>  <Esc><Plug>(smartword-w)i
 inoremap <C-b>  <Esc><Plug>(smartword-b)i
-cnoremap <C-g> <S-Right>
-cnoremap <C-b> <S-Left>
+"cnoremap <C-g> <S-Right>
+"cnoremap <C-b> <S-Left>
 noremap! <C-a> <Home>
 inoremap <expr><C-e>  pumvisible() ? "\<C-e>" : "\<End>"
 "cnoremap <C-e> <End>
@@ -2236,8 +2249,8 @@ inoremap <C-w>    <C-o>db
 "gU v(文字指向にする/これによってカーソル上の文字も範囲にする :h o_v) b gi
 inoremap <C-x>U <ESC>gUvbgi
 inoremap <C-x>u <ESC>guvbgi
-imap <C-_> <Esc>
-cmap <C-_> <C-c>
+"imap <C-_> <Esc>
+"cmap <C-_> <C-c>
 imap <C-@> <Esc>
 cmap <C-@> <C-c>
 vmap <C-@> <C-c>
@@ -2246,8 +2259,6 @@ exe 'cmap '. s:bind.esc. ' <C-c>'
 cnoreabb <expr>b getcmdtype()==':' && getcmdline()=='b' ? 'ls<CR>:b' : 'b'
 cnoreabb <expr>md getcmdtype()==':' && getcmdline()=~#'^\s*setf\%[iletype]' ? 'markdown' : 'md'
 cnoreabb <expr>mkd getcmdtype()==':' && getcmdline()=~#'^\s*setf\%[iletype]' ? 'markdown' : 'mkd'
-"TODO 現在のコマンドラインをyankする
-"cnoremap <C-y>
 
 "======================================
 "CommandlineWindow
