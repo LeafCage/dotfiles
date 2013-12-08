@@ -38,6 +38,7 @@ function! BackdraftEnterDraft() "{{{
 endfunction
 "}}}
 
+nnoremap ,st :<C-u>AltiTask<CR>
 
 
 
@@ -190,6 +191,7 @@ NeoBundle 'osyo-manga/vim-automatic', {'depends': 'osyo-manga/vim-gift', 'vim_ve
 "Bind&Command
 "NeoBundleLazy 'kana/vim-arpeggio'
 NeoBundleLazy 'kana/vim-submode', {'autoload': {'commands': ['SubmodeRestoreOptions']}}
+NeoBundleLazy 't9md/vim-mapswap', {'autoload': {'mappings': [['n', '<Plug>(mapswap-dump)']], 'commands': ['Mapswap']}}
 NeoBundleLazy 'thinca/vim-ambicmd' "コマンド名省入力 ex)NeoBundleUpdate > NBU
 NeoBundle 'tyru/vim-altercmd' "コマンドのエイリアスを作る tyru版あり #B9-6
 NeoBundle 'LeafCage/cmdlineplus.vim', {'autoload': {'mappings': [['c', '<Plug>(cmdlineplus-']]}}
@@ -341,12 +343,16 @@ if neobundle#tap('ctrlp.vim') "{{{
     nnoremap <S-Space> :
     let g:ctrlp_prompt_mappings = {}
     let g:ctrlp_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
-    let g:ctrlp_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>']
+    let g:ctrlp_prompt_mappings['PrtSelectMove("j")'] = ['<C-n>']
+    let g:ctrlp_prompt_mappings['PrtSelectMove("k")'] = ['<C-p>']
+    let g:ctrlp_prompt_mappings['PrtHistory(-1)'] = ['<C-j>']
+    let g:ctrlp_prompt_mappings['PrtHistory(1)'] = ['<C-l>']
+    let g:ctrlp_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>', '<C-k>']
     let g:ctrlp_prompt_mappings['PrtCurRight()'] = ['<Right>', '<C-f>']
-    let g:ctrlp_prompt_mappings['ToggleType(1)'] = ['<C-_>', '<C-l>', '<C-up>']
-    let g:ctrlp_prompt_mappings['ToggleType(-1)'] = ['<C-^>', '<C-x>', '<C-down>']
     let g:ctrlp_prompt_mappings['AcceptSelection("h")'] = ['<C-CR>', '<C-s>']
     let g:ctrlp_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
+    let g:ctrlp_prompt_mappings['ToggleType(1)'] = ['<C-_>', '<C-l>', '<C-up>']
+    let g:ctrlp_prompt_mappings['ToggleType(-1)'] = ['<C-^>', '<C-x>', '<C-down>']
     let g:ctrlp_prompt_mappings['PrtInsert("r")'] = ['<S-Left>']
   endfunction
 
@@ -384,12 +390,17 @@ if neobundle#tap('alti.vim') "{{{
     nnoremap <S-Space> :
     let g:alti_prompt_mappings = {}
     let g:alti_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
-    let g:alti_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>']
+    let g:alti_prompt_mappings['PrtSelectMove("j")'] = ['<C-n>']
+    let g:alti_prompt_mappings['PrtSelectMove("k")'] = ['<C-p>']
+    let g:alti_prompt_mappings['PrtHistory(-1)'] = ['<C-j>']
+    let g:alti_prompt_mappings['PrtHistory(1)'] = ['<C-l>']
+    let g:alti_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-k>']
     let g:alti_prompt_mappings['PrtCurRight()'] = ['<Right>', '<C-f>']
     let g:alti_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
-    let g:alti_prompt_mappings['PrtSelectInsert()'] = ['<Tab>']
-    let g:alti_prompt_mappings['PrtPageNext()'] = ['<C-v>']
-    let g:alti_prompt_mappings['PrtPagePrevious()'] = ['<C-y>', '<C-l>', '<C-o>']
+    let g:alti_prompt_mappings['ToggleType(1)'] = ['<C-_>', '<C-up>']
+    let g:alti_prompt_mappings['ToggleType(-1)'] = ['<C-^>', '<C-down>']
+    let g:alti_prompt_mappings['PrtSelectMove("t")'] = ['<C-y>', '<Home>', '<kHome>']
+    let g:alti_prompt_mappings['PrtSelectMove("b")'] = ['<C-b>', '<End>', '<kEnd>']
     let g:alti_getreg_mappings = {}
     let g:alti_getreg_mappings['"'] = ['<C-e>']
     let g:alti_getreg_mappings['*'] = ['<C-y>']
@@ -1135,6 +1146,10 @@ if neobundle#tap('vim-submode') "{{{
 endif
 "}}}
 "--------------------------------------
+if neobundle#tap('vim-mapswap') "{{{
+endif
+"}}}
+"--------------------------------------
 if neobundle#tap('vim-altercmd') "{{{
   call altercmd#load()
   "neobundle
@@ -1437,6 +1452,7 @@ autocmd vimrc FileType vim   setl ff=unix
 "au_keymappings
 autocmd vimrc FileType help   nnoremap <buffer><expr>q winnr('$')==1 ? ":\<C-u>bd\<CR>" : "\<C-w>c"
 autocmd vimrc BufWinEnter option-window   nnoremap <buffer><expr>q winnr('$')==1 ? ":\<C-u>bd\<CR>" : "\<C-w>c"
+autocmd vimrc Filetype qf  set nobl
 autocmd vimrc FileType qf  noremap <buffer>q    :cclose<CR>
 autocmd vimrc FileType qf  noremap <buffer><CR>    :.cc<CR>
 autocmd vimrc FileType vim    inoremap <expr><buffer>\
