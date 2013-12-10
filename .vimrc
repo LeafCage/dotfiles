@@ -194,7 +194,7 @@ NeoBundleLazy 'kana/vim-submode', {'autoload': {'commands': ['SubmodeRestoreOpti
 NeoBundleLazy 't9md/vim-mapswap', {'autoload': {'mappings': [['n', '<Plug>(mapswap-dump)']], 'commands': ['Mapswap']}}
 NeoBundleLazy 'thinca/vim-ambicmd' "コマンド名省入力 ex)NeoBundleUpdate > NBU
 NeoBundle 'tyru/vim-altercmd' "コマンドのエイリアスを作る tyru版あり #B9-6
-NeoBundle 'LeafCage/cmdlineplus.vim', {'autoload': {'mappings': [['c', '<Plug>(cmdlineplus-']]}}
+NeoBundleLazy 'LeafCage/cmdlineplus.vim', {'autoload': {'mappings': [['c', '<Plug>(cmdlineplus-']]}}
 "--------------------------------------
 "Info
 NeoBundleLazy 'osyo-manga/vim-over', {'autoload': {'commands': ['OverCommandLineNoremap', 'OverCommandLine']}}
@@ -292,7 +292,7 @@ if neobundle#tap('unite.vim') "{{{
   nnoremap ,dg :<C-u>Unite -buffer-name=register register<CR>
   "nnoremap ,dy :<C-u>Unite history/yank<CR>
   "xnoremap ,dy d:<C-u>Unite history/yank<CR>
-  inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite -start-insert history/yank\<CR>"
+  "inoremap <expr><C-y> pumvisible() ? "\<C-y>" : "\<Esc>:Unite -start-insert history/yank\<CR>"
   "file/buf関係
   nnoremap ,dfl :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
   nnoremap ,dff :<C-u>Unite -buffer-name=files file<CR>
@@ -794,6 +794,7 @@ endif
 "--------------------------------------
 if neobundle#tap('yankround.vim') "{{{
   let g:yankround_dir = $VIMCACHE. '/yankround'
+  let g:yankround_use_region_hl = 1
   nmap p <Plug>(yankround-p)
   nmap P <Plug>(yankround-P)
   nmap gp <Plug>(yankround-gp)
@@ -1158,7 +1159,7 @@ if neobundle#tap('vim-altercmd') "{{{
   AlterCommand nbu  Unite neobundle/update<C-r>=Eat_whitespace('\s')<CR>
   AlterCommand nbl[g]   Unite neobundle/log
   AlterCommand nbus   Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neosnippet
-  AlterCommand nbum   Unite neobundle/install:vital.vim:vim-over:vim-anzu:jasegment.vim:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim:vim-quickrun:vim-fugitive:lightline.vim
+  AlterCommand nbum   Unite neobundle/install:vital.vim:vim-anzu:jasegment.vim:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim:vim-quickrun:vim-fugitive:lightline.vim
   AlterCommand nbls NeoBundleList
   AlterCommand nbc NeoBundleClean
   command! -nargs=0 NeoBundleUpdateShougo
@@ -1215,9 +1216,9 @@ endif
 "Info
 if neobundle#tap('vim-over') "{{{
   let g:over_command_line_key_mappings = {"\<C-k>": "\<C-b>"}
-  cnoreabb <silent><expr>s getcmdtype()==':' && getcmdline()=~'^s' ? 'OverCommandLine<CR><C-u>%s/<C-r>=get([], getchar(0), '')<CR>' : 's'
+  "cnoreabb <silent><expr>s getcmdtype()==':' && getcmdline()=~'^s' ? 'OverCommandLine<CR><C-u>%s/<C-r>=get([], getchar(0), '')<CR>' : 's'
 else
-  cnoreabb <expr>s getcmdtype()==':' && getcmdline()=~'^s' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's'
+  "cnoreabb <expr>s getcmdtype()==':' && getcmdline()=~'^s' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's'
 endif
 "}}}
 "--------------------------------------
@@ -1448,11 +1449,11 @@ autocmd vimrc FileType js   setlocal ft=javascript
 "au_option
 autocmd vimrc FileType gitcommit  setl nofoldenable nomodeline tw=60 fenc=utf-8
 autocmd vimrc FileType vim   setl ff=unix
+autocmd vimrc Filetype qf  set nobl
 "--------------------------------------
 "au_keymappings
 autocmd vimrc FileType help   nnoremap <buffer><expr>q winnr('$')==1 ? ":\<C-u>bd\<CR>" : "\<C-w>c"
 autocmd vimrc BufWinEnter option-window   nnoremap <buffer><expr>q winnr('$')==1 ? ":\<C-u>bd\<CR>" : "\<C-w>c"
-autocmd vimrc Filetype qf  set nobl
 autocmd vimrc FileType qf  noremap <buffer>q    :cclose<CR>
 autocmd vimrc FileType qf  noremap <buffer><CR>    :.cc<CR>
 autocmd vimrc FileType vim    inoremap <expr><buffer>\
@@ -2275,6 +2276,20 @@ exe 'cmap '. s:bind.esc. ' <C-c>'
 cnoreabb <expr>b getcmdtype()==':' && getcmdline()=='b' ? 'ls<CR>:b' : 'b'
 cnoreabb <expr>md getcmdtype()==':' && getcmdline()=~#'^\s*setf\%[iletype]' ? 'markdown' : 'md'
 cnoreabb <expr>mkd getcmdtype()==':' && getcmdline()=~#'^\s*setf\%[iletype]' ? 'markdown' : 'mkd'
+function! NoCursorMoved_Substitute() "{{{
+  let save_view = winsaveview()
+  let query = input('%s', '/')
+  if query=~'^\s*$'
+    return
+  end
+  let cmd = '%s'. query
+  exe cmd
+  call histadd(':', cmd)
+  call histdel('@', query)
+  call winrestview(save_view)
+endfunction
+"}}}
+cnoreabb <expr>s getcmdtype()==':' && getcmdline()=~'^s' ? 'call NoCursorMoved_Substitute()<CR><C-r>=get([],getchar(0),"")<CR>' : 's'
 
 "======================================
 "CommandlineWindow
