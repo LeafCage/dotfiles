@@ -163,7 +163,7 @@ NeoBundleLazy 'mattn/ctrlp-mark', {'autoload': {'commands': ['CtrlPMark']}, 'dep
 "Moving
 NeoBundleLazy 'kana/vim-smartword', {'autoload': {'mappings': ['<Plug>(smartword-']}}
 NeoBundle 'deton/jasegment.vim' "WBEを日本語文節区切り移動に
-NeoBundleLazy 'haya14busa/vim-easymotion', {'autoload': {'mappings': [['sxno', '<Plug>(easymotion-s)']]}}
+NeoBundleLazy 'haya14busa/vim-easymotion', {'autoload': {'mappings': [['sxno', '<Plug>(easymotion-s)']], 'functions': ['EasyMotion#JK']}}
 NeoBundleLazy 'bkad/CamelCaseMotion', {'autoload': {'mappings': ['<Plug>CamelCaseMotion_']}}
 "NeoBundleLazy 'rhysd/clever-f.vim', {'autoload': {'mappings': [['sxno', '<Plug>(clever-f-']]}}
 NeoBundleLazy 'thinca/vim-poslist', {'autoload': {'mappings': ['<Plug>(poslist-']}}
@@ -197,7 +197,7 @@ NeoBundle 'tyru/vim-altercmd' "コマンドのエイリアスを作る tyru版�
 NeoBundleLazy 'LeafCage/cmdlineplus.vim', {'autoload': {'mappings': [['c', '<Plug>(cmdlineplus-']]}}
 "--------------------------------------
 "Info
-NeoBundleLazy 'osyo-manga/vim-over', {'autoload': {'commands': ['OverCommandLineNoremap', 'OverCommandLine']}}
+NeoBundleLazy 'mbbill/undotree', {'autoload': {'commands': ['UndotreeToggle']}}
 NeoBundle 'LeafCage/foldCC', {'stay_same': 1}
 NeoBundle 'tyru/current-func-info.vim'
 NeoBundleLazy 'sgur/vim-gitgutter', {'autoload': {'mappings': [['n', '<Plug>GitGutter']], 'commands': ['GitGutterAll', 'GitGutterToggle', 'GitGutterPrevHunk', 'GitGutterDisable', 'GitGutterLineHighlightsEnable', 'GitGutterNextHunk', 'GitGutterEnable', 'GitGutter', 'GitGutterLineHighlightsToggle', 'GitGutterLineHighlightsDisable']}}
@@ -793,7 +793,9 @@ endif
 "}}}
 "--------------------------------------
 if neobundle#tap('yankround.vim') "{{{
+  autocmd vimrc ColorScheme * highlight YankRoundRegion          term=reverse cterm=reverse ctermbg=0 guibg=Brown
   let g:yankround_dir = $VIMCACHE. '/yankround'
+  let g:yankround_region_hl_groupname = 'YankRoundRegion'
   let g:yankround_use_region_hl = 1
   nmap p <Plug>(yankround-p)
   nmap P <Plug>(yankround-P)
@@ -1214,14 +1216,6 @@ endif
 
 "======================================
 "Info
-if neobundle#tap('vim-over') "{{{
-  let g:over_command_line_key_mappings = {"\<C-k>": "\<C-b>"}
-  "cnoreabb <silent><expr>s getcmdtype()==':' && getcmdline()=~'^s' ? 'OverCommandLine<CR><C-u>%s/<C-r>=get([], getchar(0), '')<CR>' : 's'
-else
-  "cnoreabb <expr>s getcmdtype()==':' && getcmdline()=~'^s' ? '%s/<C-r>=Eat_whitespace(''\s\\|;\\|:'')<CR>' : 's'
-endif
-"}}}
-"--------------------------------------
 if neobundle#tap('foldCC') "{{{
   set fdt =FoldCCtext()
   let g:foldCCtext_tail = 'v:foldend-v:foldstart+1'
@@ -1259,6 +1253,18 @@ if neobundle#tap('vim-hier') "{{{
   "nnoremap <Space>hiu :HierUpdate<CR>
   " ハイライトを削除
   "nnoremap <Space>hic :HierClear<CR>
+endif
+"}}}
+"--------------------------------------
+if neobundle#tap('unite-colorscheme') "{{{
+  function! neobundle#tapped.hooks.on_source(bundle)
+    augroup LightLineColorscheme
+      autocmd!
+      autocmd ColorScheme * LightlineUpdate
+    augroup END
+  endfunction
+  cnoreabb <expr>colorscheme getcmdtype()==':' && getcmdline()=~'^\s*Unite ' && getcmdline()!~'-auto-preview' ?
+    \ '-auto-preview colorscheme' : 'colorscheme'
 endif
 "}}}
 
@@ -1486,6 +1492,7 @@ endfunction
 "}}}
 function! s:define_other_highlight()  "{{{
   hi Pmenu          guifg=white  guibg=#6A5CB4  gui=NONE
+  hi Visual          term=reverse cterm=reverse ctermbg=0 guibg=Gray50
   "hi Cursor          guifg=Black  guibg=Green
   "hi CursorTrack    guibg=darkslategray4
   hi ZenkakuSpace   cterm=underline ctermfg=darkgrey gui=underline guifg=darkgrey
