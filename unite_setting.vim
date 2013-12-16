@@ -11,6 +11,7 @@ au FileType unite nmap <buffer> i         <Plug>(unite_insert_enter)
 au FileType unite nmap <buffer> I         <Plug>(unite_insert_enter)
 au FileType unite nmap <silent><buffer><expr> a  unite#smart_map("\<Plug>(unite_append_enter)", "\<Plug>(unite_choose_action)")
 au FileType unite nmap <buffer> A         <Plug>(unite_append_end)
+"au FileType unite nmap <buffer><expr> q   winnr('$')==1 ? ":\<C-u>bd\<CR>" : ":\<C-u>close\<CR>"
 au FileType unite nmap <buffer> q         <Plug>(unite_exit)
 au FileType unite imap <buffer> <C-q>         <Plug>(unite_exit)
 au FileType unite nmap <buffer> Q         <Plug>(unite_all_exit)

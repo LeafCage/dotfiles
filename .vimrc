@@ -149,13 +149,15 @@ NeoBundleLazy 'kana/vim-operator-user'
 NeoBundleLazy 'kana/vim-operator-replace' "レジスタにあるものとoperator指定したものを置き換え
 NeoBundleLazy 'kana/vim-textobj-user'
 NeoBundleLazy 'h1mesuke/textobj-wiw', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-wiw']}} "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
+NeoBundleLazy 'kana/vim-textobj-function'
 NeoBundleLazy 'kana/vim-textobj-indent', {'depends': 'kana/vim-textobj-user','autoload': {'mappings': ['<Plug>(textobj-indent']}}
-NeoBundleLazy 'thinca/vim-textobj-plugins', {'depends': 'kana/vim-textobj-user','autoload': {'mappings': ['<Plug>(textobj-between']}}
-NeoBundleLazy 'anyakichi/vim-textobj-xbrackets', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-xbrackets']}}
+NeoBundleLazy 'thinca/vim-textobj-plugins'
+NeoBundleLazy 'anyakichi/vim-textobj-xbrackets'
 NeoBundleLazy 'sgur/vim-textobj-parameter', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-parameter']}}
-NeoBundleLazy 'osyo-manga/vim-textobj-multiblock', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-multiblock']}}
+NeoBundleLazy 'osyo-manga/vim-textobj-multiblock'
 NeoBundleLazy 'deris/vim-rengbang', {'autoload': {'mappings': [['nx', '<Plug>(operator-rengbang']], 'commands': ['RengBang', 'RengBangUsePrev']}}
 NeoBundleLazy 'anyakichi/vim-surround'
+"NeoBundleLazy 'rhysd/vim-operator-surround', {'autoload': {'mappings': [['n', '<Plug>(operator-surround-repeat)', ['nx', '<Plug>(operator-surround']]]}} FIXME nebulaの出力がおかしい
 NeoBundleLazy 'supermomonga/unite-sudden-death', {'autoload': {'unite_sources': ['suddendeath']}}
 NeoBundleLazy 'LeafCage/unite-recording', {'stay_same': 1}
 NeoBundleLazy 'mattn/ctrlp-mark', {'autoload': {'commands': ['CtrlPMark']}, 'depends': 'kien/ctrlp.vim'}
@@ -165,6 +167,7 @@ NeoBundleLazy 'kana/vim-smartword', {'autoload': {'mappings': ['<Plug>(smartword
 NeoBundle 'deton/jasegment.vim' "WBEを日本語文節区切り移動に
 NeoBundleLazy 'haya14busa/vim-easymotion', {'autoload': {'mappings': [['sxno', '<Plug>(easymotion-s)']], 'functions': ['EasyMotion#JK']}}
 NeoBundleLazy 'bkad/CamelCaseMotion', {'autoload': {'mappings': ['<Plug>CamelCaseMotion_']}}
+NeoBundleLazy 'yonchu/accelerated-smooth-scroll', {'autoload': {'mappings': [['xn', '<Plug>(ac-smooth-scroll-c-']]}}
 "NeoBundleLazy 'rhysd/clever-f.vim', {'autoload': {'mappings': [['sxno', '<Plug>(clever-f-']]}}
 NeoBundleLazy 'thinca/vim-poslist', {'autoload': {'mappings': ['<Plug>(poslist-']}}
 NeoBundleLazy 'thinca/vim-visualstar', {'autoload': {'mappings': ['<Plug>(visualstar-']}}
@@ -197,6 +200,7 @@ NeoBundle 'tyru/vim-altercmd' "コマンドのエイリアスを作る tyru版�
 NeoBundleLazy 'LeafCage/cmdlineplus.vim', {'autoload': {'mappings': [['c', '<Plug>(cmdlineplus-']]}}
 "--------------------------------------
 "Info
+NeoBundleLazy 'AndrewRadev/linediff.vim', {'autoload': {'commands': ['LinediffReset', 'Linediff']}}
 NeoBundleLazy 'mbbill/undotree', {'autoload': {'commands': ['UndotreeToggle']}}
 NeoBundle 'LeafCage/foldCC', {'stay_same': 1}
 NeoBundle 'tyru/current-func-info.vim'
@@ -288,6 +292,8 @@ if neobundle#tap('unite.vim') "{{{
   "やたら長い変数をechoするとき見やすく表示
   command! -complete=var -nargs=+ UPP  exe 'Unite output:PP\ '. escape(<q-args>, ': ')
   command! -nargs=+ -complete=customlist,unite#complete#source  UniteMS    bot sp| Unite -no-split <args>
+  nnoremap [space]u   :<C-u>Unite<Space>
+  cnoreabb <expr>u getcmdtype()==':' && getcmdline()==' u' ? 'Unite' : 'u'
   "文字関係
   nnoremap ,dg :<C-u>Unite -buffer-name=register register<CR>
   "nnoremap ,dy :<C-u>Unite history/yank<CR>
@@ -746,8 +752,7 @@ if neobundle#tap('neosnippet') "{{{
   call neobundle#config({'autoload': {'unite_sources': ['neosnippet_file', 'snippet', 'snippet_target'], 'mappings': [['sxi', '<Plug>(neosnippet_']], 'commands': [{'complete': 'file', 'name': 'NeoSnippetSource'}, {'complete': 'customlist,neosnippet#filetype_complete', 'name': 'NeoSnippetMakeCache'}, {'complete': 'customlist,neosnippet#edit_complete', 'name': 'NeoSnippetEdit'}]}})
   function! neobundle#tapped.hooks.on_source(bundle)
     let g:neosnippet#snippets_directory = $VIMUSERDIR. '/snippets'
-    au FileType snippet  setl nobl
-    au FileType snippet setl nofoldenable
+    au FileType snippet  setl nobl nofoldenable
     au FileType snippet  noremap <buffer>q <C-w>q
     au FileType snippet  inoremap <buffer><C-q> ${}<Left>
   endfunction
@@ -793,10 +798,8 @@ endif
 "}}}
 "--------------------------------------
 if neobundle#tap('yankround.vim') "{{{
-  autocmd vimrc ColorScheme * highlight YankRoundRegion          term=reverse cterm=reverse ctermbg=0 guibg=Brown
   let g:yankround_dir = $VIMCACHE. '/yankround'
-  let g:yankround_region_hl_groupname = 'YankRoundRegion'
-  let g:yankround_use_region_hl = 1
+  "let g:yankround_use_region_hl = 1
   nmap p <Plug>(yankround-p)
   nmap P <Plug>(yankround-P)
   nmap gp <Plug>(yankround-gp)
@@ -827,29 +830,48 @@ endif
 "--------------------------------------
 if neobundle#tap('vim-textobj-user') "{{{
   call neobundle#config({'autoload': {'mappings': [['xo', '<Plug>(textobj-piece']]}})
+  let s:SFILE = expand('<sfile>')
   function! neobundle#tapped.hooks.on_source(bundle)
-    call textobj#user#plugin('cword', {'-': {'*pattern*': '\k*\%#\k*', 'select': ['*',], }, })
+    call textobj#user#plugin('cword', {'-': {'pattern': '\k*\%#\k*', 'select': ['*',], }, })
     let textobj_star = {'select-a': 'a*', 'select-i': 'i*',
-      \ '*select-a-function*': 's:Textobj_star_a', '*select-i-function*': 's:Textobj_star_i', '*sfile*': expand('<sfile>')}
+      \ 'select-a-function': 's:Textobj_star_a', 'select-i-function': 's:Textobj_star_i', 'sfile': s:SFILE}
+    let textobj_hash = {'select-a': 'a#', 'select-i': 'i#',
+      \ 'select-a-function': 's:Textobj_hash_a', 'select-i-function': 's:Textobj_hash_i', 'sfile': s:SFILE}
     let textobj_bar = {'select-a': 'a<Bar>', 'select-i': 'i<Bar>',
-      \ '*select-a-function*': 's:Textobj_bar_a', '*select-i-function*': 's:Textobj_bar_i', '*sfile*': expand('<sfile>')}
-    let textobj_dot = {'select-a': 'a..', 'select-i': 'i..',
-      \ '*select-a-function*': 's:Textobj_dot_a', '*select-i-function*': 's:Textobj_dot_i', '*sfile*': expand('<sfile>')}
-    call textobj#user#plugin('piece', {'star': textobj_star, 'bar': textobj_bar, 'dot': textobj_dot})
+      \ 'select-a-function': 's:Textobj_bar_a', 'select-i-function': 's:Textobj_bar_i', 'sfile': s:SFILE}
+    let textobj_hyphen = {'select-a': 'a-', 'select-i': 'i-',
+      \ 'select-a-function': 's:Textobj_hyphen_a', 'select-i-function': 's:Textobj_hyphen_i', 'sfile': s:SFILE}
+    let textobj_dot = {'select-a': 'a.', 'select-i': 'i.',
+      \ 'select-a-function': 's:Textobj_dot_a', 'select-i-function': 's:Textobj_dot_i', 'sfile': s:SFILE}
+    let textobj_underscore = {'select-a': 'a_', 'select-i': 'i_',
+      \ 'select-a-function': 's:Textobj_underscore_a', 'select-i-function': 's:Textobj_underscore_i', 'sfile': s:SFILE}
+    call textobj#user#plugin('piece', {'star': textobj_star, 'bar': textobj_bar, 'dot': textobj_dot, 'underscore': textobj_underscore, 'hash': textobj_hash, 'hyphen': textobj_hyphen})
   endfunction
   let g:textobj_piece_no_default_key_mappings = 1
   xmap i* <Plug>(textobj-piece-star-i)
   xmap a* <Plug>(textobj-piece-star-a)
   omap i* <Plug>(textobj-piece-star-i)
   omap a* <Plug>(textobj-piece-star-a)
+  xmap i# <Plug>(textobj-piece-hash-i)
+  xmap a# <Plug>(textobj-piece-hash-a)
+  omap i# <Plug>(textobj-piece-hash-i)
+  omap a# <Plug>(textobj-piece-hash-a)
   xmap i<Bar> <Plug>(textobj-piece-bar-i)
   xmap a<Bar> <Plug>(textobj-piece-bar-a)
   omap i<Bar> <Plug>(textobj-piece-bar-i)
   omap a<Bar> <Plug>(textobj-piece-bar-a)
-  xmap i.. <Plug>(textobj-piece-dot-i)
-  xmap a.. <Plug>(textobj-piece-dot-a)
-  omap i.. <Plug>(textobj-piece-dot-i)
-  omap a.. <Plug>(textobj-piece-dot-a)
+  xmap i- <Plug>(textobj-piece-hyphen-i)
+  xmap a- <Plug>(textobj-piece-hyphen-a)
+  omap i- <Plug>(textobj-piece-hyphen-i)
+  omap a- <Plug>(textobj-piece-hyphen-a)
+  xmap i. <Plug>(textobj-piece-dot-i)
+  xmap a. <Plug>(textobj-piece-dot-a)
+  omap i. <Plug>(textobj-piece-dot-i)
+  omap a. <Plug>(textobj-piece-dot-a)
+  xmap i_ <Plug>(textobj-piece-underscore-i)
+  xmap a_ <Plug>(textobj-piece-underscore-a)
+  omap i_ <Plug>(textobj-piece-underscore-i)
+  omap a_ <Plug>(textobj-piece-underscore-a)
 
   function! s:Textobj_star_a() "{{{
     return s:_textobj_piece('*', 'a')
@@ -873,6 +895,30 @@ if neobundle#tap('vim-textobj-user') "{{{
   "}}}
   function! s:Textobj_dot_i() "{{{
     return s:_textobj_piece('.', 'i')
+  endfunction
+  "}}}
+  function! s:Textobj_underscore_a() "{{{
+    return s:_textobj_piece('_', 'a')
+  endfunction
+  "}}}
+  function! s:Textobj_underscore_i() "{{{
+    return s:_textobj_piece('_', 'i')
+  endfunction
+  "}}}
+  function! s:Textobj_hash_a() "{{{
+    return s:_textobj_piece('#', 'a')
+  endfunction
+  "}}}
+  function! s:Textobj_hash_i() "{{{
+    return s:_textobj_piece('#', 'i')
+  endfunction
+  "}}}
+  function! s:Textobj_hyphen_a() "{{{
+    return s:_textobj_piece('-', 'a')
+  endfunction
+  "}}}
+  function! s:Textobj_hyphen_i() "{{{
+    return s:_textobj_piece('-', 'i')
   endfunction
   "}}}
   function! s:_textobj_piece(char, i6a) "{{{
@@ -903,6 +949,19 @@ if neobundle#tap('vim-textobj-user') "{{{
 endif
 "}}}
 "--------------------------------------
+if neobundle#tap('vim-textobj-indent') "{{{
+  let g:textobj_indent_no_default_key_mappings = 1
+  omap a<C-i> <Plug>(textobj-indent-a)
+  omap i<C-i> <Plug>(textobj-indent-i)
+  omap ai <Plug>(textobj-indent-same-a)
+  omap ii <Plug>(textobj-indent-same-i)
+  xmap a<C-i> <Plug>(textobj-indent-a)
+  xmap i<C-i> <Plug>(textobj-indent-i)
+  xmap ai <Plug>(textobj-indent-same-a)
+  xmap ii <Plug>(textobj-indent-same-i)
+endif
+"}}}
+"--------------------------------------
 if neobundle#tap('vim-textovj-wiw') "{{{
   let g:textobj_wiw_no_default_key_mappings = 1
   xmap aw <Plug>(textobj-wiw-a)
@@ -912,30 +971,59 @@ if neobundle#tap('vim-textovj-wiw') "{{{
 endif
 "}}}
 "--------------------------------------
-if neobundle#tap('vim-textovj-plugins') "between {{{
-  let g:textobj_between_no_default_key_mappings = 1
-  xmap ag <Plug>(textobj-between-a)
-  xmap ig <Plug>(textobj-between-i)
-  omap ag <Plug>(textobj-between-a)
-  omap ig <Plug>(textobj-between-i)
+if neobundle#tap('vim-textobj-function') "{{{
+  call neobundle#config({'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': [['xo', '<Plug>(textobj-function']]}})
+  let g:textobj_function_no_default_key_mappings = 1
+  omap a<C-f> <Plug>(textobj-function-a)
+  omap i<C-f> <Plug>(textobj-function-i)
+  xmap a<C-f> <Plug>(textobj-function-a)
+  xmap i<C-f> <Plug>(textobj-function-i)
 endif
 "}}}
 "--------------------------------------
-if neobundle#tap('vim-textovj-parameter') "{{{
+if neobundle#tap('vim-textobj-plugins') "between {{{
+  call neobundle#config({'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': [['xo', '<Plug>(textobj-between'], ['xo', '<Plug>(textobj-comment']]}})
+  let g:textobj_between_no_default_key_mappings = 1
+  let g:textobj_comment_no_default_key_mappings = 1
+  omap a<C-b> <Plug>(textobj-between-a)
+  omap i<C-b> <Plug>(textobj-between-i)
+  xmap a<C-b> <Plug>(textobj-between-a)
+  xmap i<C-b> <Plug>(textobj-between-i)
+endif
+"}}}
+"--------------------------------------
+if neobundle#tap('vim-textobj-xbrackets') "{{{
+  call neobundle#config({'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-xbrackets']}})
+  let g:textobj_xbrackets_no_default_key_mappings = 1
+  " function declarations
+  omap ad <Plug>(textobj-xbrackets-ys(_)-a)
+  xmap ad <Plug>(textobj-xbrackets-ys(_)-a)
+  omap id <Plug>(textobj-xbrackets-ys(_)-i)
+  xmap id <Plug>(textobj-xbrackets-ys(_)-i)
+  " function definitions
+  omap aD <Plug>(textobj-xbrackets-ys(){_}-a)
+  xmap aD <Plug>(textobj-xbrackets-ys(){_}-a)
+  omap iD <Plug>(textobj-xbrackets-ys(){_}-i)
+  xmap iD <Plug>(textobj-xbrackets-ys(){_}-i)
+endif
+"}}}
+"--------------------------------------
+if neobundle#tap('vim-textobj-parameter') "{{{
   let g:textobj_parameter_no_default_key_mappings = 1
-  xmap a8 <Plug>(textobj-parameter-a)
-  xmap i8 <Plug>(textobj-parameter-i)
-  omap a8 <Plug>(textobj-parameter-a)
-  omap i8 <Plug>(textobj-parameter-i)
+  xmap a<C-p> <Plug>(textobj-parameter-a)
+  xmap i<C-p> <Plug>(textobj-parameter-i)
+  omap a<C-p> <Plug>(textobj-parameter-a)
+  omap i<C-p> <Plug>(textobj-parameter-i)
 endif
 "}}}
 "--------------------------------------
 if neobundle#tap('vim-textobj-multiblock') "{{{
+  call neobundle#config({'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-multiblock']}})
   let g:textobj_multiblock_no_default_key_mappings = 1
-  omap ab <Plug>(textobj-multiblock-a)
-  omap ib <Plug>(textobj-multiblock-i)
-  vmap ab <Plug>(textobj-multiblock-a)
-  vmap ib <Plug>(textobj-multiblock-i)
+  omap a<C-m> <Plug>(textobj-multiblock-a)
+  omap i<C-m> <Plug>(textobj-multiblock-i)
+  vmap a<C-m> <Plug>(textobj-multiblock-a)
+  vmap i<C-m> <Plug>(textobj-multiblock-i)
 endif
 "}}}
 "--------------------------------------
@@ -981,6 +1069,7 @@ if neobundle#tap('vim-easymotion') "{{{
   let g:EasyMotion_use_migemo = 1
   map S <Plug>(easymotion-s)
   map gl <Plug>(easymotion-s)
+  map mf <Plug>(easymotion-s)
   let g:EasyMotion_startofline=0
   nnoremap <expr>gj   &wrap && winwidth(0) < col('$') ? "j" : ":call EasyMotion#JK(0, 0)\<CR>"
   nnoremap <expr>gk   &wrap && winwidth(0) < col('$') ? "k" : ":call EasyMotion#JK(0, 1)\<CR>"
@@ -1006,6 +1095,16 @@ if neobundle#tap('CamelCaseMotion') "{{{
   "vmap <silent> ib <Plug>CamelCaseMotion_ib
   omap <silent> ie <Plug>CamelCaseMotion_ie
   vmap <silent> ie <Plug>CamelCaseMotion_ie
+endif
+"}}}
+"--------------------------------------
+if neobundle#tap('accelerated-smooth-scroll') "{{{
+  let g:ac_smooth_scroll_no_default_key_mappings = 1
+  let g:ac_smooth_scroll_enable_accelerating = 0
+  nmap <silent> <C-d> <Plug>(ac-smooth-scroll-c-d)
+  nmap <silent> <C-u> <Plug>(ac-smooth-scroll-c-u)
+  xmap <silent> <C-d> <Plug>(ac-smooth-scroll-c-d_v)
+  xmap <silent> <C-u> <Plug>(ac-smooth-scroll-c-u_v)
 endif
 "}}}
 "--------------------------------------
@@ -1378,6 +1477,10 @@ if neobundle#tap('lightline.vim') "{{{
   let s:p.tabline.right = [['black', 'Gray80', 16, 0], ['white', '#002451', 231, 17], ['black', 'DarkGray', 16, 0], s:STL_ATTRIBUTECOLOR]
   let g:lightline#colorscheme#lclightline#palette = s:p
   unlet s:p s:STL_BASECOLOR s:STL_ATTRIBUTECOLOR
+else
+  let pathstr = '%.40(%{empty(bufname("%")) ? "" : expand(''%:p:h'')."/"}%9*%t %0*%)'
+  let fencstr = '%([%{&fenc}/%{&ff[:0]}]%)'
+  let &stl = '%{repeat(",", winnr()).","}%4P'. '%9*%3n-%0*'. pathstr. '%m%R%H%W%y '. fencstr. '%=%4l(%4L),%3v(%3{virtcol("$")-1})%<'
 endif
 "}}}
 "--------------------------------------
@@ -1550,6 +1653,16 @@ aug END
 
 "=========================================================
 "Commands
+command! -nargs=? ExtractMatches let s:pat = empty(<q-args>) ? @/ : <q-args> | let s:result = filter(getline(1, '$'), 'v:val =~# s:pat') | new | put =s:result | unlet s:pat s:result
+function! s:highlight_preview(args) "{{{
+  highlight clear HighlightPreview
+  exe 'highlight HighlightPreview' a:args
+  echoh HighlightPreview
+  echo 'HighlightPreview'
+  echoh NONE
+endfunction
+"}}}
+command! -nargs=+   HighlightPreview    call s:highlight_preview(<q-args>)
 command! -nargs=*   VimElements    UPP lib#vimelements#collect(<f-args>)
 command! Hitest    silent! source $VIMRUNTIME/syntax/hitest.vim
 command! MessageClear for n in range(200) | echom "" | endfor| ec 'Cleared Message'
@@ -2041,11 +2154,12 @@ nnoremap <silent>F    :<C-u>exe 'norm!' v:count1.'F'. <SID>imoff_f(0)<CR>
 vnoremap <silent>f    :<C-u>exe 'norm! ' visualmode(). v:count1.'f'. <SID>imoff_f(1)<CR>
 vnoremap <silent>F    :<C-u>exe 'norm! ' visualmode(). v:count1.'F'. <SID>imoff_f(1)<CR>
 nnoremap t ;
+nnoremap T ;
 vnoremap <expr>t    bufnr('%')==g:f_pos[0] && line('.')==g:f_pos[1] ? ';' : ":\<C-u>exe 'norm!' visualmode(). v:count1.'t'. <SID>imoff_f(1)\<CR>"
-noremap T %
+noremap U %
 noremap L $
 noremap <expr>H   col('.') == match(getline('.'), '^\s*\zs\S')+1 ? '0' : '^'
-noremap <silent>U   :<C-u>call <SID>smart_M('M')<CR>
+"noremap <silent>M   :<C-u>call <SID>smart_M('M')<CR>
 function! s:smart_M(move) "{{{
   let s:smart_M_count = get(s:, 'smart_M_count', 0)
   let s:origin_view = s:smart_M_count==0 ? winsaveview() : get(s:, 'origin_view', winsaveview())
@@ -2168,7 +2282,7 @@ onoremap [@]@ `[`]
 vnoremap <expr> [@]@ "\<Esc>`[". strpart(getregtype(), 0,1). '`]'
 onoremap <silent> gv :normal gv<CR>
 "前回保存した状態にまでアンドゥ
-nnoremap [space]u :earlier 1f<CR>
+nnoremap ,u :earlier 1f<CR>
 nnoremap [space]<C-r> :later 1f<CR>
 nnoremap =p p`[=`]
 nnoremap =P P`[=`]
@@ -2199,7 +2313,7 @@ nnoremap [C-k]<C-t>k :call PeekEcho()<CR>
 ":source
 "nnoremap  [C-k]v     source $MYVIMRC<CR>
 nnoremap  ,xv    source $MYVIMRC<CR>
-nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>echoh MoreMsg<Bar>echom 'sourced:'expand('%') strftime('%X', localtime())<Bar>echoh NONE<Bar> endif<CR>
+nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>MessageClear<Bar>echoh MoreMsg<Bar>echom 'sourced:'expand('%') strftime('%X', localtime())<Bar>echoh NONE<Bar> endif<CR>
 
 
 "======================================
@@ -2477,6 +2591,7 @@ se fcs +=diff:-
 
 let &sbr = '> ' "折り返された行の先頭に表示する文字列
 se cpoptions +=n  "'showbreak'を行番号の間に表示させる
+se laststatus=2
 
 
 se guioptions=
