@@ -38,7 +38,7 @@ function! BackdraftEnterDraft() "{{{
 endfunction
 "}}}
 
-nnoremap ,st :<C-u>AltiTask<CR>
+nnoremap ,sd :<C-u>AltiTask<CR>
 
 
 
@@ -151,7 +151,8 @@ NeoBundleLazy 'kana/vim-textobj-user'
 NeoBundleLazy 'h1mesuke/textobj-wiw', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-wiw']}} "カーソルドのwordを選択する/ CamelCaseMotionの働きも？
 NeoBundleLazy 'kana/vim-textobj-function'
 NeoBundleLazy 'kana/vim-textobj-indent', {'depends': 'kana/vim-textobj-user','autoload': {'mappings': ['<Plug>(textobj-indent']}}
-NeoBundleLazy 'thinca/vim-textobj-plugins'
+NeoBundleLazy 'thinca/vim-textobj-between'
+NeoBundleLazy 'thinca/vim-textobj-comment'
 NeoBundleLazy 'anyakichi/vim-textobj-xbrackets'
 NeoBundleLazy 'sgur/vim-textobj-parameter', {'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': ['<Plug>(textobj-parameter']}}
 NeoBundleLazy 'osyo-manga/vim-textobj-multiblock'
@@ -369,7 +370,7 @@ if neobundle#tap('ctrlp.vim') "{{{
   nnoremap <silent>m<C-p> :<C-u>CtrlPMRU<CR>
   let g:ctrlp_smallreg_dir = $VIMCACHE. '/ctrlp/smallreg'
   nnoremap <silent>g<C-p> :<C-u>CtrlPMark<CR>
-  nnoremap <silent>,b<C-p> :<C-u>CtrlPBuffer<CR>
+  nnoremap <silent>,<C-p><C-b> :<C-u>CtrlPBuffer<CR>
   "nnoremap <silent>[C-k]<C-p> :<C-u>CtrlPBuffer<CR>
   "nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
   "autocmd vimrc CursorMoved ControlP  let w:lightline = 0
@@ -799,7 +800,7 @@ endif
 "--------------------------------------
 if neobundle#tap('yankround.vim') "{{{
   let g:yankround_dir = $VIMCACHE. '/yankround'
-  "let g:yankround_use_region_hl = 1
+  let g:yankround_use_region_hl = 1
   nmap p <Plug>(yankround-p)
   nmap P <Plug>(yankround-P)
   nmap gp <Plug>(yankround-gp)
@@ -845,7 +846,9 @@ if neobundle#tap('vim-textobj-user') "{{{
       \ 'select-a-function': 's:Textobj_dot_a', 'select-i-function': 's:Textobj_dot_i', 'sfile': s:SFILE}
     let textobj_underscore = {'select-a': 'a_', 'select-i': 'i_',
       \ 'select-a-function': 's:Textobj_underscore_a', 'select-i-function': 's:Textobj_underscore_i', 'sfile': s:SFILE}
-    call textobj#user#plugin('piece', {'star': textobj_star, 'bar': textobj_bar, 'dot': textobj_dot, 'underscore': textobj_underscore, 'hash': textobj_hash, 'hyphen': textobj_hyphen})
+    let textobj_slash = {'select-a': 'a/', 'select-i': 'i/',
+      \ 'select-a-function': 's:Textobj_slash_a', 'select-i-function': 's:Textobj_slash_i', 'sfile': s:SFILE}
+    call textobj#user#plugin('piece', {'star': textobj_star, 'bar': textobj_bar, 'dot': textobj_dot, 'underscore': textobj_underscore, 'hash': textobj_hash, 'hyphen': textobj_hyphen, 'slash': textobj_slash})
   endfunction
   let g:textobj_piece_no_default_key_mappings = 1
   xmap i* <Plug>(textobj-piece-star-i)
@@ -921,6 +924,14 @@ if neobundle#tap('vim-textobj-user') "{{{
     return s:_textobj_piece('-', 'i')
   endfunction
   "}}}
+  function! s:Textobj_slash_a() "{{{
+    return s:_textobj_piece('/', 'a')
+  endfunction
+  "}}}
+  function! s:Textobj_slash_i() "{{{
+    return s:_textobj_piece('/', 'i')
+  endfunction
+  "}}}
   function! s:_textobj_piece(char, i6a) "{{{
     let save_view = winsaveview()
     let crrline = line('.')
@@ -981,14 +992,23 @@ if neobundle#tap('vim-textobj-function') "{{{
 endif
 "}}}
 "--------------------------------------
-if neobundle#tap('vim-textobj-plugins') "between {{{
-  call neobundle#config({'depends': 'kana/vim-textobj-user', 'autoload': {'mappings': [['xo', '<Plug>(textobj-between'], ['xo', '<Plug>(textobj-comment']]}})
+if neobundle#tap('vim-textobj-between') "{{{
+  call neobundle#config({'depends': 'kana/vim-textobj-user','autoload': {'mappings': [['xo', '<Plug>(textobj-between']]}})
   let g:textobj_between_no_default_key_mappings = 1
-  let g:textobj_comment_no_default_key_mappings = 1
   omap a<C-b> <Plug>(textobj-between-a)
   omap i<C-b> <Plug>(textobj-between-i)
   xmap a<C-b> <Plug>(textobj-between-a)
   xmap i<C-b> <Plug>(textobj-between-i)
+endif
+"}}}
+"--------------------------------------
+if neobundle#tap('vim-textobj-comment') "{{{
+  call neobundle#config({'depends': 'kana/vim-textobj-user','autoload': {'mappings': [['xo', '<Plug>(textobj-comment']]}})
+  let g:textobj_comment_no_default_key_mappings = 1
+  omap ac <Plug>(textobj-comment-a)
+  omap ic <Plug>(textobj-comment-i)
+  xmap ac <Plug>(textobj-comment-a)
+  xmap ic <Plug>(textobj-comment-i)
 endif
 "}}}
 "--------------------------------------
@@ -1653,6 +1673,23 @@ aug END
 
 "=========================================================
 "Commands
+function! s:trim_blank_line() range "{{{
+  exe a:firstline
+  let lastrow = a:lastline
+  let erow = line('$')
+  let crrrow = line('.')
+  while crrrow <= lastrow && crrrow<erow
+    if getline(crrrow)=='' && getline(crrrow+1)!=''
+      join
+      let lastrow -= 1| let erow -= 1
+    else
+      norm! j
+    end
+    let crrrow = line('.')
+  endwhile
+endfunction
+"}}}
+command! -nargs=0 -range=%  TrimBlankLine    <line1>,<line2>call s:trim_blank_line()
 command! -nargs=? ExtractMatches let s:pat = empty(<q-args>) ? @/ : <q-args> | let s:result = filter(getline(1, '$'), 'v:val =~# s:pat') | new | put =s:result | unlet s:pat s:result
 function! s:highlight_preview(args) "{{{
   highlight clear HighlightPreview
@@ -1665,7 +1702,7 @@ endfunction
 command! -nargs=+   HighlightPreview    call s:highlight_preview(<q-args>)
 command! -nargs=*   VimElements    UPP lib#vimelements#collect(<f-args>)
 command! Hitest    silent! source $VIMRUNTIME/syntax/hitest.vim
-command! MessageClear for n in range(200) | echom "" | endfor| ec 'Cleared Message'
+command! MessageClear for n in range(200) | echom "" | endfor| unlet n| ec 'Cleared Message'
 nnoremap mc :<C-u>MessageClear<CR>
 function! s:scriptid(...) "{{{
   let arg = a:0 ? a:1 : expand('%')
@@ -2313,7 +2350,7 @@ nnoremap [C-k]<C-t>k :call PeekEcho()<CR>
 ":source
 "nnoremap  [C-k]v     source $MYVIMRC<CR>
 nnoremap  ,xv    source $MYVIMRC<CR>
-nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>MessageClear<Bar>echoh MoreMsg<Bar>echom 'sourced:'expand('%') strftime('%X', localtime())<Bar>echoh NONE<Bar> endif<CR>
+nnoremap  <silent>[C-k]<C-s> :<C-u>if &mod<Bar> echoh WarningMsg <Bar>ec '先に保存してください'<Bar>echoh NONE <Bar> else<Bar> source %<Bar>for n in range(200) <Bar> echom "" <Bar> endfor<Bar>unlet n<Bar>echoh MoreMsg<Bar>echom 'sourced:'expand('%') strftime('%X', localtime())<Bar>echoh NONE<Bar> endif<CR>
 
 
 "======================================
@@ -2703,23 +2740,6 @@ endif
 " スクラッチ
 " ==========
 
-"lingr用。空白削除関数。
-nnoremap ,<Space>k :call Kill_blank_line()<CR>
-function! Kill_blank_line()
-  let prison = line('.')
-  let prisonend = line('$')
-  while prison < prisonend
-    let checkblank =getline(".")
-    let checkblank_next =getline(line('.')+1)
-    if checkblank =='' && checkblank_next !=''
-      join
-    else
-      "call cursor(prison+1,1)
-      normal! j
-    endif
-    let prison +=1
-  endwhile
-endfunction
 
 
 
