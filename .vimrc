@@ -38,7 +38,7 @@ function! BackdraftEnterDraft() "{{{
 endfunction
 "}}}
 
-nnoremap ,sd :<C-u>AltiTask<CR>
+nnoremap ,sk :<C-u>AltiTask<CR>
 
 
 
@@ -190,7 +190,7 @@ NeoBundleLazy 'thinca/vim-showtime', {'autoload': {'commands': [{'complete': 'fi
 NeoBundleLazy 'kana/vim-altr', {'autoload': {'mappings': [['scxino', '<Plug>(altr-']]}} "現在バッファから開くファイルを類推して開く
 NeoBundleLazy 'kana/vim-gf-user', {'autoload': {'mappings': [['nv', '<Plug>(gf-user-']]}}
 NeoBundleLazy 'sgur/vim-gf-autoload'
-NeoBundle 'osyo-manga/vim-automatic', {'depends': 'osyo-manga/vim-gift', 'vim_version': '7.3.895'}
+"NeoBundle 'osyo-manga/vim-automatic', {'depends': 'osyo-manga/vim-gift', 'vim_version': '7.3.895'}
 "--------------------------------------
 "Bind&Command
 "NeoBundleLazy 'kana/vim-arpeggio'
@@ -229,6 +229,7 @@ NeoBundleLazy 'cocopon/colorswatch.vim', {'autoload': {'commands': ['ColorSwatch
 "GUI
 NeoBundleLazy 'daisuzu/rainbowcyclone.vim', {'augroup': 'RainbowCyclone', 'autoload': {'mappings': [['n', '<Plug>(rc_']], 'commands': ['RCList', 'RCReset', 'RCConcat', 'RC']}}
 NeoBundle 'itchyny/lightline.vim'
+NeoBundle 't9md/vim-ezbar'
 "NeoBundle 'kien/rainbow_parentheses.vim'
 "NeoBundle 'altercation/vim-colors-solarized' "なんか良いらしいcolorscheme
 NeoBundleLazy 'tyru/winmove.vim', {'autoload': {'mappings': ['<Plug>(winmove-']}, 'gui':1}
@@ -1305,12 +1306,15 @@ if neobundle#tap('vim-altercmd') "{{{
   AlterCommand zw  Ref webdict wip
   AlterCommand zv  Ref javadoc
 
+  AlterCommand sc     Script
+  AlterCommand ou     Outputbuf
+  AlterCommand op[p]     Outputbuf PP
+
   AlterCommand gi[t]     Git
   AlterCommand gd     Gsdiff
   AlterCommand c[tags]  !start ctags %
   AlterCommand vit[alize]     Vitalize <C-r>=expand('%:p:h:h')<CR>
   AlterCommand sf     setf
-  AlterCommand sc     Script
   AlterCommand ft     setf
   AlterCommand so     so %
   AlterCommand me    mes
@@ -1690,6 +1694,22 @@ function! s:trim_blank_line() range "{{{
 endfunction
 "}}}
 command! -nargs=0 -range=%  TrimBlankLine    <line1>,<line2>call s:trim_blank_line()
+function! s:outputbuf(cmd) "{{{
+  redir => output
+  silent exe a:cmd
+  redir END
+  if output==''
+    return
+  end
+  tabnew
+  set nobl
+  nnoremap <buffer>q :<C-u>close<CR>
+  call append('.', split(output, '\n'))
+  del _
+  setl nomod
+endfunction
+"}}}
+command! -nargs=+ -complete=expression   Outputbuf    call s:outputbuf(<q-args>)
 command! -nargs=? ExtractMatches let s:pat = empty(<q-args>) ? @/ : <q-args> | let s:result = filter(getline(1, '$'), 'v:val =~# s:pat') | new | put =s:result | unlet s:pat s:result
 function! s:highlight_preview(args) "{{{
   highlight clear HighlightPreview
@@ -2743,16 +2763,6 @@ endif
 
 
 
-function! s:alterbuf_load()
-  let fname = expand('<afile>:p:r') . '.hidden'
-  if filereadable(fname)
-    silent! exe "1split" fnameescape(fname) | silent! hide
-  endif
-endfunction
-
-autocmd BufCreate *.alter call s:alterbuf_load()
-
-"autocmd CursorMoved * redraw
 
 
 
