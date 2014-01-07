@@ -99,6 +99,9 @@ NeoBundleLazy 'thinca/vim-openbuf'
 NeoBundleLazy 'mattn/wwwrenderer-vim' "webpage(only text)を返す
 NeoBundleLazy 'mattn/webapi-vim'
 NeoBundleLazy 'osyo-manga/vim-gift'
+"NeoBundle 'bitbucket:ns9tks/vim-fuzzyfinder'
+"NeoBundle 'bitbucket:ns9tks/vim-l9'
+"NeoBundle 'kana/vim-ku'
 "--------------------------------------
 "Synthesis
 NeoBundleLazy 'Shougo/unite.vim'
@@ -229,7 +232,7 @@ NeoBundleLazy 'cocopon/colorswatch.vim', {'autoload': {'commands': ['ColorSwatch
 "GUI
 NeoBundleLazy 'daisuzu/rainbowcyclone.vim', {'augroup': 'RainbowCyclone', 'autoload': {'mappings': [['n', '<Plug>(rc_']], 'commands': ['RCList', 'RCReset', 'RCConcat', 'RC']}}
 NeoBundle 'itchyny/lightline.vim'
-NeoBundle 't9md/vim-ezbar'
+"NeoBundle 't9md/vim-ezbar'
 "NeoBundle 'kien/rainbow_parentheses.vim'
 "NeoBundle 'altercation/vim-colors-solarized' "なんか良いらしいcolorscheme
 NeoBundleLazy 'tyru/winmove.vim', {'autoload': {'mappings': ['<Plug>(winmove-']}, 'gui':1}
@@ -380,7 +383,7 @@ if neobundle#tap('ctrlp.vim') "{{{
     let w:lightline = 0
   endfunction
   let g:ctrlp_cache_dir = $VIMCACHE. '/ctrlp'
-  let g:ctrlp_max_files = 250
+  let g:ctrlp_max_files = 50
   let g:ctrlp_use_migemo = 1
   let g:ctrlp_show_hidden = 1
   let g:ctrlp_switch_buffer = ''
@@ -1090,7 +1093,6 @@ if neobundle#tap('vim-easymotion') "{{{
   let g:EasyMotion_use_migemo = 1
   map S <Plug>(easymotion-s)
   map gl <Plug>(easymotion-s)
-  map mf <Plug>(easymotion-s)
   let g:EasyMotion_startofline=0
   nnoremap <expr>gj   &wrap && winwidth(0) < col('$') ? "j" : ":call EasyMotion#JK(0, 0)\<CR>"
   nnoremap <expr>gk   &wrap && winwidth(0) < col('$') ? "k" : ":call EasyMotion#JK(0, 1)\<CR>"
@@ -1334,6 +1336,14 @@ if neobundle#tap('cmdlineplus.vim') "{{{
   cmap <C-\>i  <Plug>(cmdlineplus-escape-input)
   cmap <C-\><C-y>  <Plug>(cmdlineplus-yank)
   cmap <C-\><C-c>  <Plug>(cmdlineplus-yank-clipboard)
+  cmap <C-\>f  <Plug>(cmdlineplus-f)
+  cmap <C-\>F  <Plug>(cmdlineplus-F)
+  cmap <C-\>t  <Plug>(cmdlineplus-t)
+  cmap <C-\>T  <Plug>(cmdlineplus-T)
+  cmap <C-\>;  <Plug>(cmdlineplus-;)
+  cmap <C-\>,  <Plug>(cmdlineplus-,)
+  cmap <C-\>d  <Plug>(cmdlineplus-df)
+  cmap <C-\>D  <Plug>(cmdlineplus-dF)
 endif
 "}}}
 
@@ -1381,10 +1391,10 @@ endif
 "--------------------------------------
 if neobundle#tap('unite-colorscheme') "{{{
   function! neobundle#tapped.hooks.on_source(bundle)
-    augroup LightLineColorscheme
-      autocmd!
-      autocmd ColorScheme * LightlineUpdate
-    augroup END
+    "augroup LightLineColorscheme
+    "  autocmd!
+    "  autocmd ColorScheme * LightlineUpdate
+    "augroup END
   endfunction
   cnoreabb <expr>colorscheme getcmdtype()==':' && getcmdline()=~'^\s*Unite ' && getcmdline()!~'-auto-preview' ?
     \ '-auto-preview colorscheme' : 'colorscheme'
@@ -1502,9 +1512,100 @@ if neobundle#tap('lightline.vim') "{{{
   let g:lightline#colorscheme#lclightline#palette = s:p
   unlet s:p s:STL_BASECOLOR s:STL_ATTRIBUTECOLOR
 else
-  let pathstr = '%.40(%{empty(bufname("%")) ? "" : expand(''%:p:h'')."/"}%9*%t %0*%)'
-  let fencstr = '%([%{&fenc}/%{&ff[:0]}]%)'
-  let &stl = '%{repeat(",", winnr()).","}%4P'. '%9*%3n-%0*'. pathstr. '%m%R%H%W%y '. fencstr. '%=%4l(%4L),%3v(%3{virtcol("$")-1})%<'
+  "let pathstr = '%.40(%{empty(bufname("%")) ? "" : expand(''%:p:h'')."/"}%9*%t %0*%)'
+  "let fencstr = '%([%{&fenc}/%{&ff[:0]}]%)'
+  "let &stl = '%{repeat(",", winnr()).","}%4P'. '%9*%3n-%0*'. pathstr. '%m%R%H%W%y '. fencstr. '%=%4l(%4L),%3v(%3{virtcol("$")-1})%<'
+endif
+"}}}
+"--------------------------------------
+if neobundle#tap('vim-ezbar') "{{{
+  let g:ezbar = {'separator_L': '', 'separator_R': ''}
+  let g:ezbar.active = [
+    \ 'winbufnum', 'dir',
+    \ 'filename',
+    \ {'chg_color': {'gui': ['SlateGray', 'white', 'bold']}},
+    \ 'filetype',
+    \ 'modified',
+    \ 'currentfuncrow',
+    \ {'__SEP__': 'StatusLine'},
+    \ 'cfi',
+    \ 'fileformat',
+    \ 'encoding',
+    \ 'percent',
+    \ 'line_col',
+    \ ]
+  let g:ezbar.inactive = [
+    \ 'winbufnum', 'dir',
+    \ 'filename',
+    \ {'chg_color': 'StlProperty'},
+    \ 'filetype',
+    \ 'modified',
+    \ {'__SEP__': 'StatusLine'},
+    \ 'SEP',
+    \ 'encoding',
+    \ 'percent',
+    \ 'line_col',
+    \ ]
+
+  let s:u = {}
+  function! s:u._init(n) "{{{
+    let self.mode = mode()
+    let self.crrbuf = bufname(winbufnr(a:n))
+    if self.__is_active && self.mode == 'i'
+      let self.__default_color = {'gui': ['DarkKhaki', 'black', 'bold']}
+    end
+  endfunction
+  "}}}
+  function! s:u._filter(layout, parts) "{{{
+    if self.mode == 'i'
+      let a:parts.__SEP__.ac = {'gui': ['DarkKhaki', 'black', 'bold']}
+    end
+    let a:parts.line_col.ac = {'gui': ['NavajoWhite1', 'black', 'bold']}
+    let a:parts.line_col.c = {'gui': ['NavajoWhite1', 'black']}
+    "let a:layout[-1].ac = {'gui': ['NavajoWhite1', 'black', 'bold']}
+    "let a:layout[-1].c = {'gui': ['NavajoWhite1', 'black']}
+    let a:layout[-2].ac = {'gui': ['MistyRose', 'black', 'bold']}
+    let a:layout[-2].c = {'gui': ['MistyRose', 'black']}
+    return a:layout
+  endfunction
+  "}}}
+  function! s:u.winbufnum(n) "{{{
+    return '%n%{repeat(",", winnr())}%<'
+  endfunction
+  "}}}
+  function! s:u.dir(n) "{{{
+    let bg = self.mode=='i' ? 'LightSkyBlue1' : 'azure'
+    let _ = fnamemodify(self.crrbuf, ':h')
+    return {'s': '%.35('._.'%)', 'ac': {'gui': [bg, 'black', 'bold']}, 'ic': {'gui': ['azure', 'black']}}
+  endfunction
+  "}}}
+  function! s:u.filename(n) "{{{
+    let bg = self.mode=='i' ? 'RosyBrown1' : 'MistyRose'
+    return {'s': fnamemodify(self.crrbuf, ':t'), 'ac': {'gui': [bg, 'black', 'bold']}, 'c': {'gui': ['MistyRose', 'black']}}
+  endfunction
+  "}}}
+  function! s:u.currentfuncrow(n) "{{{
+    if &ft != 'vim'
+      return ''
+    end
+    let funcbgn = search('^\s*\<fu\%[nction]\>', 'bcnW', search('^\s*\<endf\%[unction]\>', 'bcnW'))
+    if funcbgn > 0
+      let row = line('.') - funcbgn
+      return row ? {'s': row, 'c': {'gui': ['azure', 'black', 'bold']}} : ''
+    endif
+    return ''
+  endfunction
+  "}}}
+  function! s:u.cfi(n) "{{{
+    if exists('*cfi#format')
+      return {'s': cfi#format('%.43s()', ''), 'c': {'gui': ['azure', 'black', 'bold']}}
+    end
+    return ''
+  endfunction
+  "}}}
+
+  let g:ezbar.parts = extend(s:u, ezbar#parts#default#new(), 'keep')
+  unlet s:u
 endif
 "}}}
 "--------------------------------------
@@ -1618,6 +1719,9 @@ function! s:define_CursorIM_on_highlight() "{{{
 endfunction
 "}}}
 function! s:define_other_highlight()  "{{{
+  hi StlProperty    guifg=white guibg=SlateGray
+  hi TabLineSel     guifg=white guibg=#002451 gui=underline
+  hi TabLine        guifg=black guibg=Gray60
   hi Pmenu          guifg=white  guibg=#6A5CB4  gui=NONE
   hi Visual          term=reverse cterm=reverse ctermbg=0 guibg=Gray50
   "hi Cursor          guifg=Black  guibg=Green
@@ -1733,6 +1837,7 @@ function! s:scriptid(...) "{{{
 endfunction
 "}}}
 command! -nargs=?   Script    echo <SID>scriptid(<f-args>)
+command! -nargs=1   Func    fu {<args>}
 "command! -bar Tasks execute 'vimgrep /\C\v<(TODO|FIXME|XXX)>/ **/*.'. expand('%:e')
 command! -bar Tasks execute 'vimgrep /\C\v<(TODO|FIXME|XXX)>/ ' expand('%:h'). '**/*.'. expand('%:e')
 "Vim script計測
@@ -1825,6 +1930,7 @@ if exists(':AlterCommand')
     AlterCommand gr[e] Grep
   end
   AlterCommand re[name] Rename
+  AlterCommand fu Func
 end
 
 "=========================================================
@@ -2197,7 +2303,11 @@ function! s:imoff_f(is_vmode) "{{{
   let save_gcr = &gcr
   set gcr=n:hor20
   let c = nr2char(getchar())
-  if a:is_vmode && c!="\<Esc>"
+  if c=="\<Tab>"
+    let &gcr = save_gcr
+    if exists('*EasyMotion#S')| call EasyMotion#S(a:is_vmode,2)| end
+    return "\<Esc>"
+  elseif a:is_vmode && c!="\<Esc>"
     let g:f_pos = [bufnr('%'), line('.')]
   else
     let g:f_pos = [0, 0]
@@ -2464,6 +2574,7 @@ function! NoCursorMoved_Substitute() "{{{
   exe cmd
   call histadd(':', cmd)
   call histdel('@', query)
+  call histdel(':', 'call NoCursorMoved_Substitute()')
   call winrestview(save_view)
 endfunction
 "}}}
@@ -2667,6 +2778,42 @@ se shm +=T  "メッセージが長すぎてコマンドラインに収まらな�
 se shm +=W  "書き込み時、メッセージを表示しない
 se shm +=o  "書き込み時のメッセージをその後の読み込みメッセージで上書きする
 se shm +=I  "Vim開始挨拶メッセージを表示しない
+
+if has_key(s:, 'mytal') || &tal==''
+  let s:mytal = 1
+  set tabline =%!MyTabline()
+  function! MyTabline() "{{{
+    let tabs = map(range(1, tabpagenr('$')), 's:_get_tablabels(v:val)')
+    let leftline = join(tabs, ''). '%#TabLineFill#%T'
+    let head = StlFugitive()
+    let headhi = head=='' ? '' : head=='master' ? '%#StlProperty# ' : '%#Todo# '
+    let rightline = headhi. head. ' %#TabLine# %{&et?"Et":""}%{&ts}:%{&sw}:%{&sts},%{&tw} '. '%#TabLineSel# %.35(%{fnamemodify(getcwd(), ":~")}%) '. '%#TabLineFill# %L '
+    return leftline. '%='. rightline
+  endfunction
+  "}}}
+  function! StlFugitive() "{{{
+    try
+      if &ft !~? 'vimfiler\|gundo' && exists('*fugitive#head')
+        return fugitive#head()
+      endif
+    catch
+      return ''
+    endtry
+    return ''
+  endfunction
+  "}}}
+  function! s:_get_tablabels(tabnr) "{{{
+    let hi = tabpagenr()==a:tabnr ? '%#TabLineSel#' : '%#TabLine#'
+    let bufs = tabpagebuflist(a:tabnr)
+    let wincount = len(bufs)
+    let crrbufnr = bufs[tabpagewinnr(a:tabnr)-1]
+    let crrbuf = bufname(crrbufnr)
+    let crrbuf = crrbuf=='' ? 'NoTitle' : fnamemodify(crrbuf, ':t')
+    return printf('%%%dT%s%d%s %d-%s ', a:tabnr, hi, a:tabnr, repeat(',', wincount), crrbufnr, crrbuf)
+  endfunction
+  "}}}
+end
+
 
 
 se diffopt=filler,horizontal
