@@ -204,6 +204,7 @@ NeoBundle 'tyru/vim-altercmd' "コマンドのエイリアスを作る tyru版�
 NeoBundleLazy 'LeafCage/cmdlineplus.vim', {'autoload': {'mappings': [['c', '<Plug>(cmdlineplus-']]}}
 "--------------------------------------
 "Info
+NeoBundleLazy 'itchyny/calendar.vim', {'autoload': {'commands': [{'complete': 'customlist,calendar#argument#complete', 'name': 'Calendar'}]}}
 NeoBundleLazy 'AndrewRadev/linediff.vim', {'autoload': {'commands': ['LinediffReset', 'Linediff']}}
 NeoBundleLazy 'mbbill/undotree', {'autoload': {'commands': ['UndotreeToggle']}}
 NeoBundle 'LeafCage/foldCC', {'stay_same': 1}
@@ -580,6 +581,33 @@ if neobundle#tap('vimfiler') "{{{
     return fnamemodify(prjRootPath, ':h')
   endfunction
   "}}}
+endif
+"}}}
+"--------------------------------------
+if neobundle#tap('calendar.vim') "{{{
+  let g:calendar_cache_directory = $VIMCACHE. '/calendar.vim/'
+  autocmd vimrc FileType calendar call s:calendar_mappings()
+  function! s:calendar_mappings()
+    nmap <buffer><expr>q b:calendar.view._help ? "\<Plug>(calendar_help)" : b:calendar.view._event ? "\<Plug>(calendar_event)" : b:calendar.view._task ? "\<Plug>(calendar_task)" : "\<Plug>(calendar_exit)"
+    nmap <buffer>h  <Plug>(calendar_prev)
+    nmap <buffer>l  <Plug>(calendar_next)
+    nmap <buffer>H  <Plug>(calendar_line_head)
+    nmap <buffer>L  <Plug>(calendar_line_last)
+    nmap <buffer>dd  <Plug>(calendar_delete_line)
+    nmap <buffer>cc  <Plug>(calendar_clear)
+    nmap <buffer>gh  <Plug>(calendar_today)
+    nmap <buffer>t  <Plug>(calendar_task)
+    nmap <buffer>e  <Plug>(calendar_event)
+    nmap <buffer>r  <Plug>(calendar_start_insert_change)
+    nmap <buffer><Esc>  <Plug>(calendar_close_event)
+    try
+      unmap <buffer>d
+      unmap <buffer>c
+      unmap <buffer><C-h>
+      unmap <buffer><Space>
+    catch /E31:/
+    endtry
+  endfunction
 endif
 "}}}
 
@@ -1283,7 +1311,7 @@ if neobundle#tap('vim-altercmd') "{{{
   AlterCommand nbu  Unite neobundle/update<C-r>=Eat_whitespace('\s')<CR>
   AlterCommand nbl[g]   Unite neobundle/log
   AlterCommand nbus   Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neosnippet
-  AlterCommand nbum   Unite neobundle/install:vital.vim:vim-anzu:jasegment.vim:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim:vim-quickrun:vim-fugitive:lightline.vim
+  AlterCommand nbum   Unite neobundle/install:vital.vim:lightline.vim:calendar.vim:vim-anzu:vim-quickrun:vim-fugitive:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim
   AlterCommand nbls NeoBundleList
   AlterCommand nbc NeoBundleClean
   command! -nargs=0 NeoBundleUpdateShougo
@@ -2784,7 +2812,7 @@ if has_key(s:, 'mytal') || &tal==''
   set tabline =%!MyTabline()
   function! MyTabline() "{{{
     let tabs = map(range(1, tabpagenr('$')), 's:_get_tablabels(v:val)')
-    let leftline = join(tabs, ''). '%#TabLineFill#%T'
+    let leftline = join(tabs, '%#TabLine#|'). '%#TabLineFill#%T'
     let head = StlFugitive()
     let headhi = head=='' ? '' : head=='master' ? '%#StlProperty# ' : '%#Todo# '
     let rightline = headhi. head. ' %#TabLine# %{&et?"Et":""}%{&ts}:%{&sw}:%{&sts},%{&tw} '. '%#TabLineSel# %.35(%{fnamemodify(getcwd(), ":~")}%) '. '%#TabLineFill# %L '
