@@ -1549,7 +1549,8 @@ endif
 if neobundle#tap('vim-ezbar') "{{{
   let g:ezbar = {'separator_L': '', 'separator_R': ''}
   let g:ezbar.active = [
-    \ 'winbufnum', 'dir',
+    \ 'winbufnum',
+    \ 'dir',
     \ 'filename',
     \ {'chg_color': {'gui': ['SlateGray', 'white', 'bold']}},
     \ 'filetype',
@@ -1563,13 +1564,13 @@ if neobundle#tap('vim-ezbar') "{{{
     \ 'line_col',
     \ ]
   let g:ezbar.inactive = [
-    \ 'winbufnum', 'dir',
+    \ 'winbufnum',
+    \ 'dir',
     \ 'filename',
     \ {'chg_color': 'StlProperty'},
     \ 'filetype',
     \ 'modified',
     \ {'__SEP__': 'StatusLine'},
-    \ 'SEP',
     \ 'encoding',
     \ 'percent',
     \ 'line_col',
@@ -1578,8 +1579,8 @@ if neobundle#tap('vim-ezbar') "{{{
   let s:u = {}
   function! s:u._init(n) "{{{
     let self.mode = mode()
-    let self.crrbuf = bufname(winbufnr(a:n))
-    if self.__is_active && self.mode == 'i'
+    let self.bufname = bufname(winbufnr(a:n))
+    if self.__is_active && self.mode==#'i'
       let self.__default_color = {'gui': ['DarkKhaki', 'black', 'bold']}
     end
   endfunction
@@ -1588,12 +1589,12 @@ if neobundle#tap('vim-ezbar') "{{{
     if self.mode == 'i'
       let a:parts.__SEP__.ac = {'gui': ['DarkKhaki', 'black', 'bold']}
     end
-    let a:parts.line_col.ac = {'gui': ['NavajoWhite1', 'black', 'bold']}
-    let a:parts.line_col.c = {'gui': ['NavajoWhite1', 'black']}
-    "let a:layout[-1].ac = {'gui': ['NavajoWhite1', 'black', 'bold']}
-    "let a:layout[-1].c = {'gui': ['NavajoWhite1', 'black']}
-    let a:layout[-2].ac = {'gui': ['MistyRose', 'black', 'bold']}
-    let a:layout[-2].c = {'gui': ['MistyRose', 'black']}
+    if has_key(a:parts, 'filename')
+      let a:parts.filename.ac = {'gui': [(self.mode==#'i' ? 'RosyBrown1': 'MistyRose'), 'black', 'bold']}
+      let a:parts.filename.ic = {'gui': ['MistyRose', 'black']}
+    end
+    call extend(a:parts.line_col, {'ac': {'gui': ['NavajoWhite1', 'black', 'bold']}, 'c': {'gui': ['NavajoWhite1', 'black']}})
+    call extend(a:parts.percent, {'ac': {'gui': ['MistyRose', 'black', 'bold']}, 'c': {'gui': ['MistyRose', 'black']}})
     return a:layout
   endfunction
   "}}}
@@ -1602,14 +1603,9 @@ if neobundle#tap('vim-ezbar') "{{{
   endfunction
   "}}}
   function! s:u.dir(n) "{{{
-    let bg = self.mode=='i' ? 'LightSkyBlue1' : 'azure'
-    let _ = fnamemodify(self.crrbuf, ':h')
-    return {'s': '%.35('._.'%)', 'ac': {'gui': [bg, 'black', 'bold']}, 'ic': {'gui': ['azure', 'black']}}
-  endfunction
-  "}}}
-  function! s:u.filename(n) "{{{
-    let bg = self.mode=='i' ? 'RosyBrown1' : 'MistyRose'
-    return {'s': fnamemodify(self.crrbuf, ':t'), 'ac': {'gui': [bg, 'black', 'bold']}, 'c': {'gui': ['MistyRose', 'black']}}
+    let bg = self.mode==#'i' ? 'LightSkyBlue1': 'azure'
+    return {'s': '%.35('. fnamemodify(self.bufname, ':h'). '%)',
+      \ 'ac': {'gui': [bg, 'black', 'bold']}, 'ic': {'gui': ['azure', 'black']}}
   endfunction
   "}}}
   function! s:u.currentfuncrow(n) "{{{
@@ -2333,7 +2329,8 @@ function! s:imoff_f(is_vmode) "{{{
   let c = nr2char(getchar())
   if c=="\<Tab>"
     let &gcr = save_gcr
-    if exists('*EasyMotion#S')| call EasyMotion#S(a:is_vmode,2)| end
+    silent exe "norm \<Plug>(easymotion-s)"
+    call EasyMotion#S(a:is_vmode,2)
     return "\<Esc>"
   elseif a:is_vmode && c!="\<Esc>"
     let g:f_pos = [bufnr('%'), line('.')]
