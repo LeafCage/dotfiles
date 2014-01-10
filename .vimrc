@@ -187,6 +187,8 @@ NeoBundleLazy 'https://github.com/tpope/vim-speeddating.git'
 NeoBundleLazy 'thinca/vim-showtime', {'autoload': {'commands': [{'complete': 'file', 'name': 'ShowtimeStart'}]}}
 "--------------------------------------
 "Buffer&Win&Tabpage&Jump
+NeoBundleLazy 't9md/vim-choosewin', {'autoload': {'mappings': [['n', '<Plug>(choosewin)']], 'commands': ['ChooseWin']}}
+NeoBundleLazy 'itchyny/thumbnail.vim', {'autoload': {'commands': [{'complete': 'customlist,thumbnail#complete', 'name': 'Thumbnail'}]}}
 "NeoBundle 'kana/vim-tabpagecd' "TabPage毎にcrrdirを持てるようにする
 "NeoBundle 'Rykka/lastbuf.vim'
 "NeoBundleLazy 'osyo-manga/vim-reanimate', {'autoload': {'commands': ['ReanimateSave', 'ReanimateLoad', 'ReanimateSaveInput', 'ReanimateLoadInput', 'ReanimateLoadLatest', 'ReanimateSaveCursorHold', 'ReanimateSwitch', 'ReanimateEditVimrcLocal', 'ReanimateUnload']}}
@@ -838,8 +840,10 @@ if neobundle#tap('yankround.vim') "{{{
   nmap gp <Plug>(yankround-gp)
   nmap gP <Plug>(yankround-gP)
   nnoremap <silent><SID>(ctrlp) :<C-u>CtrlP<CR>
+  nnoremap <silent><expr><SID>(thumbnail) exists(':Thumbnail')==2 ? ":\<C-u>Thumbnail\<CR>" : ''
   nmap <expr><C-p>    yankround#is_active() ? "\<Plug>(yankround-prev)" : "<SID>(ctrlp)"
-  nmap <C-n> <Plug>(yankround-next)
+  nmap <expr><C-n>    yankround#is_active() ? "\<Plug>(yankround-next)" : "<SID>(thumbnail)"
+  "nmap <C-n> <Plug>(yankround-next)
   nnoremap <silent>[@]<C-p> :<C-u>CtrlPYankRound<CR>
 endif
 "}}}
@@ -1198,10 +1202,19 @@ endif
 let g:Syster_dir = $BASEDIR. '/syster'
 
 "======================================
-"Buffer&Win&Tabpage
+"Buffer&Win&Tabpage&Jump
 "lastbuf
 let g:lastbuf_level= 2
 exe 'noremap <silent>'. s:bind.win. 'u :LastBuf<CR>'
+"--------------------------------------
+if neobundle#tap('vim-choosewin') "{{{
+  let g:choosewin_overlay_enable = 1
+  let g:choosewin_overlay_clear_multibyte = 1
+  let g:choosewin_label = 'ABCDEFGIJKMNOPQRSTUVWXYZ'
+  let g:choosewin_keymap = {'h': 'tab_prev', 'l': 'tab_next'}
+  nmap  m;  <Plug>(choosewin)
+endif
+"}}}
 "--------------------------------------
 if neobundle#tap('vim-altr') "{{{
   map <F2> <Plug>(altr-forward)
@@ -2804,8 +2817,7 @@ se shm +=W  "書き込み時、メッセージを表示しない
 se shm +=o  "書き込み時のメッセージをその後の読み込みメッセージで上書きする
 se shm +=I  "Vim開始挨拶メッセージを表示しない
 
-if has_key(s:, 'mytal') || &tal==''
-  let s:mytal = 1
+if neobundle#get('lightline.vim')=={}
   set tabline =%!MyTabline()
   function! MyTabline() "{{{
     let tabs = map(range(1, tabpagenr('$')), 's:_get_tablabels(v:val)')
