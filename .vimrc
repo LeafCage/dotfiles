@@ -119,7 +119,7 @@ NeoBundleLazy 'LeafCage/ref-javadoc', {'depends': 'thinca/vim-ref', 'stay_same':
 "--------------------------------------
 "Development
 NeoBundleLazy 'tpope/vim-fugitive'
-NeoBundleLazy 'thinca/vim-quickrun', {'autoload': {'commands': 'QuickRun', 'mappings': ['<Plug>(quickrun']}}
+NeoBundleLazy 'thinca/vim-quickrun', {'autoload': {'commands': 'QuickRun', 'mappings': ['<Plug>(quickrun']}, 'depends': 'Shougo/vimproc'}
 NeoBundleLazy 'kannokanno/vimtest'
 NeoBundleLazy 'kannokanno/vmock'
 NeoBundleLazy 'LeafCage/laptime.vim', {'stay_same': 1}
@@ -699,13 +699,12 @@ endif
 "}}}
 "--------------------------------------
 if neobundle#tap('vim-quickrun') "{{{
-  call neobundle#config({})
-  function! neobundle#tapped.hooks.on_source(bundle)
-    let g:quickrun_config = {}
-    let g:quickrun_config.markdown = {'type': 'markdown/kramdown', 'cmdopt': '-s', 'outputter': 'browser'}
-  endfunction
-
-  nmap ,xq <Plug>(quickrun)
+  let g:quickrun_config = {}
+  let g:quickrun_config._ = {'outputter/buffer/split': '', 'outputter/buffer/close_on_empty': 1, 'runner': 'vimproc', 'runner/vimproc/updatetime': 60}
+  let g:quickrun_config.markdown = {'type': 'markdown/kramdown', 'cmdopt': '-s', 'outputter': 'browser'}
+  nmap ,r <Plug>(quickrun)
+  "<C-c> でquickrun実行を強制終了させる
+  nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 endif
 "}}}
 "--------------------------------------
@@ -1212,7 +1211,7 @@ if neobundle#tap('vim-choosewin') "{{{
   let g:choosewin_overlay_clear_multibyte = 1
   let g:choosewin_label = 'ABCDEFGIJKMNOPQRSTUVWXYZ'
   let g:choosewin_keymap = {'h': 'tab_prev', 'l': 'tab_next'}
-  nmap  m;  <Plug>(choosewin)
+  nmap  mf  <Plug>(choosewin)
 endif
 "}}}
 "--------------------------------------
@@ -1324,7 +1323,7 @@ if neobundle#tap('vim-altercmd') "{{{
   AlterCommand nbu  Unite neobundle/update<C-r>=Eat_whitespace('\s')<CR>
   AlterCommand nbl[g]   Unite neobundle/log
   AlterCommand nbus   Unite neobundle/install:unite.vim:vimshell:vimfiler:vimproc:neobundle:neocomplcache:neosnippet
-  AlterCommand nbum   Unite neobundle/install:vital.vim:lightline.vim:calendar.vim:vim-anzu:vim-quickrun:vim-fugitive:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim
+  AlterCommand nbum   Unite neobundle/install:vital.vim:lightline.vim:calendar.vim:vim-choosewin:vim-anzu:vim-quickrun:vim-fugitive:vim-gf-autoload:current-func-info.vim:rainbowcyclone.vim
   AlterCommand nbls NeoBundleList
   AlterCommand nbc NeoBundleClean
   command! -nargs=0 NeoBundleUpdateShougo
@@ -1851,6 +1850,7 @@ function! s:outputbuf(cmd) "{{{
 endfunction
 "}}}
 command! -nargs=+ -complete=expression   Outputbuf    call s:outputbuf(<q-args>)
+command! -complete=var -nargs=+ OPP  Outputbuf PP <args>
 command! -nargs=? ExtractMatches let s:pat = empty(<q-args>) ? @/ : <q-args> | let s:result = filter(getline(1, '$'), 'v:val =~# s:pat') | new | put =s:result | unlet s:pat s:result
 function! s:highlight_preview(args) "{{{
   highlight clear HighlightPreview
@@ -2032,7 +2032,6 @@ noremap <C-z> "+
 inoremap <C-r><C-y>   <C-r>+
 cnoremap <C-r><C-y>   <C-r>=substitute(@+, '\n$', '', 'g')<CR>
 cnoremap <C-y>   <C-r>=substitute(@+, '\n$', '', 'g')<CR>
-nnoremap <C-c> "+y
 vnoremap <C-c> "+y
 vnoremap <C-y> "+y
 snoremap <C-c> <C-c>a
@@ -2081,6 +2080,7 @@ endfunction
 map Y y$
 nnoremap ; :
 vnoremap ; :
+nnoremap <silent># :<C-u>let @/ = '\C\<'.expand("<cword>").'\>'<Bar>call histadd('/', @/)<CR>
 nnoremap [space]/ :<C-u>%s/
 nnoremap j gj|nnoremap k gk
 vnoremap <expr>j mode()==#'V' ? 'j' : 'gj'|vnoremap <expr>k mode()==#'V' ? 'k' : 'gk'
