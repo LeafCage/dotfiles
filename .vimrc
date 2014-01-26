@@ -161,7 +161,6 @@ NeoBundleLazy 'sgur/vim-textobj-parameter', {'depends': 'kana/vim-textobj-user',
 NeoBundleLazy 'osyo-manga/vim-textobj-multiblock'
 NeoBundleLazy 'deris/vim-rengbang', {'autoload': {'mappings': [['nx', '<Plug>(operator-rengbang']], 'commands': ['RengBang', 'RengBangUsePrev']}}
 NeoBundleLazy 'anyakichi/vim-surround'
-"NeoBundleLazy 'rhysd/vim-operator-surround', {'autoload': {'mappings': [['n', '<Plug>(operator-surround-repeat)', ['nx', '<Plug>(operator-surround']]]}} FIXME nebulaの出力がおかしい
 NeoBundleLazy 'supermomonga/unite-sudden-death', {'autoload': {'unite_sources': ['suddendeath']}}
 NeoBundleLazy 'LeafCage/unite-recording', {'stay_same': 1}
 NeoBundleLazy 'mattn/ctrlp-mark', {'autoload': {'commands': ['CtrlPMark']}, 'depends': 'kien/ctrlp.vim'}
