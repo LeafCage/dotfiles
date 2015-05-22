@@ -100,9 +100,19 @@ let g:MYBUNDLE = expand('$VIMFILES/mybundle')
 NeoBundleLocal $VIMFILES/bundle/
 NeoBundle 'Shougo/neobundle.vim'
 "--------------------------------------
+"NeoBundle 'haya14busa/incsearch.vim'
+"NeoBundle 'osyo-manga/vital-over'
+"NeoBundle 'osyo-manga/vim-over'
+"NeoBundle 'kamichidu/vim-milqi'
+"NeoBundle 'kamichidu/vim-regexp-assemble'
+"NeoBundle 'bitbucket:ns9tks/vim-fuzzyfinder'
+"NeoBundle 'bitbucket:ns9tks/vim-l9'
+"NeoBundle 'bitbucket:ns9tks/vim-autocomplpop'
+"NeoBundle 'kana/vim-ku'
+
 "Library:
 NeoBundleLazy 'Shougo/vimproc'
-NeoBundleLazy 'vim-jp/vital.vim', {'autoload': {'commands': 'Vitalize'},}
+NeoBundle 'vim-jp/vital.vim', {'autoload': {'commands': 'Vitalize'},}
 NeoBundle 'LeafCage/oreo.vim', {'stay_same': 1, 'base': g:MYBUNDLE}
 NeoBundle 'LeafCage/lim.vim', {'stay_same': 1, 'base': g:MYBUNDLE}
 NeoBundleLazy 'tomtom/tlib_vim'
@@ -112,13 +122,10 @@ NeoBundleLazy 'mattn/webapi-vim'
 NeoBundleLazy 'osyo-manga/vim-gift'
 NeoBundle 'rbtnn/rabbit-ui.vim'
 NeoBundleLazy 'rbtnn/rabbit-ui-collection.vim', {'autoload': {'commands': [{'complete': 'file', 'name': 'RabbitUICollectionEditCSV'}, 'RabbitUICollectionChoiceMark', 'RabbitUICollectionChoiceBookmark', 'RabbitUICollectionChoiceBuffer']}}
-"NeoBundle 'bitbucket:ns9tks/vim-fuzzyfinder'
-"NeoBundle 'bitbucket:ns9tks/vim-l9'
-"NeoBundle 'kana/vim-ku'
 "--------------------------------------
 "Synthesis:
 NeoBundleLazy 'Shougo/unite.vim'
-NeoBundleLazy 'kien/ctrlp.vim',
+NeoBundleLazy 'ctrlpvim/ctrlp.vim',
 NeoBundle 'LeafCage/alti.vim', {'stay_same': 1, 'base': g:MYBUNDLE}
 NeoBundleLazy 'Shougo/vimshell'
 NeoBundleLazy 'Shougo/vimfiler'
@@ -162,7 +169,7 @@ else
 end
 NeoBundleLazy 'Shougo/neosnippet'
 NeoBundle 'Shougo/neosnippet-snippets'
-NeoBundle 'mattn/emmet-vim'
+NeoBundleLazy 'mattn/emmet-vim', {'autoload': {'insert': 1, 'commands': ['Emmet', 'EmmetInstall']}}
 NeoBundleLazy 'tpope/vim-abolish', {'autoload': {'mappings': [['n', '<Plug>Coerce']], 'commands': [{'complete': 'custom,LoadAbolish', 'name': 'S'}, {'complete': 'custom,LoadAbolish', 'name': 'Abolish'}, {'complete': 'custom,LoadAbolish', 'name': 'Subvert'}]}}
 NeoBundleLazy 'scrooloose/nerdcommenter', {'autoload': {'mappings': [['inx', '<Plug>NERDCommenter']]}}
 NeoBundle 'LeafCage/yankround.vim', {'stay_same': 1, 'base': g:MYBUNDLE}
@@ -195,6 +202,7 @@ NeoBundleLazy 'yonchu/accelerated-smooth-scroll', {'autoload': {'mappings': [['x
 "NeoBundleLazy 'rhysd/clever-f.vim', {'autoload': {'mappings': [['sxno', '<Plug>(clever-f-']]}}
 NeoBundleLazy 'thinca/vim-poslist', {'autoload': {'mappings': ['<Plug>(poslist-']}}
 NeoBundleLazy 'thinca/vim-visualstar', {'autoload': {'mappings': ['<Plug>(visualstar-']}}
+NeoBundle 'haya14busa/vim-asterisk'
 NeoBundleLazy 'https://github.com/vim-scripts/DrawIt.git' "図を描写する #Bible5-4
 NeoBundleLazy 'https://github.com/vim-scripts/Align.git' "高機能なテキストファイル整形ツール #Bible5-11
 NeoBundleLazy 'https://github.com/tpope/vim-speeddating.git'
@@ -230,6 +238,8 @@ NeoBundleLazy 'itchyny/calendar.vim', {'autoload': {'commands': [{'complete': 'c
 NeoBundleLazy 'AndrewRadev/linediff.vim', {'autoload': {'commands': ['LinediffReset', 'Linediff']}}
 NeoBundleLazy 'mbbill/undotree', {'autoload': {'commands': ['UndotreeToggle']}}
 NeoBundle 'LeafCage/foldCC.vim', {'stay_same': 1, 'base': g:MYBUNDLE}
+NeoBundle 'LeafCage/visiblemarks.vim', {'stay_same': 1, 'base': g:MYBUNDLE}
+NeoBundle 'LeafCage/echos.vim', {'autoload': {'commands': [{'complete': 'expression', 'name': 'Echos'}]}, 'stay_same': 1, 'base': g:MYBUNDLE}
 NeoBundle 'tyru/current-func-info.vim'
 NeoBundleLazy 'sgur/vim-gitgutter', {'autoload': {'mappings': [['n', '<Plug>GitGutter']], 'commands': ['GitGutterAll', 'GitGutterToggle', 'GitGutterPrevHunk', 'GitGutterDisable', 'GitGutterLineHighlightsEnable', 'GitGutterNextHunk', 'GitGutterEnable', 'GitGutter', 'GitGutterLineHighlightsToggle', 'GitGutterLineHighlightsDisable']}}
 "NeoBundle 'LeafCage/win-shujuukankei.vim'
@@ -290,7 +300,8 @@ endif
 if neobundle#tap('oreo.vim') "{{{
   let g:oreo#config_dir = '~/Dropbox/.config/vim/oreo.vim'
   let g:oreo#libs = {}
-  let g:oreo#libs.lim = 'D:/hom/Dropbox/vimfiles/bundle/lim.vim'
+  let g:oreo#libs.lim = 'D:/hom/Dropbox/vimfiles/mybundle/lim.vim'
+  let g:oreo#libs.limalfa = 'oppai'
   let g:oreo#libs['rabbit_ui'] = 'D:/hom/Dropbox/vimfiles/neobundle/rabbit-ui.vim'
 endif
 "}}}
@@ -389,29 +400,30 @@ endif
 if neobundle#tap('ctrlp.vim') "{{{
   call neobundle#config({'autoload': {'commands': ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU', 'CtrlPLastMode', 'CtrlPRoot', 'CtrlPClearCache', 'CtrlPClearAllCaches']}})
   function! neobundle#tapped.hooks.on_source(bundle)
-    nnoremap <S-Space> :
     let g:ctrlp_prompt_mappings = {}
-    let g:ctrlp_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
+    let g:ctrlp_prompt_mappings['PrtBS()'] = ['<BS>', '<C-h>']
     let g:ctrlp_prompt_mappings['PrtSelectMove("j")'] = ['<C-n>']
     let g:ctrlp_prompt_mappings['PrtSelectMove("k")'] = ['<C-p>']
     let g:ctrlp_prompt_mappings['PrtHistory(-1)'] = ['<C-j>']
     let g:ctrlp_prompt_mappings['PrtHistory(1)'] = ['<C-l>']
     let g:ctrlp_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-b>', '<C-k>']
     let g:ctrlp_prompt_mappings['PrtCurRight()'] = ['<Right>', '<C-f>']
-    let g:ctrlp_prompt_mappings['AcceptSelection("h")'] = ['<C-CR>', '<C-s>']
     let g:ctrlp_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
-    let g:ctrlp_prompt_mappings['ToggleType(1)'] = ['<C-_>', '<C-l>', '<C-up>']
-    let g:ctrlp_prompt_mappings['ToggleType(-1)'] = ['<C-^>', '<C-x>', '<C-down>']
+    let g:ctrlp_prompt_mappings['ToggleType(1)'] = ['<C-]>', '<C-up>']
+    let g:ctrlp_prompt_mappings['ToggleType(-1)'] = ['<C-\>', '<C-down>']
+    let g:ctrlp_prompt_mappings['PrtInsert()'] = ['<C-^>']
     let g:ctrlp_prompt_mappings['PrtInsert("r")'] = ['<S-Left>']
   endfunction
 
   nnoremap <silent>[space]<C-p> :<C-u>CtrlP<CR>
   nnoremap <silent><M-p> :<C-u>CtrlP<CR>
-  nnoremap <silent>z<C-p> :<C-u>CtrlP D:/hom/Dropbox/ref<CR>
+  nnoremap <silent><M-b> :<C-u>CtrlPBuffer<CR>
+  nnoremap <silent>,b<C-p> :<C-u>CtrlPBuffer<CR>
   nnoremap <silent>m<C-p> :<C-u>CtrlPMRU<CR>
+  nnoremap <silent><M-m> :<C-u>CtrlPMRU<CR>
+  nnoremap <silent>z<C-p> :<C-u>CtrlP D:/hom/Dropbox/ref<CR>
   let g:ctrlp_smallreg_dir = $VIMCACHE. '/ctrlp/smallreg'
   nnoremap <silent>g<C-p> :<C-u>CtrlPMark<CR>
-  nnoremap <silent>,<C-p><C-b> :<C-u>CtrlPBuffer<CR>
   "nnoremap <silent>[C-k]<C-p> :<C-u>CtrlPBuffer<CR>
   "nnoremap <silent>[C-k]<C-h> :<C-u>CtrlPMRU<CR>
   "autocmd vimrc CursorMoved ControlP  let w:lightline = 0
@@ -435,20 +447,11 @@ endif
 "--------------------------------------
 if neobundle#tap('alti.vim') "{{{
   function! neobundle#tapped.hooks.on_source(bundle)
-    nnoremap <S-Space> :map <buffer><CR>
     let g:alti_prompt_mappings = {}
-    let g:alti_prompt_mappings['PrtBS()'] = ['<BS>', '<C-]>', '<C-h>']
-    let g:alti_prompt_mappings['PrtSelectMove("j")'] = ['<C-n>']
-    let g:alti_prompt_mappings['PrtSelectMove("k")'] = ['<C-p>']
-    let g:alti_prompt_mappings['PrtHistory(-1)'] = ['<C-j>']
-    let g:alti_prompt_mappings['PrtHistory(1)'] = ['<C-l>']
     let g:alti_prompt_mappings['PrtCurLeft()'] = ['<Left>', '<C-k>']
-    let g:alti_prompt_mappings['PrtCurRight()'] = ['<Right>', '<C-f>']
+    let g:alti_prompt_mappings['PrtPage(1)'] = ['<C-l>', '<PageDown>', '<kPageDown>']
+    let g:alti_prompt_mappings['PrtPage(-1)'] = ['<C-o>', '<PageUp>', '<kPageUp>']
     let g:alti_prompt_mappings['PrtExit()'] = ['<Esc>', '<C-c>', '<C-q>']
-    let g:alti_prompt_mappings['ToggleType(1)'] = ['<C-_>', '<C-up>']
-    let g:alti_prompt_mappings['ToggleType(-1)'] = ['<C-^>', '<C-down>']
-    let g:alti_prompt_mappings['PrtSelectMove("t")'] = ['<C-y>', '<Home>', '<kHome>']
-    let g:alti_prompt_mappings['PrtSelectMove("b")'] = ['<C-b>', '<End>', '<kEnd>']
     let g:alti_getreg_mappings = {}
     let g:alti_getreg_mappings['"'] = ['<C-e>']
     let g:alti_getreg_mappings['*'] = ['<C-y>']
@@ -489,7 +492,8 @@ if neobundle#tap('vimshell') "{{{
       call vimshell#set_execute_file('tbz,bz2', 'bzcat')
     endif
     au FileType vimshell  setl nobl
-    au FileType vimshell nnoremap <silent> <buffer> q <C-w>c
+    au FileType vimshell nnoremap <silent><buffer> q <C-w>c
+    au FileType vimshell nmap <silent><buffer><C-x>c <Plug>(vimshell_interrupt)
     au FileType vimshell nnoremap ,db :<C-u>Unite -default-action=cd bookmark<CR>
     au FileType vimshell nnoremap ,dd :<C-u>Unite -default-action=cd directory_mru<CR>
     autocmd FileType vimshell
@@ -902,22 +906,22 @@ if neobundle#tap('neosnippet') "{{{
   call neobundle#config({'autoload': {'unite_sources': ['neosnippet_file', 'snippet', 'snippet_target'], 'mappings': [['sxi', '<Plug>(neosnippet_']], 'commands': [{'complete': 'file', 'name': 'NeoSnippetSource'}, {'complete': 'customlist,neosnippet#filetype_complete', 'name': 'NeoSnippetMakeCache'}, {'complete': 'customlist,neosnippet#edit_complete', 'name': 'NeoSnippetEdit'}]}})
   function! neobundle#tapped.hooks.on_source(bundle)
     let g:neosnippet#snippets_directory = $VIMUSERDIR. '/snippets'
-    au FileType snippet  setl nobl nofoldenable
-    au FileType snippet  noremap <buffer>q <C-w>q
-    au FileType snippet  inoremap <buffer><C-q> ${}<Left>
+    au vimrc FileType neosnippet  setl nobl nofoldenable tabstop=2 shiftwidth=2 softtabstop=2
+    au vimrc FileType neosnippet  noremap <buffer>q <C-w>q
+    au vimrc FileType neosnippet  inoremap <buffer><C-q> ${}<Left>
   endfunction
 
-  au BufLeave *.snip setl nobl
+  au vimrc BufLeave *.snip setl nobl
   imap <C-s>  <Plug>(neosnippet_expand_or_jump)
   smap <C-s>  <Plug>(neosnippet_expand_or_jump)
   xmap <C-s>  <Plug>(neosnippet_expand_target)
   "スニペットを編集する
   nmap cos <SID>o_snip
-  nnoremap <SID>o_snip :NeoSnippetEdit -split -horizontal -direction=aboveleft<CR>
+  nnoremap <SID>o_snip :<C-u>NeoSnippetEdit -split -horizontal -direction=aboveleft<CR>
   nmap coS <SID>o_Snip
-  nnoremap <SID>o_Snip :NeoSnippetEdit -runtime -split -horizontal -direction=aboveleft<CR>
+  nnoremap <SID>o_Snip :<C-u>NeoSnippetEdit -runtime -split -horizontal -direction=aboveleft<CR>
   nmap cors <SID>o_rsnip
-  nnoremap <SID>o_rsnip :NeoSnippetEdit -runtime -split -horizontal -direction=aboveleft<CR>
+  nnoremap <SID>o_rsnip :<C-u>NeoSnippetEdit -runtime -split -horizontal -direction=aboveleft<CR>
 
   nmap coas <SID>a_snip
   nnoremap <SID>a_snip :NeoSnippetEdit -split -horizontal -direction=aboveleft _<CR>
@@ -960,9 +964,10 @@ endif
 "}}}
 "--------------------------------------
 if neobundle#tap('yankround.vim') "{{{
+  let g:ctrlp_abailable = 1
   let g:yankround_dir = $VIMCACHE. '/yankround'
   let g:yankround_use_region_hl = 1
-  let g:yankround_use_ctrlp = 1
+  let g:ctrlp_enable = 1
   nmap p <Plug>(yankround-p)
   xmap p <Plug>(yankround-p)
   nmap P <Plug>(yankround-P)
@@ -979,6 +984,11 @@ if neobundle#tap('yankround.vim') "{{{
   nmap <expr><C-n>    yankround#is_active() ? "\<Plug>(yankround-next)" : "gt"
   "nmap <C-n> <Plug>(yankround-next)
   nnoremap <silent>[@]<C-p> :<C-u>CtrlPYankRound<CR>
+  cmap <C-r> <Plug>(yankround-insert-register)
+  cmap <C-r><C-e>   <Plug>(yankround-insert-register)=substitute(substitute(@", '\n$', '', ''), '\n', '<Bar> ', 'g')<CR>
+  cmap <C-r><C-y>   <Plug>(yankround-insert-register)=substitute(@+, '\n$', '', 'g')<CR>
+  cmap <C-y> <Plug>(yankround-pop)
+  cmap <C-x><C-y> <Plug>(yankround-backpop)
 endif
 "}}}
 "--------------------------------------
@@ -1550,6 +1560,24 @@ if neobundle#tap('foldCC.vim') "{{{
 endif
 "}}}
 "--------------------------------------
+if neobundle#tap('visiblemarks.vim') "{{{
+  nnoremap <silent>m :<C-u>call visiblemarks#setmark()<CR>
+  "nmap m <Plug>(visiblemarks-m)
+  nmap ma <Plug>(visiblemarks-m,)
+  nmap m. <Plug>(visiblemarks-m.)
+  nmap dm <Plug>(visiblemarks-dm)
+  nmap m<C-g> <Plug>(visiblemarks-info-buf)
+  map gm <Plug>(visiblemarks-`)
+  map M <Plug>(visiblemarks-`)
+  map MM <Plug>(visiblemarks-``)
+endif
+"}}}
+"--------------------------------------
+if neobundle#tap('echos.vim') "{{{
+  let g:echos_enable_visible_str = 1
+endif
+"}}}
+"--------------------------------------
 if neobundle#tap('lastmess.vim') "{{{
   let g:lastmess_ignore_pattern = 'スキャン中\|検索したので\|箇所変更しました;\|行 削除しました;\|行 追加しました\|\d\+L, \d\+C$\|行 --\d\+%--$\|--バッファに行がありません--$\|既に一番新しい変更です\|^\s*\d\+:\s\%(\~\|\u:\)/'
   let g:lastmess_default_count = 30
@@ -1631,7 +1659,7 @@ if neobundle#tap('lightline.vim') "{{{
   let g:lightline.inactive.left = [['winbufnum'], ['dir'], ['filename'], ['filetype', 'readonly', 'modified']]
   let g:lightline.inactive.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding']]
 
-  let g:lightline.component = {'dir': '%.35(%{expand("%:h:s?\\S$?\\0/?")}%)', 'winbufnum': '%n%{repeat(",", winnr())}%<', 'rows': '%L', 'cd': '%.35(%{fnamemodify(getcwd(), ":~")}%)', 'readonly': '%{&ro ? "=" : ""}', 'tabopts': '%{&et?"et":""}%{&ts}:%{&sw}:%{&sts},%{&tw}', 'lineinfo': '%3l:%-3v'}
+  let g:lightline.component = {'dir': '%.35(%{expand("%:h:s?\\S$?\\0/?")}%)', 'filename': '%t%{get(w:, "quickfix_title", "")}', 'winbufnum': '%n%{repeat(",", winnr())}%<', 'rows': '%L', 'cd': '%.35(%{fnamemodify(getcwd(), ":~")}%)', 'readonly': '%{&ro ? "=" : ""}', 'tabopts': '%{&et?"et":""}%{&ts}:%{&sw}:%{&sts},%{&tw}', 'lineinfo': '%3l:%-3v'}
   let g:lightline.component_function = {'fugitive': 'StlFugitive', 'cfi': 'StlCurrentFuncInfo', 'currentfuncrow': 'StlCurrentFuncRow', 'anzu': 'anzu#search_status'}
   function! StlFugitive() "{{{
     try
@@ -1884,12 +1912,15 @@ autocmd vimrc Filetype qf  set nobl
 autocmd vimrc FileType help   nnoremap <buffer><expr>q winnr('$')==1 ? ":\<C-u>bd\<CR>" : "\<C-w>c"
 autocmd vimrc BufWinEnter option-window   nnoremap <buffer><expr>q winnr('$')==1 ? ":\<C-u>bd\<CR>" : "\<C-w>c"
 autocmd vimrc FileType qf  noremap <buffer>q    :cclose<CR>
-autocmd vimrc FileType qf  noremap <buffer><CR>    :.cc<CR>
+autocmd vimrc FileType qf  noremap <buffer><CR>    :<C-u>.cc<CR>zvzz
+autocmd vimrc FileType qf  noremap <buffer><C-n>    :<C-u>exe v:count. 'cn'<CR>zvzz<C-w>p
+autocmd vimrc FileType qf  noremap <buffer><C-p>    :<C-u>exe v:count. 'cp'<CR>zvzz<C-w>p
 autocmd vimrc FileType vim    inoremap <expr><buffer>\
   \ getline('.') =~ '^\s*$' ? "\\\<Space>" : match(getline('.'), '\S')+1 >= col('.') ? "\\\<Space>" : '\'
 autocmd vimrc Filetype vim  inoreabb <buffer> ecs Echos
 autocmd vimrc Filetype vim  inoreabb <buffer> echs Echos
 autocmd vimrc Filetype vim  inoreabb <buffer> echos Echos
+autocmd vimrc Filetype vim  inoreabb <buffer> ect Echot
 autocmd vimrc FileType markdown   inoremap <buffer><expr><CR> getline('.')=~'\S\s$' ? "\<Space>\<CR>" : "\<CR>"
 autocmd vimrc FileType markdown   inoremap <buffer><expr>- match(getline('.'), '^\s*\zs[^-]')==col('.')-1 ? "- " : '-'
 autocmd vimrc FileType markdown   inoremap <buffer><expr>+ match(getline('.'), '^\s*\zs[^+]')==col('.')-1 ? "+ " : '+'
@@ -1947,8 +1978,16 @@ endfunction
 "Window位置の保存と復帰
 let s:infofile = expand($VIMCACHE. '/.vimpos')
 function! s:save_windowsize() "{{{
+  if !has('gui_running')
+    return
+  end
   let options = ['set columns='. &columns, 'set lines='. &lines, 'winpos '. getwinposx(). ' '. getwinposy()]
-  call writefile(options, s:infofile)
+  try
+    call writefile(options, s:infofile)
+  catch /E482/
+    call delete(s:infofile)
+    call writefile(options, s:infofile)
+  endtry
 endfunction
 "}}}
 
@@ -2129,7 +2168,7 @@ if exists(':AlterCommand')
   AlterCommand re[name] Rename <C-r>=expand('%:p:h').'/'<CR><C-r>=Eat_whitespace('\s')<CR>
   AlterCommand fu Func
 end
-command! -nargs=1 -complete=var   Echos  redir => s:msg | silent exe 'echo '. <q-args> | redir END | echom s:msg[1:] | unlet s:msg
+"command! -nargs=1 -complete=var   Echos  redir => s:msg | silent exe 'echo '. <q-args> | redir END | echom s:msg[1:] | unlet s:msg
 
 "=========================================================
 "Misc:
@@ -2197,7 +2236,7 @@ map @ [@]
 nnoremap ZZ <Nop>
 nnoremap q <Nop>
 nnoremap <C-q> <Nop>
-noremap m <Nop>
+"noremap m <Nop>
 noremap! <S-Up> _
 "インサートモードで間違って出してほしくないキー
 noremap <F15> <Nop>
@@ -2214,7 +2253,7 @@ inoremap <C-u> <C-g>u<C-u>
 "--------------------------------------
 "参照操作
 cnoremap <F1>   <C-u>h function-list<CR>
-nnoremap <expr><F1>   v:count==1 ? ":\<C-u>h :command-completion-custom\<CR>" : ":\<C-u>h function-list\<CR>"
+nnoremap <expr><F1>   v:count==1 ? ":\<C-u>h :command-completion-custom\<CR>" : v:count==2 ? ":\<C-u>h complete-functions\<CR>" : ":\<C-u>h function-list\<CR>"
 nnoremap <C-h>  :<C-u>h<Space>
 cnoremap <expr><C-h>    getcmdtype()==':' ? getcmdpos()==1 ? 'h ' : "\<C-h>" : "\<C-h>"
 cnoremap <expr><C-e>    getcmdtype()==':' ? getcmdline()=~'^\s*$\\|^h $' ? "<C-u>ec " : "\<C-e>" : "\<C-e>"
@@ -2226,10 +2265,8 @@ noremap ,Y "*y$
 noremap ,p "*p
 noremap ,P "*P
 noremap <F3> "+
-noremap! <F3>   <C-r>+
 inoremap <C-r><C-y>   <C-r>+
-cnoremap <C-r><C-y>   <C-r>=substitute(@+, '\n$', '', 'g')<CR>
-cnoremap <C-y>   <C-r>=substitute(@+, '\n$', '', 'g')<CR>
+"cnoremap <C-r><C-y>   <C-r>=substitute(@+, '\n$', '', 'g')<CR>
 vnoremap <C-c> "+y
 vnoremap <C-y> "+y
 snoremap <C-c> <C-c>a
@@ -2346,8 +2383,6 @@ function! s:enlarge_win(winnr) "{{{
 endfunction
 "}}}
 "指定した番号の窓を閉じる
-nmap ct <SID>close_remotewin1
-nmap cz <SID>close_remotewin$
 nmap c1 <SID>close_remotewin1
 nmap c2 <SID>close_remotewin2
 nmap c3 <SID>close_remotewin3
@@ -2379,12 +2414,11 @@ nnoremap <SID>close_remotewin5 :call <SID>close_remotewin(5)<CR>
 nnoremap <SID>close_remotewin6 :call <SID>close_remotewin(6)<CR>
 function! s:close_remotewin(winnr)
   let save_winnr = winnr()
+  if a:winnr < save_winnr
+    let save_winnr -= 1
+  endif
   exe a:winnr. 'wincmd w'
   hide
-  if save_winnr == a:winnr
-    return
-  endif
-  let save_winnr = s:_get_ajusted_savewinnr(save_winnr, [a:winnr])
   exe save_winnr. 'wincmd w'
 endfunction
 "Specialwin Open/Close
@@ -2393,32 +2427,26 @@ nmap cq <SID>close_whole_specialwins
 nmap d,q <SID>close_whole_specialwins
 function! s:close_whole_specialwins(options, buftypes, filetypes) "{{{
   let save_winnr = winnr()
-  let killedwinnr_list = []
-  windo call add(killedwinnr_list, s:_close_win(s:_should_close(a:options, a:buftypes, a:filetypes)))
-  let save_winnr = s:_get_ajusted_savewinnr(save_winnr, killedwinnr_list)
-  exe save_winnr.'wincmd w'
+  let closable_winnrs = []
+  windo if !(index(map(a:options, 'eval(v:val)'), 1)==-1 && index(a:buftypes, &bt)==-1 && index(a:filetypes, &ft)==-1) | call add(closable_winnrs, winnr()) | endif
+  for winnr in reverse(closable_winnrs)
+    if winnr < save_winnr
+      let save_winnr -= 1
+    endif
+    exe winnr. 'wincmd w'
+    hide
+  endfor
+  exe save_winnr. 'wincmd w'
 endfunction
 "}}}
-function! s:_close_win(should_close) "{{{
+function! s:closewin_remote(should_close) "{{{
   if !a:should_close
-    return 0
+    return
   endif
   let winnr = winnr()
   hide
   return winnr
 endfunction "}}}
-function! s:_should_close(options, buftypes, filetypes) "{{{
-  if index(a:options, 1)!=-1
-    return 1
-  endif
-  if index(a:buftypes, &bt)!=-1
-    return 1
-  endif
-  if index(a:filetypes, &ft)!=-1
-    return 1
-  endif
-endfunction
-"}}}
 function! s:_get_ajusted_savewinnr(save_winnr, killedwinnr_list)  "{{{
   let save_winnr = a:save_winnr
   for killedwinnr in reverse(a:killedwinnr_list)
@@ -2481,11 +2509,21 @@ exe 'nnoremap '. s:bind.win. '6 6<C-w><C-w>'
 "Specialwin Switching
 "QuickFixコマンド
 nmap cn <SID>c_n
-nnoremap <SID>c_n    :cn<CR>zv
+nnoremap <SID>c_n    :<C-u>exe v:count. 'cn'<CR>zv
 nmap cp <SID>c_p
-nnoremap <SID>c_p    :cp<CR>zv
+nnoremap <SID>c_p    :<C-u>exe v:count. 'cp'<CR>zv
 nmap cv <SID>c_window
-nnoremap <SID>c_window    :cw<CR>
+nnoremap <silent><SID>c_window    :<C-u>call <SID>toggle_cwindow()<CR>
+function! s:toggle_cwindow() "{{{
+  let cwinnr = 0
+  windo if &bt=='quickfix' | let cwinnr = winnr() | endif
+  if cwinnr
+    cclose
+  else
+    cwindow
+  end
+endfunction
+"}}}
 "--------------------------------------
 "Open the Particular Buf
 nnoremap <SID>o_vimrc :e $MYVIMRC_SUBSTANCEDIR/.vimrc<CR>g`"
@@ -2541,10 +2579,14 @@ vnoremap <silent>f    :<C-u>exe <SID>imoff_f(1, 'f')<CR>
 vnoremap <silent>F    :<C-u>exe <SID>imoff_f(1, 'F')<CR>
 nnoremap T ,
 vnoremap <expr>t    g:Fpos.is_during_f(1) ? ';' : ":\<C-u>exe <SID>imoff_f(1, 't')\<CR>"
-noremap M %
 noremap L $
 xnoremap L $h
 noremap <expr>H   col('.') == match(getline('.'), '^\s*\zs\S')+1 ? '0' : '^'
+noremap gH H
+noremap gM M
+noremap gL L
+"noremap M `
+"noremap MM ``
 "noremap <silent>M   :<C-u>call <SID>smart_M('M')<CR>
 function! s:smart_M(move) "{{{
   let s:smart_M_count = get(s:, 'smart_M_count', 0)
@@ -2755,8 +2797,10 @@ inoremap <expr><C-e>  pumvisible() ? "\<C-e>" : "\<End>"
 "cnoremap <C-e> <End>
 "--------------------------------------
 "挿入バインド(Insert CommandLine)
+cnoremap <C-x><C-p> <Up>
+cnoremap <C-x><C-n> <Down>
 inoremap <C-r><C-e> <C-r>"
-cnoremap <C-r><C-e>   <C-r>=substitute(substitute(@", '\n$', '', ''), '\n', '<Bar> ', 'g')<CR>
+"cnoremap <C-r><C-e>   <C-r>=substitute(substitute(@", '\n$', '', ''), '\n', '<Bar> ', 'g')<CR>
 noremap! <C-r><C-f> <C-r>=expand('%:t')<CR>
 inoremap <S-C-Tab> <C-d>
 inoremap <C-r><C-t> 0<C-d>
